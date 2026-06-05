@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Beloved Family Hub</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Background Decorations -->
+  <div class="bg-shape bg-shape-1"></div>
+  <div class="bg-shape bg-shape-2"></div>
+
+  <div class="app-container">
+    
+    <!-- Sidebar / Bottom Nav -->
+    <nav class="main-nav">
+      <div class="nav-brand">
+        <i class="fa-solid fa-heart nav-logo"></i>
+        <span>Beloved Family</span>
+      </div>
+      <div class="nav-menu">
+        <a href="#" class="nav-item active" data-target="home">
+          <i class="fa-solid fa-house"></i>
+          <span>Home</span>
+        </a>
+        <a href="#" class="nav-item" data-target="family-expenses">
+          <i class="fa-solid fa-file-invoice-dollar"></i>
+          <span>Family Expenses</span>
+        </a>
+        <a href="#" class="nav-item" data-target="kids-savings">
+          <i class="fa-solid fa-piggy-bank"></i>
+          <span>Kids Savings</span>
+        </a>
+        <a href="#" class="nav-item" data-target="mona-expenses">
+          <i class="fa-solid fa-person-running"></i>
+          <span>Mona Gym</span>
+        </a>
+      </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      
+      <!-- Home Portal -->
+      <section id="home" class="page-section active fade-in">
+        <header class="section-header text-center">
+          <h1>Welcome to Beloved Family</h1>
+          <p>รวมทุกเรื่องราวและค่าใช้จ่ายของครอบครัวไว้ในที่เดียว</p>
+        </header>
+
+        <div class="portal-grid">
+          <div class="portal-card" onclick="document.querySelector('.nav-item[data-target=\'family-expenses\']').click()">
+            <div class="portal-icon bg-gradient-blue"><i class="fa-solid fa-file-invoice-dollar"></i></div>
+            <h3>Family Expenses</h3>
+            <p>บันทึกและสรุปค่าใช้จ่ายส่วนกลางของครอบครัว</p>
+          </div>
+          
+          <div class="portal-card" onclick="document.querySelector('.nav-item[data-target=\'kids-savings\']').click()">
+            <div class="portal-icon bg-gradient-green"><i class="fa-solid fa-piggy-bank"></i></div>
+            <h3>Kids Savings</h3>
+            <p>บันทึกและติดตามเงินออมของนโมและโมนา</p>
+            <div class="avatar-group mt-2">
+              <img src="Namo.png" alt="Namo" class="avatar-sm">
+              <img src="Mona.png" alt="Mona" class="avatar-sm">
+            </div>
+          </div>
+
+          <div class="portal-card" onclick="document.querySelector('.nav-item[data-target=\'mona-expenses\']').click()">
+            <div class="portal-icon bg-gradient-pink"><i class="fa-solid fa-person-running"></i></div>
+            <h3>Mona Gym Expenses</h3>
+            <p>บันทึกค่าใช้จ่ายเกี่ยวกับการเรียนยิมนาสติกของโมนา</p>
+            <img src="Mona.png" alt="Mona" class="avatar-sm mt-2">
+          </div>
+        </div>
+      </section>
+
+      <!-- Family Expenses Section -->
+      <section id="family-expenses" class="page-section fade-in">
+        <header class="section-header">
+          <h2><i class="fa-solid fa-file-invoice-dollar me-2"></i> Family Expenses</h2>
+          <p>ระบบบันทึกรายจ่ายครอบครัว</p>
+        </header>
+        
+        <div class="tabs-container">
+          <div class="tabs">
+            <button class="tab-btn active" data-tab="fe-form">บันทึกค่าใช้จ่าย</button>
+            <button class="tab-btn" data-tab="fe-dashboard">แดชบอร์ด</button>
+          </div>
+          
+          <div class="tab-content active" id="fe-form">
+            <div class="glass-panel">
+              <form id="feForm">
+                <div class="form-group">
+                  <label>วันที่ใช้จ่าย</label>
+                  <input type="date" id="feDate" class="input-control" required>
+                </div>
+                <div class="form-group">
+                  <label>ประเภทค่าใช้จ่าย</label>
+                  <select id="feCategory" class="input-control" required>
+                    <option value="" selected disabled>-- เลือกประเภท --</option>
+                    <option value="อาหาร">อาหาร</option>
+                    <option value="เครื่องดื่ม (ไม่มีแอลกฮอล์)">เครื่องดื่ม (ไม่มีแอลกฮอล์)</option>
+                    <option value="เครื่องดื่ม (แอลกฮอล์)">เครื่องดื่ม (แอลกฮอล์)</option>
+                    <option value="ค่าใช้จ่าย นโม">ค่าใช้จ่าย นโม</option>
+                    <option value="ค่าใช้จ่าย โมนา">ค่าใช้จ่าย โมนา</option>
+                    <option value="อื่นๆ">อื่นๆ</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>ระบุ (รายละเอียด)</label>
+                  <input type="text" id="feDetail" class="input-control" placeholder="เช่น ค่าอาหารเย็น, ซื้อของเข้าบ้าน" required>
+                </div>
+                <div class="form-group">
+                  <label>ยอดค่าใช้จ่าย (บาท)</label>
+                  <div class="input-group">
+                    <span class="input-prefix">฿</span>
+                    <input type="number" id="feAmount" class="input-control pl-prefix" placeholder="0.00" step="0.01" required>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label>หมายเหตุ</label>
+                  <textarea id="feRemark" class="input-control" rows="2" placeholder="ใส่หมายเหตุเพิ่มเติม (ถ้ามี)"></textarea>
+                </div>
+                <div class="form-group">
+                  <label>รูปใบเสร็จ (ถ้ามี - ขนาดไม่เกิน 2MB)</label>
+                  <input type="file" id="feFile" class="input-control" accept="image/*">
+                </div>
+                <button type="submit" class="btn btn-primary w-full mt-4">บันทึกรายการ</button>
+              </form>
+            </div>
+          </div>
+          
+          <div class="tab-content" id="fe-dashboard">
+            <div class="glass-panel text-center" id="feDashboardContent" style="display:none;">
+              <h3>สรุปค่าใช้จ่าย <span id="feMonthName" class="text-primary"></span></h3>
+              <div class="summary-box">
+                <div class="text-sm">ยอดใช้จ่ายรวม (บาท)</div>
+                <div class="amount-large text-danger" id="feTotalAmount">0.00</div>
+              </div>
+              <div class="chart-wrapper mt-4">
+                <canvas id="feChart"></canvas>
+              </div>
+              <div id="feCategoryList" class="mt-4 text-left"></div>
+              <h4 class="mt-4 text-left">ประวัติการใช้จ่ายเดือนนี้</h4>
+              <div id="feTransactionList" class="mt-2 text-left"></div>
+            </div>
+            <div id="feDashboardLoading" class="loader-container">
+              <div class="spinner"></div>
+              <p>กำลังดึงข้อมูล...</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Kids Savings Section -->
+      <section id="kids-savings" class="page-section fade-in">
+        <header class="section-header">
+          <h2><i class="fa-solid fa-piggy-bank me-2"></i> Kids Savings</h2>
+          <p>เลือกลูกที่ต้องการบันทึกเงินออม</p>
+        </header>
+        
+        <div class="tabs-container">
+          <div class="tabs" style="display: none;">
+            <button class="tab-btn active" data-tab="ks-home">เลือกลูก</button>
+          </div>
+          
+          <div class="tab-content active" id="ks-home">
+            <div class="kids-portal" id="ksPortal">
+              <div class="kid-card" onclick="ksSelectKid('namo')">
+                <img src="Namo.png" alt="Namo" class="kid-avatar">
+                <h3>นโม (Namo)</h3>
+                <div class="badge">ลูกชาย</div>
+                <div class="balance-box">
+                  <div class="text-sm">ยอดเงินคงเหลือ</div>
+                  <div class="balance-amount text-success">฿<span id="ksNamoBalance">0.00</span></div>
+                </div>
+              </div>
+              
+              <div class="kid-card" onclick="ksSelectKid('mona')">
+                <img src="Mona.png" alt="Mona" class="kid-avatar">
+                <h3>โมนา (Mona)</h3>
+                <div class="badge">ลูกสาว</div>
+                <div class="balance-box">
+                  <div class="text-sm">ยอดเงินคงเหลือ</div>
+                  <div class="balance-amount text-success">฿<span id="ksMonaBalance">0.00</span></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Kids Savings Form View (Hidden by default) -->
+            <div id="ksActionView" style="display: none;">
+              <button class="btn btn-icon mb-4" onclick="ksBackToPortal()"><i class="fa-solid fa-arrow-left"></i> กลับไปเลือกบัญชี</button>
+              
+              <div class="glass-panel profile-header mb-4 text-center">
+                <img src="" id="ksSelectedAvatar" class="avatar-md">
+                <h3 id="ksSelectedName"></h3>
+                <div class="balance-display text-success mt-2 fw-bold" style="font-size: 1.2rem;">ยอดปัจจุบัน: ฿<span id="ksSelectedBalance">0.00</span></div>
+              </div>
+
+              <div class="tabs-container mt-2">
+                <div class="tabs">
+                  <button class="tab-btn active" data-tab="ks-deposit">ฝากเงิน</button>
+                  <button class="tab-btn" data-tab="ks-withdraw">ถอนเงิน</button>
+                  <button class="tab-btn" data-tab="ks-individual-dashboard">แดชบอร์ด</button>
+                </div>
+                
+                <!-- Deposit -->
+                <div class="tab-content active" id="ks-deposit">
+                  <form id="ksDepositForm">
+                    <div class="form-group">
+                      <label>ยอดเงินที่ฝาก (บาท)</label>
+                      <div class="input-group">
+                        <span class="input-prefix text-success">฿</span>
+                        <input type="number" id="ksDepAmount" class="input-control pl-prefix" placeholder="0.00" step="0.01" required>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label>รายละเอียด/แหล่งที่มา</label>
+                      <input type="text" id="ksDepDetail" class="input-control" placeholder="เช่น ค่าขนม, เงินฝากประจำ" required>
+                    </div>
+                    <button type="submit" class="btn btn-success w-full mt-4">บันทึกเงินฝาก</button>
+                  </form>
+                </div>
+
+                <!-- Withdraw -->
+                <div class="tab-content" id="ks-withdraw">
+                  <form id="ksWithdrawForm">
+                    <div class="form-group">
+                      <label>ยอดเงินที่ถอน (บาท)</label>
+                      <div class="input-group">
+                        <span class="input-prefix text-danger">฿</span>
+                        <input type="number" id="ksWithAmount" class="input-control pl-prefix" placeholder="0.00" step="0.01" required>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label>เหตุผลการถอน</label>
+                      <input type="text" id="ksWithDetail" class="input-control" placeholder="เช่น ซื้อของเล่น, อุปกรณ์การเรียน" required>
+                    </div>
+                    <button type="submit" class="btn btn-danger w-full mt-4">บันทึกการถอนเงิน</button>
+                  </form>
+                </div>
+                
+                <!-- Individual Dashboard -->
+                <div class="tab-content" id="ks-individual-dashboard">
+                  <div class="glass-panel text-center" id="ksDashboardContent">
+                    <div class="stats-grid">
+                      <div class="stat-box">
+                        <div class="text-sm">ยอดเงินฝากรวม</div>
+                        <div class="amount-md text-success" id="ksDashTotalDeposit">฿0.00</div>
+                      </div>
+                      <div class="stat-box">
+                        <div class="text-sm">ยอดเงินถอนรวม</div>
+                        <div class="amount-md text-danger" id="ksDashTotalWithdraw">฿0.00</div>
+                      </div>
+                    </div>
+                    
+                    <h4 class="mt-4 text-left"><i class="fa-solid fa-chart-line"></i> กราฟยอดเงินออมสะสม</h4>
+                    <div class="chart-wrapper mt-2">
+                      <canvas id="ksChart"></canvas>
+                    </div>
+                    
+                    <h4 class="mt-4 text-left"><i class="fa-solid fa-clock-rotate-left"></i> ประวัติรายการฝาก-ถอน (ล่าสุด)</h4>
+                    <div id="ksTransactionList" class="mt-2 text-left list-wrapper"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Mona Expenses Section -->
+      <section id="mona-expenses" class="page-section fade-in">
+        <header class="section-header">
+          <div class="d-flex align-center justify-center gap-3">
+            <img src="Mona.png" alt="Mona" class="avatar-sm">
+            <div>
+              <h2 class="mb-0"><i class="fa-solid fa-person-running me-2"></i> Mona Gym Expenses</h2>
+              <p class="mb-0 text-sm">ระบบบันทึกค่าใช้จ่ายยิมนาสติก</p>
+            </div>
+          </div>
+        </header>
+
+        <div class="tabs-container">
+          <div class="tabs">
+            <button class="tab-btn active" data-tab="me-form">บันทึกค่าใช้จ่าย</button>
+            <button class="tab-btn" data-tab="me-dashboard">แดชบอร์ดสรุปผล</button>
+          </div>
+          
+          <div class="tab-content active" id="me-form">
+            <div class="glass-panel">
+              <form id="meForm">
+                <div class="form-group">
+                  <label>วันที่ใช้จ่าย</label>
+                  <input type="date" id="meDate" class="input-control" required>
+                </div>
+                <div class="form-group">
+                  <label>ประเภทค่าใช้จ่าย</label>
+                  <select id="meCategory" class="input-control" required onchange="meCheckCustomType(this)">
+                    <option value="" selected disabled>-- เลือกประเภท --</option>
+                    <option value="เรียนยิมนาสติก">เรียนยิมนาสติก</option>
+                    <option value="แข่งขันยิมนาสติก">แข่งขันยิมนาสติก</option>
+                    <option value="ชุดยิมนาสติก">ชุดยิมนาสติก</option>
+                    <option value="อุปกรณ์ยิมนาสติก">อุปกรณ์ยิมนาสติก</option>
+                    <option value="ช่างถ่ายภาพ">ช่างถ่ายภาพ</option>
+                    <option value="อื่นๆ">อื่นๆ</option>
+                  </select>
+                </div>
+                <div class="form-group" id="meCustomTypeGroup" style="display: none;">
+                  <label>ระบุประเภทค่าใช้จ่ายอื่นๆ</label>
+                  <input type="text" id="meCustomType" class="input-control" placeholder="ระบุประเภทค่าใช้จ่าย">
+                </div>
+                <div class="form-group">
+                  <label>ยอดค่าใช้จ่าย (บาท)</label>
+                  <div class="input-group">
+                    <span class="input-prefix">฿</span>
+                    <input type="number" id="meAmount" class="input-control pl-prefix" placeholder="0.00" step="0.01" required>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label>หมายเหตุ</label>
+                  <textarea id="meRemark" class="input-control" rows="2" placeholder="รายละเอียดเพิ่มเติม (ถ้ามี)"></textarea>
+                </div>
+                <div class="form-group">
+                  <label>รูปใบเสร็จ (ถ้ามี)</label>
+                  <input type="file" id="meFile" class="input-control" accept="image/*,application/pdf">
+                </div>
+                <button type="submit" class="btn btn-primary bg-gradient-pink w-full mt-4">บันทึกรายการ</button>
+              </form>
+            </div>
+          </div>
+          
+          <div class="tab-content" id="me-dashboard">
+            <div class="glass-panel text-center" id="meDashboardContent" style="display:none;">
+              <div class="stats-grid">
+                <div class="stat-box">
+                  <div class="text-sm">ยอดเดือนนี้</div>
+                  <div class="amount-md text-pink" id="meMonthTotal">฿0.00</div>
+                </div>
+                <div class="stat-box">
+                  <div class="text-sm">ยอดปีนี้</div>
+                  <div class="amount-md text-purple" id="meYearTotal">฿0.00</div>
+                </div>
+              </div>
+              <h4 class="mt-4 text-left">สัดส่วนค่าใช้จ่าย</h4>
+              <div id="meBreakdownList" class="mt-2 text-left"></div>
+              <h4 class="mt-4 text-left">ประวัติการใช้จ่าย</h4>
+              <div id="meTransactionList" class="mt-2 text-left list-wrapper"></div>
+            </div>
+            <div id="meDashboardLoading" class="loader-container">
+              <div class="spinner border-pink"></div>
+              <p>กำลังดึงข้อมูลรายงาน...</p>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Loading Overlay -->
+  <div id="globalLoading" class="loading-overlay" style="display: none;">
+    <div class="spinner"></div>
+    <div class="loading-text mt-3">กำลังประมวลผล...</div>
+  </div>
+
+  <script src="app.js"></script>
+  <script src="family-expenses.js"></script>
+  <script src="kids-savings.js"></script>
+  <script src="mona-expenses.js"></script>
+</body>
+</html>
