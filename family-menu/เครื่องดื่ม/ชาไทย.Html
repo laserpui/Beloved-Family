@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เครื่องมือคำนวณสูตรชาไทย โดยพอล</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap');
+        body {
+            font-family: 'Kanit', sans-serif;
+            background-color: #fff9f2;
+        }
+        .orange-gradient {
+            background: linear-gradient(135deg, #ee7c31 0%, #f39c12 100%);
+        }
+        .card {
+            background: white;
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        }
+        input[type="range"] {
+            accent-color: #ee7c31;
+        }
+        /* ลบลูกศรออกจาก input number */
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+    </style>
+</head>
+<body class="min-h-screen pb-12">
+
+    <div class="orange-gradient text-white pt-10 pb-20 px-6 text-center rounded-b-[3rem] relative">
+        <!-- ปุ่มกลับหน้าแรก -->
+        <div class="absolute top-4 left-4 z-20">
+            <a href="../index.html" class="inline-flex items-center gap-2 bg-white/20 hover:bg-white/30 active:scale-95 text-white text-sm font-semibold px-4 py-2 rounded-xl backdrop-blur-md transition-all shadow-sm border border-white/10">
+                <i class="fa-solid fa-arrow-left"></i>
+                <span>กลับหน้าหลัก</span>
+            </a>
+        </div>
+
+        <h1 class="text-3xl md:text-4xl font-bold mb-2">🍹 สูตรชงชาเย็น (ชาไทย)</h1>
+        <p class="opacity-90 text-sm md:text-base">คำนวณสัดส่วนแม่นยำ สำหรับคุณปุ๋ย</p>
+    </div>
+
+    <div class="max-w-5xl mx-auto -mt-12 px-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            <div class="space-y-6">
+                <div class="card p-6">
+                    <div class="mb-6">
+                        <label class="block text-gray-700 text-sm font-semibold mb-2">
+                            <i class="fas fa-faucet-drip mr-2 text-orange-600"></i> ปริมาณน้ำ (ลิตร)
+                        </label>
+                        <div class="flex items-center gap-4">
+                            <input type="range" id="waterRange" min="0.1" max="10" step="0.1" value="1" 
+                                   class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                            <div class="flex items-center">
+                                <input type="number" id="waterInput" value="1" step="0.1" 
+                                       class="w-16 border-b-2 border-orange-600 text-center font-bold text-xl focus:outline-none text-orange-700">
+                                <span class="ml-1 font-bold text-gray-600">L</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-6">
+                        <label class="block text-gray-700 text-sm font-semibold mb-2">
+                            <i class="fas fa-arrow-down-short-wide mr-2 text-orange-600"></i> ระดับการลดความหวาน (%)
+                        </label>
+                        <div class="flex items-center gap-4 mb-2">
+                            <input type="range" id="sweetnessRange" min="0" max="100" step="5" value="0" 
+                                   class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                            <div class="flex items-center bg-orange-50 px-2 py-1 rounded-lg border border-orange-200">
+                                <input type="number" id="sweetnessInput" value="0" 
+                                       class="w-14 bg-transparent text-center font-bold text-lg focus:outline-none text-orange-700">
+                                <span class="font-bold text-orange-700">%</span>
+                            </div>
+                        </div>
+                        <p class="text-[11px] text-gray-500">* 0% คือสูตรปกติ | 100% คือไม่ใส่ความหวานเลย | หากต้องการเพิ่มหวานให้ใส่ค่าติดลบ (เช่น -20)</p>
+                    </div>
+                    
+                    <button onclick="resetForm()" 
+                            class="w-full py-2.5 px-4 rounded-xl border-2 border-dashed border-gray-300 text-gray-500 hover:border-orange-400 hover:text-orange-500 hover:bg-orange-50 transition-all text-sm font-medium flex items-center justify-center gap-2">
+                        <i class="fas fa-undo-alt"></i> คืนค่าเริ่มต้น (น้ำ 1L, ลดหวาน 0%)
+                    </button>
+                </div>
+
+                <div class="card p-6 hidden md:block">
+                    <h2 class="text-lg font-bold mb-4 text-orange-800 flex items-center">
+                        <i class="fas fa-mortar-pestle mr-2"></i> วิธีการชงสูตรเด็ด
+                    </h2>
+                    <div class="space-y-4 text-sm text-gray-600">
+                        <div class="flex gap-3">
+                            <div class="bg-orange-100 text-orange-700 w-6 h-6 rounded-full flex items-center justify-center shrink-0 font-bold">1</div>
+                            <p>ต้มน้ำให้เดือดจัด แล้วปิดไฟทันที</p>
+                        </div>
+                        <div class="flex gap-3">
+                            <div class="bg-orange-100 text-orange-700 w-6 h-6 rounded-full flex items-center justify-center shrink-0 font-bold">2</div>
+                            <p>ใส่ผงชา (แดง+ทอง) กดให้จมน้ำ <span class="text-red-500 font-bold underline">ห้ามคน!</span> ปิดฝาแช่ไว้ 10-15 นาที</p>
+                        </div>
+                        <div class="flex gap-3">
+                            <div class="bg-orange-100 text-orange-700 w-6 h-6 rounded-full flex items-center justify-center shrink-0 font-bold">3</div>
+                            <p>กรองผ่านผ้าขาวบาง บีบน้ำออกให้หมด</p>
+                        </div>
+                        <div class="flex gap-3">
+                            <div class="bg-orange-100 text-orange-700 w-6 h-6 rounded-full flex items-center justify-center shrink-0 font-bold">4</div>
+                            <p>ผสมน้ำตาล ครีมเทียม นมข้นหวาน/จืด ตามสัดส่วนที่คำนวณได้</p>
+                        </div>
+                        <div class="mt-4 p-3 bg-blue-50 text-blue-700 rounded-xl flex items-start gap-3 border border-blue-100">
+                            <i class="fas fa-info-circle mt-1 shrink-0"></i>
+                            <p class="text-xs"><strong>พอลแนะนำ:</strong> สูตรนี้ชงแบบเข้มข้น เมื่อเทใส่น้ำแข็งรสชาติจะพอดี แนะนำให้บ่มในตู้เย็น 1 คืนจะหอมขึ้นครับคุณปุ๋ย</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-6">
+                <div class="card p-6 h-full">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-lg font-bold text-orange-800 flex items-center">
+                            <i class="fas fa-list-ul mr-2"></i> สัดส่วนวัตถุดิบ
+                        </h2>
+                        <span class="text-xs bg-orange-100 text-orange-600 px-2 py-1 rounded-md font-medium">ปรับแต่งได้อิสระ</span>
+                    </div>
+                    <div id="ingredients" class="space-y-3">
+                        </div>
+                    <p class="text-[11px] text-gray-400 mt-5 text-center italic">* หากตัวเลขไม่ลงตัว ระบบจะปัดเศษทศนิยมให้โดยอัตโนมัติ</p>
+                </div>
+
+                <div class="card p-6 md:hidden">
+                    <h2 class="text-lg font-bold mb-4 text-orange-800 flex items-center">
+                        <i class="fas fa-mortar-pestle mr-2"></i> วิธีการชงสูตรเด็ด
+                    </h2>
+                    <div class="space-y-4 text-sm text-gray-600">
+                        <div class="flex gap-3">
+                            <div class="bg-orange-100 text-orange-700 w-6 h-6 rounded-full flex items-center justify-center shrink-0 font-bold">1</div>
+                            <p>ต้มน้ำให้เดือดจัด แล้วปิดไฟทันที</p>
+                        </div>
+                        <div class="flex gap-3">
+                            <div class="bg-orange-100 text-orange-700 w-6 h-6 rounded-full flex items-center justify-center shrink-0 font-bold">2</div>
+                            <p>ใส่ผงชา (แดง+ทอง) กดให้จมน้ำ <span class="text-red-500 font-bold underline">ห้ามคน!</span> ปิดฝาแช่ไว้ 10-15 นาที</p>
+                        </div>
+                        <div class="flex gap-3">
+                            <div class="bg-orange-100 text-orange-700 w-6 h-6 rounded-full flex items-center justify-center shrink-0 font-bold">3</div>
+                            <p>กรองผ่านผ้าขาวบาง บีบน้ำออกให้หมด</p>
+                        </div>
+                        <div class="flex gap-3">
+                            <div class="bg-orange-100 text-orange-700 w-6 h-6 rounded-full flex items-center justify-center shrink-0 font-bold">4</div>
+                            <p>ผสมน้ำตาล ครีมเทียม นมข้นหวาน/จืด ตามสัดส่วน</p>
+                        </div>
+                        <div class="mt-4 p-3 bg-blue-50 text-blue-700 rounded-xl flex items-start gap-3 border border-blue-100">
+                            <i class="fas fa-info-circle mt-1 shrink-0"></i>
+                            <p class="text-xs"><strong>พอลแนะนำ:</strong> สูตรนี้ชงแบบเข้มข้น เมื่อเทใส่น้ำแข็งรสชาติจะพอดี แนะนำให้บ่มในตู้เย็น 1 คืนจะหอมขึ้นครับ</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        const waterRange = document.getElementById('waterRange');
+        const waterInput = document.getElementById('waterInput');
+        const sweetnessRange = document.getElementById('sweetnessRange');
+        const sweetnessInput = document.getElementById('sweetnessInput');
+
+        // สัดส่วนตั้งต้นต่อปริมาณน้ำ 1 ลิตร (ลดความหวาน 0%)
+        const baseRatios = {
+            teaRed: 60,
+            teaGold: 10,
+            sugar: 60,
+            creamer: 40,
+            condensed: 220,
+            evaporated: 80
+        };
+
+        const ingredientMetadata = [
+            { id: 'teaRed', name: 'ผงชาตรามือ (สีแดง)', icon: '🍂', unit: 'กรัม' },
+            { id: 'teaGold', name: 'ผงชาตรามือ (สีทอง)', icon: '✨', unit: 'กรัม' },
+            { id: 'sugar', name: 'น้ำตาลทรายขาว', icon: '🍚', unit: 'กรัม', isSweet: true },
+            { id: 'creamer', name: 'ผงครีมเทียม', icon: '☁️', unit: 'กรัม' },
+            { id: 'condensed', name: 'นมข้นหวาน', icon: '🍯', unit: 'กรัม', isSweet: true },
+            { id: 'evaporated', name: 'นมข้นจืด', icon: '🥛', unit: 'กรัม' }
+        ];
+
+        // คำนวณสัดส่วนปัจจุบันโดยคิดจากการลดความหวาน (%)
+        function getCurrentRatios() {
+            let reductionPercent = parseFloat(sweetnessInput.value) || 0;
+            
+            // แปลงค่าเปอร์เซ็นต์การลด เป็นตัวคูณ (เช่น ลด 25% คือคูณ 0.75 / ลด 0% คือคูณ 1)
+            let multiplier = 1 - (reductionPercent / 100);
+            
+            // ป้องกันไม่ให้ค่าติดลบในกรณีที่ใส่ตัวเลขเกิน 100%
+            if (multiplier < 0) multiplier = 0; 
+            
+            return {
+                teaRed: baseRatios.teaRed,
+                teaGold: baseRatios.teaGold,
+                sugar: baseRatios.sugar * multiplier,
+                creamer: baseRatios.creamer,
+                condensed: baseRatios.condensed * multiplier,
+                evaporated: baseRatios.evaporated
+            };
+        }
+
+        // สร้าง Input สำหรับแต่ละวัตถุดิบ
+        function initIngredients() {
+            const container = document.getElementById('ingredients');
+            container.innerHTML = ingredientMetadata.map(item => `
+                <div class="flex justify-between items-center p-3 bg-gray-50 rounded-xl transition-all border border-transparent hover:border-orange-100 focus-within:border-orange-300 focus-within:bg-white focus-within:shadow-md shadow-sm">
+                    <div class="flex items-center">
+                        <div class="w-8 h-8 flex items-center justify-center bg-white rounded-lg shadow-sm mr-3 text-lg border border-gray-100">
+                            ${item.icon}
+                        </div>
+                        <span class="text-gray-700 font-medium text-sm">${item.name}</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <input type="number" id="input-${item.id}" 
+                               oninput="handleIngredientChange('${item.id}', this.value)"
+                               class="w-20 text-right font-bold ${item.isSweet ? 'text-pink-600' : 'text-orange-700'} bg-transparent focus:outline-none text-lg"
+                               placeholder="0">
+                        <span class="text-gray-400 text-xs w-8">${item.unit}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // อัปเดตทุกช่องตามปริมาณน้ำ
+        function updateAllFields(liters) {
+            const currentRatios = getCurrentRatios();
+            
+            waterInput.value = liters === 0 ? '' : parseFloat(liters.toFixed(2));
+            waterRange.value = liters;
+
+            ingredientMetadata.forEach(item => {
+                const el = document.getElementById(`input-${item.id}`);
+                if (el) {
+                    el.value = liters === 0 ? '' : (currentRatios[item.id] * liters).toFixed(0);
+                }
+            });
+        }
+
+        // เมื่อมีการแก้ไขค่าในช่องวัตถุดิบด้วยตัวเอง
+        function handleIngredientChange(id, value) {
+            const val = parseFloat(value) || 0;
+            const currentRatios = getCurrentRatios();
+            const ratioPerLitre = currentRatios[id];
+            
+            if (ratioPerLitre > 0) {
+                const newLiters = val / ratioPerLitre;
+                updateOthers(id, newLiters);
+            }
+        }
+
+        // อัปเดตช่องอื่นๆ ยกเว้นช่องที่กำลังพิมพ์อยู่
+        function updateOthers(excludeId, liters) {
+            const currentRatios = getCurrentRatios();
+            
+            waterInput.value = liters === 0 ? '' : parseFloat(liters.toFixed(2));
+            waterRange.value = liters;
+
+            ingredientMetadata.forEach(item => {
+                if (item.id !== excludeId) {
+                    const el = document.getElementById(`input-${item.id}`);
+                    if (el) {
+                        el.value = liters === 0 ? '' : (currentRatios[item.id] * liters).toFixed(0);
+                    }
+                }
+            });
+        }
+
+        // ฟังก์ชันรีเซ็ตค่า
+        function resetForm() {
+            sweetnessInput.value = 0;
+            sweetnessRange.value = 0;
+            updateAllFields(1);
+        }
+
+        // Event Listeners สำหรับการเปลี่ยนค่าน้ำ
+        waterRange.addEventListener('input', (e) => {
+            updateAllFields(parseFloat(e.target.value));
+        });
+
+        waterInput.addEventListener('input', (e) => {
+            updateAllFields(parseFloat(e.target.value) || 0);
+        });
+
+        // Event Listeners สำหรับการเปลี่ยนระดับความหวาน
+        sweetnessRange.addEventListener('input', (e) => {
+            sweetnessInput.value = e.target.value;
+            updateAllFields(parseFloat(waterInput.value) || 1);
+        });
+
+        sweetnessInput.addEventListener('input', (e) => {
+            sweetnessRange.value = e.target.value;
+            updateAllFields(parseFloat(waterInput.value) || 1);
+        });
+
+        // เริ่มต้นแอป
+        initIngredients();
+        updateAllFields(1);
+    </script>
+</body>
+</html>

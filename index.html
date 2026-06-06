@@ -54,6 +54,10 @@
           <i class="fa-solid fa-person-running"></i>
           <span>Mona Gym</span>
         </a>
+        <a href="#" class="nav-item" data-target="family-menu">
+          <i class="fa-solid fa-utensils"></i>
+          <span>Family Menu</span>
+        </a>
       </div>
     </nav>
 
@@ -69,13 +73,13 @@
 
         <div class="portal-grid">
           <div class="portal-card" onclick="document.querySelector('.nav-item[data-target=\'family-expenses\']').click()">
-            <div class="portal-icon bg-gradient-blue"><i class="fa-solid fa-file-invoice-dollar"></i></div>
+            <img class="portal-icon" src="family_expenses_icon.png" alt="Family Expenses" style="object-fit: cover;">
             <h3>Family Expenses</h3>
             <p>บันทึกและสรุปค่าใช้จ่ายส่วนกลางของครอบครัว</p>
           </div>
           
           <div class="portal-card" onclick="document.querySelector('.nav-item[data-target=\'kids-savings\']').click()">
-            <div class="portal-icon bg-gradient-green"><i class="fa-solid fa-piggy-bank"></i></div>
+            <img class="portal-icon" src="kids_savings_icon.png" alt="Kids Savings" style="object-fit: cover;">
             <h3>Kids Savings</h3>
             <p>บันทึกและติดตามเงินออมของนโมและโมนา</p>
             <div class="avatar-group mt-2">
@@ -85,10 +89,16 @@
           </div>
 
           <div class="portal-card" onclick="document.querySelector('.nav-item[data-target=\'mona-expenses\']').click()">
-            <div class="portal-icon bg-gradient-pink"><i class="fa-solid fa-person-running"></i></div>
+            <img class="portal-icon" src="mona_gym_icon.png" alt="Mona Gym" style="object-fit: cover;">
             <h3>Mona Gym Expenses</h3>
             <p>บันทึกค่าใช้จ่ายเกี่ยวกับการเรียนยิมนาสติกของโมนา</p>
             <img src="Mona.png" alt="Mona" class="avatar-sm mt-2">
+          </div>
+          
+          <div class="portal-card" onclick="document.querySelector('.nav-item[data-target=\'family-menu\']').click()">
+            <img class="portal-icon" src="family_menu_icon.png" alt="Family Menu" style="object-fit: cover;">
+            <h3>Family Menu</h3>
+            <p>คลังสูตรอาหารประจำบ้านและเครื่องมือคำนวณวัตถุดิบ</p>
           </div>
         </div>
       </section>
@@ -371,6 +381,17 @@
           </div>
         </div>
 
+      </section>
+
+      <!-- Family Menu Section -->
+      <section id="family-menu" class="page-section fade-in" style="height: calc(100vh - 120px); min-height: 550px;">
+        <header class="section-header">
+          <h2><i class="fa-solid fa-utensils me-2"></i> Family Menu</h2>
+          <p>คลังสูตรอาหารประจำบ้านและเครื่องมือคำนวณวัตถุดิบ</p>
+        </header>
+        <div class="glass-panel" style="padding: 0; overflow: hidden; height: calc(100% - 80px); min-height: 450px; border-radius: 24px;">
+          <iframe src="family-menu/index.html" style="width: 100%; height: 100%; border: none; border-radius: 24px;"></iframe>
+        </div>
       </section>
 
     </main>

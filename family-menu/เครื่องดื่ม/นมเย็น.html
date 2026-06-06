@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เครื่องมือคำนวณสูตรนมเย็น โดยพอล</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap');
+        body {
+            font-family: 'Kanit', sans-serif;
+            background-color: #fdf2f8; 
+        }
+        .pink-gradient {
+            background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);
+        }
+        .card {
+            background: white;
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 25px rgba(236, 72, 153, 0.1); 
+        }
+        input[type="range"] {
+            accent-color: #ec4899; 
+        }
+        /* ลบลูกศรออกจาก input number */
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+    </style>
+</head>
+<body class="min-h-screen pb-12">
+
+    <div class="pink-gradient text-white pt-10 pb-20 px-4 sm:px-6 text-center rounded-b-[3rem] relative">
+        <!-- ปุ่มกลับหน้าแรก -->
+        <div class="absolute top-4 left-4 z-20">
+            <a href="../index.html" class="inline-flex items-center gap-2 bg-white/20 hover:bg-white/30 active:scale-95 text-white text-sm font-semibold px-4 py-2 rounded-xl backdrop-blur-md transition-all shadow-sm border border-white/10">
+                <i class="fa-solid fa-arrow-left"></i>
+                <span>กลับหน้าหลัก</span>
+            </a>
+        </div>
+
+        <h1 class="text-2xl sm:text-3xl font-bold mb-2">🌸 สูตรชงนมเย็น (นมชมพู)</h1>
+        <p class="opacity-90 text-sm sm:text-base">คำนวณสัดส่วนแม่นยำ สำหรับคุณปุ๋ย</p>
+    </div>
+
+    <div class="w-full max-w-xl mx-auto -mt-12 px-4 sm:px-6">
+        <div class="card p-5 sm:p-6 mb-6">
+            
+            <div class="mb-6">
+                <label class="block text-gray-700 text-sm font-semibold mb-2">
+                    <i class="fas fa-faucet-drip mr-2 text-pink-600"></i> ปริมาณน้ำ (ลิตร)
+                </label>
+                <div class="flex items-center gap-3 sm:gap-4">
+                    <input type="range" id="waterRange" min="0.1" max="10" step="0.1" value="1" 
+                           class="w-full h-2 bg-pink-100 rounded-lg appearance-none cursor-pointer">
+                    <div class="flex items-center shrink-0">
+                        <input type="number" id="waterInput" value="1" step="0.1" 
+                               class="w-16 border-b-2 border-pink-500 text-center font-bold text-xl sm:text-2xl focus:outline-none text-pink-600 bg-transparent">
+                        <span class="ml-1 font-bold text-gray-600 text-lg">L</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-6">
+                <div class="flex justify-between items-end mb-2">
+                    <label class="block text-gray-700 text-sm font-semibold">
+                        <i class="fas fa-candy-cane mr-2 text-pink-600"></i> ระดับการลดความหวาน (%)
+                    </label>
+                    <span class="text-[10px] sm:text-xs text-gray-400">0% = หวานปกติ / 29% = ลดเหลือเฮลบลูบอย 1 ขวด</span>
+                </div>
+                <div class="flex items-center gap-3 sm:gap-4 mb-4">
+                    <input type="range" id="reductionRange" min="0" max="100" step="1" value="0" 
+                           class="w-full h-2 bg-pink-100 rounded-lg appearance-none cursor-pointer">
+                    <div class="flex items-center shrink-0">
+                        <input type="number" id="reductionInput" value="0" step="1" 
+                               class="w-16 border-b-2 border-pink-500 text-center font-bold text-xl sm:text-2xl focus:outline-none text-pink-600 bg-transparent">
+                        <span class="ml-1 font-bold text-gray-600 text-lg">%</span>
+                    </div>
+                </div>
+                
+                <button onclick="resetForm()" 
+                        class="w-full py-2.5 px-4 rounded-xl border-2 border-dashed border-gray-300 text-gray-500 hover:border-pink-400 hover:text-pink-500 hover:bg-pink-50 transition-all text-sm font-medium flex items-center justify-center gap-2">
+                    <i class="fas fa-undo-alt"></i> รีเซ็ตค่าเริ่มต้น (น้ำ 1 L / ไม่ลดหวาน)
+                </button>
+            </div>
+        </div>
+
+        <div class="card p-5 sm:p-6 mb-6">
+            <h2 class="text-lg sm:text-xl font-bold mb-4 text-pink-800 flex items-center">
+                <i class="fas fa-list-ul mr-2"></i> วัตถุดิบ (ปรับค่าได้อิสระ)
+            </h2>
+            <div id="ingredients" class="space-y-3 sm:space-y-4">
+                </div>
+            <p class="text-[10px] sm:text-xs text-gray-400 mt-4 text-center italic">* แก้ไขช่องใดก็ได้ ระบบจะคำนวณสัดส่วนที่เหลือให้ทันที</p>
+        </div>
+
+        <div class="card p-5 sm:p-6">
+            <h2 class="text-lg sm:text-xl font-bold mb-4 text-pink-800 flex items-center">
+                <i class="fas fa-mortar-pestle mr-2"></i> วิธีการทำนมเย็น
+            </h2>
+            <div class="space-y-4 text-sm sm:text-base text-gray-600 leading-relaxed">
+                <div class="flex gap-3">
+                    <div class="bg-pink-100 text-pink-600 w-6 h-6 rounded-full flex items-center justify-center shrink-0 font-bold text-sm">1</div>
+                    <p>ต้มน้ำให้เดือดจัด เปิดไฟแรง</p>
+                </div>
+                <div class="flex gap-3">
+                    <div class="bg-pink-100 text-pink-600 w-6 h-6 rounded-full flex items-center justify-center shrink-0 font-bold text-sm">2</div>
+                    <p>เทน้ำแดงเฮลบลูบอยลงไป <span class="text-red-500 font-bold underline">อย่าเพิ่งปิดไฟ!</span> ต้มต่อให้น้ำแดงเดือดขึ้นมาอีกรอบ (จะช่วยให้เก็บได้นาน)</p>
+                </div>
+                <div class="flex gap-3">
+                    <div class="bg-pink-100 text-pink-600 w-6 h-6 rounded-full flex items-center justify-center shrink-0 font-bold text-sm">3</div>
+                    <p>พอน้ำเดือดรอบสอง ให้ปิดไฟทันที แล้วใส่ครีมเทียมคนให้ละลายหมด</p>
+                </div>
+                <div class="flex gap-3">
+                    <div class="bg-pink-100 text-pink-600 w-6 h-6 rounded-full flex items-center justify-center shrink-0 font-bold text-sm">4</div>
+                    <p>เติมนมข้นหวาน และ นมข้นจืด คนให้เข้ากัน พักไว้ให้เย็นก่อนกรอกใส่ขวด</p>
+                </div>
+                <div class="mt-5 p-4 bg-pink-50 text-pink-700 rounded-xl flex items-start gap-3 border border-pink-100">
+                    <i class="fas fa-info-circle mt-1 shrink-0"></i>
+                    <p class="text-xs sm:text-sm"><strong>พอลแนะนำ:</strong> สูตรนี้ 5 ลิตร จะกรอกใส่ขวด 250 ml ได้ประมาณ 31 ขวด เก็บในตู้เย็นได้นาน 2 สัปดาห์ครับ</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const waterRange = document.getElementById('waterRange');
+        const waterInput = document.getElementById('waterInput');
+        const reductionRange = document.getElementById('reductionRange');
+        const reductionInput = document.getElementById('reductionInput');
+        
+        let currentReduction = 0; // เปอร์เซ็นต์การลดความหวานเริ่มต้น (0% = ไม่ลดหวานเลย)
+
+        // สัดส่วนต่อปริมาณน้ำ 1 ลิตร ที่สูตรหวานปกติ (ลดหวาน 0%)
+        const baseRatios = {
+            syrup: 200,      // 1000ml / 5L
+            creamer: 60,     // 300g / 5L
+            condensed: 155.2,// 776g / 5L
+            evaporated: 162  // 810g / 5L
+        };
+
+        const ingredientMetadata = [
+            { id: 'syrup', name: 'น้ำแดงเฮลบลูบอย', icon: '🍓', unit: 'ml' },
+            { id: 'creamer', name: 'ผงครีมเทียม', icon: '☁️', unit: 'กรัม' },
+            { id: 'condensed', name: 'นมข้นหวาน', icon: '🍯', unit: 'กรัม' },
+            { id: 'evaporated', name: 'นมข้นจืด', icon: '🥛', unit: 'กรัม' }
+        ];
+
+        function initIngredients() {
+            const container = document.getElementById('ingredients');
+            container.innerHTML = ingredientMetadata.map(item => `
+                <div class="flex justify-between items-center p-3 bg-gray-50 rounded-xl transition-all border border-transparent focus-within:border-pink-300 focus-within:bg-white focus-within:shadow-sm">
+                    <div class="flex items-center">
+                        <span class="mr-3 text-xl sm:text-2xl">${item.icon}</span>
+                        <span class="text-gray-700 font-medium text-sm sm:text-base">${item.name}</span>
+                    </div>
+                    <div class="flex items-center gap-1 sm:gap-2">
+                        <input type="number" id="input-${item.id}" 
+                               oninput="handleIngredientChange('${item.id}', this.value)"
+                               class="w-16 sm:w-24 text-right font-bold text-pink-600 bg-transparent focus:outline-none text-lg sm:text-xl"
+                               placeholder="0">
+                        <span class="text-gray-400 text-xs sm:text-sm w-8">${item.unit}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // ดึงสัดส่วนจริงอิงตามเปอร์เซ็นต์ 'การลดความหวาน' ปัจจุบัน
+        function getCurrentRatio(id) {
+            if (id === 'syrup') {
+                // เอาสัดส่วนตั้งต้นมาหักลบเปอร์เซ็นต์การลด (เช่น ลด 20% ก็จะเหลือความหวาน 80%)
+                return baseRatios.syrup * (1 - (currentReduction / 100));
+            }
+            return baseRatios[id];
+        }
+
+        function updateAllFields(liters) {
+            waterInput.value = liters === 0 ? '' : parseFloat(liters.toFixed(2));
+            waterRange.value = liters;
+
+            ingredientMetadata.forEach(item => {
+                const el = document.getElementById(`input-${item.id}`);
+                if (el) {
+                    const ratio = getCurrentRatio(item.id);
+                    el.value = liters === 0 ? '' : (ratio * liters).toFixed(0);
+                }
+            });
+        }
+
+        function handleIngredientChange(id, value) {
+            const val = parseFloat(value) || 0;
+            const ratioPerLitre = getCurrentRatio(id);
+            
+            if (ratioPerLitre > 0) {
+                const newLiters = val / ratioPerLitre;
+                updateOthers(id, newLiters);
+            }
+        }
+
+        function updateOthers(excludeId, liters) {
+            waterInput.value = liters === 0 ? '' : parseFloat(liters.toFixed(2));
+            waterRange.value = liters;
+
+            ingredientMetadata.forEach(item => {
+                if (item.id !== excludeId) {
+                    const el = document.getElementById(`input-${item.id}`);
+                    if (el) {
+                        const ratio = getCurrentRatio(item.id);
+                        el.value = liters === 0 ? '' : (ratio * liters).toFixed(0);
+                    }
+                }
+            });
+        }
+
+        function handleReductionChange(val) {
+            let parsedVal = parseFloat(val);
+            if (isNaN(parsedVal)) parsedVal = 0;
+            if (parsedVal < 0) parsedVal = 0;
+            if (parsedVal > 100) parsedVal = 100; // ไม่ให้ลดเกิน 100%
+
+            currentReduction = parsedVal;
+            reductionRange.value = currentReduction;
+            reductionInput.value = currentReduction;
+            
+            // อัปเดตปริมาณวัตถุดิบโดยอิงจากน้ำลิตรปัจจุบัน
+            updateAllFields(parseFloat(waterInput.value) || 0);
+        }
+
+        function resetForm() {
+            currentReduction = 0;
+            reductionRange.value = 0;
+            reductionInput.value = 0;
+            updateAllFields(1);
+        }
+
+        // Event Listeners สำหรับ ปริมาณน้ำ
+        waterRange.addEventListener('input', (e) => updateAllFields(parseFloat(e.target.value)));
+        waterInput.addEventListener('input', (e) => updateAllFields(parseFloat(e.target.value) || 0));
+
+        // Event Listeners สำหรับ ระดับการลดความหวาน
+        reductionRange.addEventListener('input', (e) => handleReductionChange(e.target.value));
+        reductionInput.addEventListener('input', (e) => handleReductionChange(e.target.value));
+
+        // เริ่มต้นแอป
+        initIngredients();
+        updateAllFields(1);
+    </script>
+</body>
+</html>

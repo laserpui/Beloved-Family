@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>สูตรคอหมูย่าง Air Fryer สไตล์เชฟ</title>
+    <!-- นำเข้า Tailwind CSS สำหรับการจัดรูปแบบ Responsive -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- นำเข้า Font Awesome สำหรับไอคอน -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- นำเข้า Font พร้อม จาก Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Prompt', sans-serif;
+            background-color: #fffaf0; /* สีพื้นหลังส้มอ่อนๆ กระตุ้นความอยากอาหาร */
+        }
+        /* ซ่อนลูกศรใน input type number */
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { 
+            -webkit-appearance: none; 
+            margin: 0; 
+        }
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+    </style>
+</head>
+<body class="text-gray-800 antialiased">
+
+    <!-- ส่วนหัวของเว็บไซต์ (Header) -->
+    <header class="bg-orange-600 text-white py-12 px-4 shadow-lg text-center relative overflow-hidden">
+        <!-- ลายพื้นหลังตกแต่ง -->
+        <div class="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none" style="background-image: url('data:image/svg+xml,%3Csvg width=\'20\' height=\'20\' viewBox=\'0 0 20 20\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'1\' fill-rule=\'evenodd\'%3E%3Ccircle cx=\'3\' cy=\'3\' r=\'3\'/%3E%3Ccircle cx=\'13\' cy=\'13\' r=\'3\'/%3E%3C/g%3E%3C/svg%3E');"></div>
+        
+        <!-- ปุ่มกลับหน้าแรก -->
+        <div class="absolute top-4 left-4 z-20">
+            <a href="../index.html" class="inline-flex items-center gap-2 bg-white/20 hover:bg-white/30 active:scale-95 text-white text-sm font-semibold px-4 py-2 rounded-xl backdrop-blur-md transition-all shadow-sm border border-white/10">
+                <i class="fa-solid fa-arrow-left"></i>
+                <span>กลับหน้าหลัก</span>
+            </a>
+        </div>
+
+        <div class="max-w-4xl mx-auto relative z-10">
+            <h1 class="text-3xl md:text-5xl font-bold mb-4 drop-shadow-md">
+                <i class="fa-solid fa-fire-burner mr-2"></i> สูตรคอหมูย่าง Air Fryer
+            </h1>
+            <p class="text-lg md:text-xl font-light opacity-90">เกรียมฉ่ำ เนื้อนุ่มละมุน สไตล์เชฟมืออาชีพ (คำนวณสูตรอัตโนมัติ)</p>
+        </div>
+    </header>
+
+    <!-- พื้นที่เนื้อหาหลัก -->
+    <main class="max-w-4xl mx-auto px-4 py-8 -mt-6">
+        
+        <!-- ส่วนคำนวณปริมาณเนื้อหมู (Calculator Portion) -->
+        <section class="bg-white rounded-2xl shadow-xl p-6 md:p-8 mb-8 border border-orange-100">
+            <div class="text-center mb-6">
+                <h2 class="text-2xl font-semibold text-orange-700 mb-2">ปรับปริมาณวัตถุดิบ</h2>
+                <p class="text-gray-500 text-sm">ใส่ปริมาณเนื้อคอหมูที่คุณมี ระบบจะคำนวณเครื่องปรุงให้พอดี</p>
+            </div>
+            
+            <div class="flex items-center justify-center space-x-4">
+                <button onclick="adjustWeight(-100)" class="w-12 h-12 rounded-full bg-orange-100 text-orange-600 hover:bg-orange-200 flex items-center justify-center text-xl transition-colors shadow-sm">
+                    <i class="fa-solid fa-minus"></i>
+                </button>
+                
+                <div class="relative w-40">
+                    <input type="number" id="porkWeight" value="500" min="100" step="50" oninput="calculateIngredients()" class="w-full text-center text-3xl font-bold text-gray-800 bg-gray-50 border-2 border-orange-200 rounded-xl py-3 focus:outline-none focus:border-orange-500 transition-colors">
+                    <span class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 font-medium">กรัม</span>
+                </div>
+                
+                <button onclick="adjustWeight(100)" class="w-12 h-12 rounded-full bg-orange-100 text-orange-600 hover:bg-orange-200 flex items-center justify-center text-xl transition-colors shadow-sm">
+                    <i class="fa-solid fa-plus"></i>
+                </button>
+            </div>
+            
+            <!-- ปุ่มรีเซ็ต -->
+            <div class="text-center mt-6">
+                <button onclick="resetWeight()" class="inline-flex items-center space-x-2 text-sm font-medium text-gray-500 hover:text-orange-600 bg-gray-50 hover:bg-orange-50 border border-gray-200 hover:border-orange-200 px-4 py-2 rounded-full transition-all shadow-sm">
+                    <i class="fa-solid fa-rotate-left"></i>
+                    <span>รีเซ็ตค่าเริ่มต้น (500 กรัม)</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- ส่วนแสดงเครื่องปรุง (Ingredients 2 Columns) -->
+        <div class="grid md:grid-cols-2 gap-8 mb-8">
+            
+            <!-- ส่วนผสมหมักหมู -->
+            <section class="bg-white rounded-2xl shadow-md p-6 border-t-4 border-orange-500">
+                <h3 class="text-xl font-semibold mb-4 flex items-center text-gray-800">
+                    <i class="fa-solid fa-mortar-pestle text-orange-500 mr-2 text-xl"></i> วัตถุดิบหมักหมู
+                </h3>
+                <ul class="space-y-3" id="marinade-list">
+                    <!-- รายการจะถูกสร้างด้วย JavaScript -->
+                </ul>
+                <div class="mt-4 p-3 bg-orange-50 rounded-lg text-sm text-orange-800 border border-orange-100">
+                    <i class="fa-solid fa-lightbulb text-orange-500 mr-1"></i> <strong>เคล็ดลับ:</strong> น้ำมันพืชช่วยเคลือบผิวหมูให้ชุ่มชื้น ไม่แห้งกระด้างเวลาโดนลมร้อน
+                </div>
+            </section>
+
+            <!-- ส่วนผสมน้ำจิ้มแจ่ว -->
+            <section class="bg-white rounded-2xl shadow-md p-6 border-t-4 border-red-500">
+                <h3 class="text-xl font-semibold mb-4 flex items-center text-gray-800">
+                    <i class="fa-solid fa-pepper-hot text-red-500 mr-2 text-xl"></i> น้ำจิ้มแจ่วรสเด็ด
+                </h3>
+                <ul class="space-y-3" id="sauce-list">
+                    <!-- รายการจะถูกสร้างด้วย JavaScript -->
+                </ul>
+                <div class="mt-4 text-sm text-gray-500 italic px-2">
+                    * ผสมทุกอย่างให้เข้ากัน ชิมรสให้เปรี้ยว เค็ม หวานตาม และเผ็ดร้อน โรยหน้าด้วยผักชีฝรั่งและต้นหอม
+                </div>
+            </section>
+
+        </div>
+
+        <!-- ส่วนขั้นตอนการทำ (Instructions) -->
+        <section class="bg-white rounded-2xl shadow-md p-6 md:p-8 mb-8">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-6 text-center border-b pb-4">
+                <i class="fa-solid fa-list-check text-orange-600 mr-2"></i> ขั้นตอนการปรุงสไตล์เชฟ
+            </h2>
+            
+            <div class="space-y-6">
+                <!-- ขั้นตอนที่ 1 -->
+                <div class="flex">
+                    <div class="flex-shrink-0 mr-4">
+                        <div class="w-10 h-10 rounded-full bg-orange-500 text-white flex items-center justify-center font-bold text-lg shadow">1</div>
+                    </div>
+                    <div>
+                        <h4 class="text-lg font-semibold text-gray-800">เตรียมและหมักหมู</h4>
+                        <p class="text-gray-600 mt-1">นำส้อมมาจิ้มให้ทั่วชิ้นคอหมู (เพื่อให้เครื่องปรุงซึมเข้าเนื้อได้ลึกขึ้น) ผสมเครื่องปรุงทั้งหมด นำหมูลงไปคลุกเคล้า นวดด้วยมือประมาณ 5 นาที แล้ว<span class="font-semibold text-orange-600">หมักทิ้งไว้ในตู้เย็นอย่างน้อย 30 นาที</span> (หรือ 1-2 ชั่วโมงจะดีที่สุด)</p>
+                    </div>
+                </div>
+
+                <!-- ขั้นตอนที่ 2 -->
+                <div class="flex">
+                    <div class="flex-shrink-0 mr-4">
+                        <div class="w-10 h-10 rounded-full bg-orange-500 text-white flex items-center justify-center font-bold text-lg shadow">2</div>
+                    </div>
+                    <div>
+                        <h4 class="text-lg font-semibold text-gray-800">วอร์มเตา (Preheat)</h4>
+                        <p class="text-gray-600 mt-1">ตั้งอุณหภูมิหม้อทอดไร้น้ำมันที่ <span class="bg-gray-100 px-2 py-1 rounded font-mono text-sm text-gray-800">180°C</span> เป็นเวลา <span class="font-semibold">3 นาที</span> เพื่อให้ความร้อนในตะแกรงคงที่</p>
+                    </div>
+                </div>
+
+                <!-- ขั้นตอนที่ 3 -->
+                <div class="flex">
+                    <div class="flex-shrink-0 mr-4">
+                        <div class="w-10 h-10 rounded-full bg-orange-500 text-white flex items-center justify-center font-bold text-lg shadow">3</div>
+                    </div>
+                    <div>
+                        <h4 class="text-lg font-semibold text-gray-800">ย่างรอบที่ 1 (สุกและฉ่ำ)</h4>
+                        <p class="text-gray-600 mt-1">วางคอหมูลงในตะแกรง (ไม่ควรวางซ้อนกัน) ใช้ไฟ <span class="bg-gray-100 px-2 py-1 rounded font-mono text-sm text-gray-800">180°C</span> เวลา <span class="font-semibold text-orange-600">10-12 นาที</span> จากนั้นเปิดหม้อออกมาเพื่อพลิกกลับด้านหมู</p>
+                    </div>
+                </div>
+
+                <!-- ขั้นตอนที่ 4 -->
+                <div class="flex">
+                    <div class="flex-shrink-0 mr-4">
+                        <div class="w-10 h-10 rounded-full bg-orange-500 text-white flex items-center justify-center font-bold text-lg shadow">4</div>
+                    </div>
+                    <div>
+                        <h4 class="text-lg font-semibold text-gray-800">ย่างรอบที่ 2 (ทำผิวเกรียม)</h4>
+                        <p class="text-gray-600 mt-1">ย่างต่อที่ไฟ <span class="bg-gray-100 px-2 py-1 rounded font-mono text-sm text-gray-800">180°C</span> อีก <span class="font-semibold text-orange-600">8-10 นาที</span></p>
+                    </div>
+                </div>
+
+                <!-- ขั้นตอนที่ 5 -->
+                <div class="flex bg-orange-50 p-4 rounded-xl border border-orange-200">
+                    <div class="flex-shrink-0 mr-4">
+                        <div class="w-10 h-10 rounded-full bg-red-600 text-white flex items-center justify-center font-bold text-lg shadow"><i class="fa-solid fa-star"></i></div>
+                    </div>
+                    <div>
+                        <h4 class="text-lg font-semibold text-red-700">เทคนิคขั้นสุดยอด (Crispy & Charred)</h4>
+                        <p class="text-gray-700 mt-1">ในนาทีสุดท้าย ให้ปรับอุณหภูมิขึ้นไปที่ <span class="bg-red-100 px-2 py-1 rounded font-mono text-sm font-bold text-red-800">200°C</span> ประมาณ <span class="font-bold">2-3 นาที</span> ลมร้อนจะช่วยดึงน้ำมันที่ผิวหมูออกมา ทำให้ขอบหมูเกรียม หอม เหมือนย่างเตาถ่าน</p>
+                    </div>
+                </div>
+
+                 <!-- ขั้นตอนที่ 6 -->
+                 <div class="flex">
+                    <div class="flex-shrink-0 mr-4">
+                        <div class="w-10 h-10 rounded-full bg-orange-500 text-white flex items-center justify-center font-bold text-lg shadow">5</div>
+                    </div>
+                    <div>
+                        <h4 class="text-lg font-semibold text-gray-800">พักเนื้อ (Resting) - ห้ามข้าม!</h4>
+                        <p class="text-gray-600 mt-1">นำหมูออกจากเตา <span class="font-semibold text-red-500">อย่าเพิ่งหั่นทันที!</span> ให้พักหมูไว้บนเขียงประมาณ 3-5 นาที เพื่อให้น้ำในเนื้อหมูกระจายตัวกลับเข้าที่ เวลาหั่นน้ำหวานของหมูจะไม่ไหลออก เนื้อจะนุ่มชุ่มฉ่ำที่สุด</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ส่วนท้าย (Footer) -->
+    <footer class="bg-gray-800 text-white py-6 text-center">
+        <p class="text-sm opacity-70">© 2026 Chef's Air Fryer Recipes. อร่อยง่ายๆ ได้สุขภาพ</p>
+    </footer>
+
+    <!-- JavaScript สำหรับระบบคำนวณ -->
+    <script>
+        // กำหนดน้ำหนักพื้นฐานเป็น 500 กรัม
+        const BASE_WEIGHT = 500;
+
+        // ฐานข้อมูลเครื่องปรุง (baseAmount คือปริมาณต่อหมู 500g)
+        const ingredients = {
+            marinade: [
+                { name: 'สามเกลือ (รากผักชี กระเทียม พริกไทย โขลก)', baseAmount: 1, unit: 'ช้อนโต๊ะ' },
+                { name: 'ซอสหอยนางรม', baseAmount: 2, unit: 'ช้อนโต๊ะ' },
+                { name: 'ซีอิ๊วขาว', baseAmount: 1, unit: 'ช้อนโต๊ะ' },
+                { name: 'น้ำตาลปี๊บ หรือ น้ำตาลมะพร้าว', baseAmount: 1, unit: 'ช้อนโต๊ะ' },
+                { name: 'ผงปรุงรสหมู', baseAmount: 1, unit: 'ช้อนชา' },
+                { name: 'น้ำมันพืช', baseAmount: 1, unit: 'ช้อนชา' },
+            ],
+            sauce: [
+                { name: 'น้ำมะนาวคั้นสด', baseAmount: 2.5, unit: 'ช้อนโต๊ะ' },
+                { name: 'น้ำปลาดี', baseAmount: 2.5, unit: 'ช้อนโต๊ะ' },
+                { name: 'น้ำตาลปี๊บ', baseAmount: 1, unit: 'ช้อนโต๊ะ' },
+                { name: 'พริกป่น', baseAmount: 1.5, unit: 'ช้อนโต๊ะ' },
+                { name: 'ข้าวคั่วใหม่ๆ', baseAmount: 1, unit: 'ช้อนโต๊ะ' },
+            ]
+        };
+
+        // ฟังก์ชันสร้าง UI สำหรับรายการเครื่องปรุง
+        function renderIngredientsList(listId, data, ratio) {
+            const listElement = document.getElementById(listId);
+            listElement.innerHTML = ''; // ล้างข้อมูลเดิม
+
+            data.forEach(item => {
+                // คำนวณปริมาณใหม่
+                let calculatedAmount = item.baseAmount * ratio;
+                
+                // จัดรูปแบบตัวเลข (ถ้าทศนิยมเป็น .0 ให้แสดงเป็นจำนวนเต็ม, ถ้าไม่ใช้แสดงทศนิยม 1 ตำแหน่ง)
+                let formattedAmount = calculatedAmount % 1 === 0 ? calculatedAmount : calculatedAmount.toFixed(1);
+
+                // สร้าง element <li>
+                const li = document.createElement('li');
+                li.className = 'flex justify-between items-center border-b border-gray-100 pb-2 last:border-0';
+                li.innerHTML = `
+                    <span class="text-gray-700">${item.name}</span>
+                    <span class="font-semibold text-orange-600 bg-orange-50 px-3 py-1 rounded-full text-sm shadow-sm transition-all duration-300">
+                        ${formattedAmount} ${item.unit}
+                    </span>
+                `;
+                listElement.appendChild(li);
+            });
+        }
+
+        // ฟังก์ชันหลักที่ถูกเรียกเมื่อมีการเปลี่ยนแปลงตัวเลข
+        function calculateIngredients() {
+            const inputElement = document.getElementById('porkWeight');
+            let currentWeight = parseFloat(inputElement.value);
+
+            // ป้องกันค่าว่างหรือติดลบ
+            if (isNaN(currentWeight) || currentWeight < 0) {
+                currentWeight = 0;
+            }
+
+            // หาอัตราส่วน
+            const ratio = currentWeight / BASE_WEIGHT;
+
+            // อัปเดตการแสดงผล
+            renderIngredientsList('marinade-list', ingredients.marinade, ratio);
+            renderIngredientsList('sauce-list', ingredients.sauce, ratio);
+        }
+
+        // ฟังก์ชันสำหรับปุ่ม + และ -
+        function adjustWeight(amount) {
+            const inputElement = document.getElementById('porkWeight');
+            let currentWeight = parseFloat(inputElement.value) || 0;
+            
+            let newWeight = currentWeight + amount;
+            
+            // กำหนดค่าน้อยสุดที่ 50 กรัม เพื่อไม่ให้เป็น 0
+            if (newWeight < 50) newWeight = 50;
+            
+            inputElement.value = newWeight;
+            calculateIngredients(); // เรียกคำนวณใหม่
+        }
+
+        // ฟังก์ชันสำหรับรีเซ็ตค่า
+        function resetWeight() {
+            const inputElement = document.getElementById('porkWeight');
+            inputElement.value = BASE_WEIGHT;
+            calculateIngredients(); // เรียกคำนวณใหม่
+        }
+
+        // โหลดข้อมูลครั้งแรกเมื่อเปิดหน้าเว็บ
+        window.onload = function() {
+            calculateIngredients();
+        };
+    </script>
+</body>
+</html>

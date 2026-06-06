@@ -209,6 +209,7 @@ body {
 .bg-gradient-blue { background: linear-gradient(135deg, #667eea, #764ba2); }
 .bg-gradient-green { background: linear-gradient(135deg, #2ed573, #1e90ff); }
 .bg-gradient-pink { background: linear-gradient(135deg, #ff758c, #ff7eb3); }
+.bg-gradient-orange { background: linear-gradient(135deg, #f59e0b, #d97706); }
 
 /* Components */
 .glass-panel {

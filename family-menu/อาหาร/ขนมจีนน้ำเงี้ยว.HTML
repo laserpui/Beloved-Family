@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>คำนวณสูตรขนมจีนน้ำเงี้ยว - Recipe Calculator</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Sarabun', sans-serif; }
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { 
+            -webkit-appearance: none; margin: 0; 
+        }
+    </style>
+</head>
+<body class="bg-red-50 text-gray-800">
+
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // --- Icons ---
+        const ChefHatIcon = ({ className }) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M6 13.87A4 4 0 0 1 7.41 6a5.11 5.11 0 0 1 1.05-1.54 5 5 0 0 1 7.08 0A5.11 5.11 0 0 1 16.59 6 4 4 0 0 1 18 13.87V21H6Z"/><line x1="6" y1="17" x2="18" y2="17"/></svg>;
+        const ScaleIcon = ({ className }) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></svg>;
+        const RotateCcwIcon = ({ className }) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>;
+        const UtensilsIcon = ({ className }) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 1 0-10 0v13a8 8 0 0 0 16 0Z"/></svg>;
+        const BookOpenIcon = ({ className }) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>;
+        const ArrowLeftIcon = ({ size = 20, className = "" }) => (
+            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+        );
+
+        // --- Main Component ---
+        const RecipeCalculator = () => {
+            // สูตรขนมจีนน้ำเงี้ยว
+            const baseRecipe = [
+                { name: 'เส้นขนมจีน', amount: 1, unit: 'กิโลกรัม', icon: '🍜' },
+                { name: 'ซี่โครงหมู/กระดูกอ่อน', amount: 500, unit: 'กรัม', icon: '🍖' },
+                { name: 'หมูสับ', amount: 500, unit: 'กรัม', icon: '🐷' },
+                { name: 'เลือดไก่ (หั่นเต๋า)', amount: 2, unit: 'ก้อน', icon: '🧊' },
+                { name: 'ดอกงิ้วแห้ง (แช่น้ำ)', amount: 30, unit: 'กรัม', icon: '🌺' },
+                { name: 'มะเขือเทศ (สีดา/ราชินี)', amount: 300, unit: 'กรัม', icon: '🍅' },
+                { name: 'พริกแห้ง (เม็ดใหญ่)', amount: 6, unit: 'เม็ด', icon: '🌶️' },
+                { name: 'พริกแห้ง (เม็ดเล็ก)', amount: 30, unit: 'เม็ด', icon: '🔥' },
+                { name: 'กระเทียม', amount: 8, unit: 'กลีบ', icon: '🧄' },
+                { name: 'หอมแดง', amount: 8, unit: 'หัว', icon: '🧅' },
+                { name: 'ถั่วเน่าแผ่น (ย่างไฟ)', amount: 2, unit: 'แผ่น', icon: '🫓' },
+                { name: 'กะปิ', amount: 1, unit: 'ช้อนโต๊ะ', icon: '🦐' },
+                { name: 'น้ำปลาร้าต้มสุก', amount: 100, unit: 'กรัม', icon: '🏺' },
+                { name: 'น้ำปลา', amount: 3, unit: 'ช้อนโต๊ะ', icon: '🐟' },
+                { name: 'น้ำมันพืช', amount: 3, unit: 'ช้อนโต๊ะ', icon: '🍶' },
+            ];
+
+            const [currentRecipe, setCurrentRecipe] = useState(baseRecipe);
+            const [scaleFactor, setScaleFactor] = useState(1);
+
+            const handleInputChange = (index, newValue) => {
+                let val = parseFloat(newValue);
+                if (isNaN(val) || val < 0) val = 0;
+                const baseAmount = baseRecipe[index].amount;
+                const newFactor = val / baseAmount;
+                setScaleFactor(newFactor);
+            };
+
+            useEffect(() => {
+                const updatedRecipe = baseRecipe.map(item => ({
+                    ...item,
+                    amount: item.amount * scaleFactor
+                }));
+                setCurrentRecipe(updatedRecipe);
+            }, [scaleFactor]);
+
+            const handleReset = () => {
+                setScaleFactor(1);
+            };
+
+            const formatNumber = (num) => parseFloat(num.toFixed(2));
+
+            return (
+                <div className="min-h-screen py-4 sm:py-8 px-2 sm:px-4 flex justify-center items-start">
+                    <div className="w-full max-w-4xl bg-white rounded-2xl shadow-xl overflow-hidden border border-red-100 relative flex flex-col">
+                        
+                        {/* Header */}
+                        <div className="bg-gradient-to-r from-red-600 to-red-800 p-6 sm:p-8 text-white text-center relative overflow-hidden shrink-0">
+                            <div className="absolute top-0 left-0 w-full h-full opacity-10 bg-[url('https://www.transparenttextures.com/patterns/food.png')]"></div>
+                            
+                            {/* ปุ่มกลับหน้าแรก */}
+                            <div className="absolute top-4 left-4 z-20">
+                                <a href="../index.html" className="inline-flex items-center gap-2 bg-white/20 hover:bg-white/30 active:scale-95 text-white text-sm font-semibold px-4 py-2 rounded-xl backdrop-blur-md transition-all shadow-sm border border-white/10">
+                                    <ArrowLeftIcon size={16} />
+                                    <span>กลับหน้าหลัก</span>
+                                </a>
+                            </div>
+
+                            <ChefHatIcon className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-2 relative z-10 text-white" />
+                            <h1 className="text-2xl sm:text-4xl font-bold relative z-10 drop-shadow-md">สูตรขนมจีนน้ำเงี้ยว</h1>
+                            <p className="text-red-100 mt-2 relative z-10 text-sm sm:text-base">สูตรชาวเหนือลำแต้ๆ (ใส่น้ำปลาร้าเพิ่มความนัว)</p>
+                        </div>
+
+                        {/* Control Panel */}
+                        <div className="p-4 sm:p-6 bg-red-50 border-b border-red-200">
+                            <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+                                <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-lg shadow-sm w-full sm:w-auto border border-red-100">
+                                    <ScaleIcon className="w-5 h-5 text-red-500" />
+                                    <span className="font-semibold text-gray-600">สัดส่วนปัจจุบัน:</span>
+                                    <span className="text-xl font-bold text-red-600">{formatNumber(scaleFactor)} เท่า</span>
+                                </div>
+                                <button 
+                                    onClick={handleReset}
+                                    className="flex items-center gap-2 px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg transition-colors text-sm font-medium w-full sm:w-auto justify-center"
+                                >
+                                    <RotateCcwIcon className="w-4 h-4" />
+                                    รีเซ็ตสัดส่วน
+                                </button>
+                            </div>
+                            <p className="text-xs sm:text-sm text-gray-500 mt-3 text-center sm:text-left">
+                                * วิธีใช้: พิมพ์ตัวเลขในช่อง "จำนวน" ของวัตถุดิบใดก็ได้ ระบบจะคำนวณวัตถุดิบอื่นๆ ให้สอดคล้องกันอัตโนมัติ
+                            </p>
+                        </div>
+
+                        {/* Main Content Area (Two Columns on Desktop) */}
+                        <div className="flex flex-col lg:flex-row divide-y lg:divide-y-0 lg:divide-x divide-red-100">
+                            
+                            {/* Left Column: Ingredients Table */}
+                            <div className="w-full lg:w-1/2 p-2 sm:p-4">
+                                <div className="flex items-center gap-2 mb-4 px-2 pt-2">
+                                    <UtensilsIcon className="w-6 h-6 text-red-600" />
+                                    <h2 className="text-xl font-bold text-gray-800">รายการวัตถุดิบ</h2>
+                                </div>
+                                <div className="overflow-hidden rounded-xl border border-red-100 sm:border-0">
+                                    <table className="w-full text-left border-collapse block sm:table">
+                                        <thead className="hidden sm:table-header-group">
+                                            <tr className="bg-red-100 text-red-800 text-sm uppercase tracking-wider">
+                                                <th className="p-3 font-semibold rounded-tl-lg">วัตถุดิบ</th>
+                                                <th className="p-3 font-semibold text-center w-28">จำนวน</th>
+                                                <th className="p-3 font-semibold rounded-tr-lg w-20">หน่วย</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className="divide-y divide-red-100 block sm:table-row-group">
+                                            {currentRecipe.map((item, index) => (
+                                                <tr key={index} className="flex flex-col sm:table-row p-3 sm:p-0 hover:bg-red-50/50 transition-colors group">
+                                                    <td className="p-0 sm:p-3 pb-2 sm:pb-3 block sm:table-cell">
+                                                        <div className="flex items-center gap-2">
+                                                            <span className="text-xl">{item.icon}</span>
+                                                            <div>
+                                                                <p className="font-bold text-gray-700 text-sm sm:text-base">{item.name}</p>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td className="p-0 sm:p-3 text-center block sm:table-cell">
+                                                        <div className="flex items-center gap-2">
+                                                            <input
+                                                                type="number"
+                                                                min="0"
+                                                                step="any"
+                                                                value={formatNumber(item.amount)}
+                                                                onChange={(e) => handleInputChange(index, e.target.value)}
+                                                                className="w-full sm:w-24 bg-white border border-gray-300 text-gray-900 text-center text-base rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 block p-1.5 shadow-sm font-bold transition-all"
+                                                            />
+                                                            <span className="text-gray-500 font-medium text-sm sm:hidden min-w-[50px] text-left">
+                                                                {item.unit}
+                                                            </span>
+                                                        </div>
+                                                    </td>
+                                                    <td className="p-3 text-gray-600 font-medium text-sm hidden sm:table-cell w-20">
+                                                        {item.unit}
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            {/* Right Column: Cooking Instructions */}
+                            <div className="w-full lg:w-1/2 p-4 sm:p-6 bg-gradient-to-b from-white to-red-50/30">
+                                <div className="flex items-center gap-2 mb-6">
+                                    <BookOpenIcon className="w-6 h-6 text-red-600" />
+                                    <h2 className="text-xl font-bold text-gray-800">วิธีทำและขั้นตอน</h2>
+                                </div>
+
+                                <div className="space-y-6 text-gray-700">
+                                    
+                                    {/* Step 1: Curry Paste */}
+                                    <div className="bg-white p-4 rounded-xl shadow-sm border border-red-100">
+                                        <h3 className="text-lg font-bold text-red-700 mb-3 flex items-center gap-2">
+                                            <span className="bg-red-100 text-red-700 w-6 h-6 rounded-full flex items-center justify-center text-sm">1</span>
+                                            การเตรียมพริกแกงน้ำเงี้ยว
+                                        </h3>
+                                        <ul className="list-disc list-inside space-y-2 text-sm sm:text-base ml-1">
+                                            <li>นำ <span className="font-semibold">พริกแห้งเม็ดใหญ่</span> และ <span className="font-semibold">พริกแห้งเม็ดเล็ก</span> ไปคั่วไฟอ่อนให้พอหอม</li>
+                                            <li>นำพริกที่คั่วแล้ว โขลกรวมกับ <span className="font-semibold">กระเทียม</span> และ <span className="font-semibold">หอมแดง</span> จนละเอียดเป็นเนื้อเดียวกัน</li>
+                                            <li>ใส่ <span className="font-semibold">ถั่วเน่าแผ่น</span> (ที่นำไปย่างไฟจนหอมกรอบ) และ <span className="font-semibold">กะปิ</span> ลงไป โขลกต่อให้ส่วนผสมทั้งหมดเข้ากันดี พักไว้</li>
+                                        </ul>
+                                    </div>
+
+                                    {/* Step 2: Cooking */}
+                                    <div className="bg-white p-4 rounded-xl shadow-sm border border-red-100">
+                                        <h3 className="text-lg font-bold text-red-700 mb-3 flex items-center gap-2">
+                                            <span className="bg-red-100 text-red-700 w-6 h-6 rounded-full flex items-center justify-center text-sm">2</span>
+                                            การต้มน้ำเงี้ยว
+                                        </h3>
+                                        <ol className="list-decimal list-inside space-y-3 text-sm sm:text-base ml-1">
+                                            <li>ตั้งกระทะ นำ <span className="font-semibold">น้ำมันพืช</span> ใส่ลงไป เปิดไฟกลาง นำพริกแกงที่โขลกไว้ลงไปผัดจนส่งกลิ่นหอม</li>
+                                            <li>ใส่ <span className="font-semibold">หมูสับ</span> ลงไปผัดให้เข้ากับพริกแกงจนหมูเริ่มสุก จากนั้นตามด้วย <span className="font-semibold">ซี่โครงหมู</span> ผัดคลุกเคล้าให้ผิวด้านนอกสุกตึง</li>
+                                            <li>เทส่วนผสมทั้งหมดลงในหม้อต้ม เติมน้ำเปล่ากะให้ท่วมกระดูกหมู (ประมาณ 1.5 - 2 ลิตร ตามความเข้มข้นที่ชอบ) ต้มจนน้ำเดือด</li>
+                                            <li>เมื่อน้ำเดือด ใส่ <span className="font-semibold">ดอกงิ้ว</span> (ที่แช่น้ำจนนิ่มแล้ว) ตามด้วย <span className="font-semibold">มะเขือเทศ</span> ปรุงรสด้วย <span className="font-semibold">น้ำปลาร้า</span> และ <span className="font-semibold">น้ำปลา</span></li>
+                                            <li>ลดไฟลงเป็นไฟอ่อน เคี่ยวต่อไปประมาณ 30-40 นาที เพื่อให้กระดูกหมูเปื่อยและน้ำซุปมีรสชาติกลมกล่อม</li>
+                                            <li>เมื่อกระดูกหมูเปื่อยได้ที่ ใส่ <span className="font-semibold">เลือดไก่หั่นเต๋า</span> ลงไป ต้มต่ออีกประมาณ 5-10 นาที ปิดไฟ พร้อมเสิร์ฟ</li>
+                                        </ol>
+                                    </div>
+
+                                    {/* Step 3: Sides */}
+                                    <div className="bg-red-100/50 p-4 rounded-xl border border-red-200">
+                                        <h3 className="text-base font-bold text-gray-800 mb-2">🥬 ผักเคียงและเครื่องเคียงที่แนะนำ</h3>
+                                        <p className="text-sm sm:text-base text-gray-600">
+                                            กะหล่ำปลีซอย, ถั่วงอก, ยอดกระถิน, ผักกาดดองซอย, มะนาว, พริกขี้หนูแห้งทอด, แคบหมู และกระเทียมเจียวสำหรับโรยหน้า
+                                        </p>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<RecipeCalculator />);
+    </script>
+</body>
+</html>

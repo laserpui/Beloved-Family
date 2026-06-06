@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Family Menu - คลังสูตรอาหารประจำบ้าน</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="คลังสูตรอาหารประจำบ้านแสนอร่อย คำนวณปริมาณเครื่องปรุงอัตโนมัติตามความต้องการ ทั้งเมนูหม้อทอดไร้น้ำมัน อาหารเหนือโบราณ และเครื่องดื่มแสนชื่นใจ">
+    <meta name="keywords" content="สูตรอาหาร, คำนวณสูตรอาหาร, หม้อทอดไร้น้ำมัน, อาหารเหนือ, ชาไทย, ชาเขียว, นมเย็น, คอหมูย่าง, น้ำพริกอ่อง, ขนมจีนน้ำเงี้ยว">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts - Prompt & Sarabun -->
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        prompt: ['Prompt', 'sans-serif'],
+                        sarabun: ['Sarabun', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#fffbeb',
+                            100: '#fef3c7',
+                            200: '#fde68a',
+                            500: '#f59e0b',
+                            600: '#d97706',
+                            700: '#b45309',
+                            800: '#92400e',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body {
+            font-family: 'Prompt', 'Sarabun', sans-serif;
+            background-color: #fdfbf7;
+            background-image: 
+                radial-gradient(rgba(245, 158, 11, 0.04)  1px, transparent 0),
+                radial-gradient(rgba(245, 158, 11, 0.04) 1px, transparent 0);
+            background-size: 24px 24px;
+            background-position: 0 0, 12px 12px;
+        }
+        
+        .glass-nav {
+            background: rgba(253, 251, 247, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(245, 158, 11, 0.1);
+        }
+        
+        .recipe-card {
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        
+        .recipe-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 20px 25px -5px rgba(217, 119, 6, 0.1), 0 10px 10px -5px rgba(217, 119, 6, 0.04);
+        }
+    </style>
+</head>
+<body class="text-gray-800 min-h-screen flex flex-col antialiased">
+
+    <!-- Navigation Header -->
+    <header class="glass-nav sticky top-0 z-50 w-full transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="bg-gradient-to-r from-brand-500 to-amber-600 w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center text-white shadow-md shadow-brand-500/20">
+                    <i class="fa-solid fa-utensils text-lg sm:text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg sm:text-2xl font-bold bg-gradient-to-r from-brand-700 to-amber-900 bg-clip-text text-transparent leading-none">Family Menu</h1>
+                    <p class="text-[10px] sm:text-xs text-brand-600 font-medium tracking-wider uppercase mt-0.5 sm:mt-1">คลังสูตรอาหารประจำบ้าน</p>
+                </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="relative overflow-hidden py-12 sm:py-20 bg-gradient-to-b from-brand-50/50 to-transparent">
+        <div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image: url('data:image/svg+xml,%3Csvg width=\'30\' height=\'30\' viewBox=\'0 0 30 30\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M15 0L30 15L15 30L0 15Z\' fill=\'%23d97706\' fill-opacity=\'1\' fill-rule=\'evenodd\'/%3E%3C/svg%3E'); background-size: 20px 20px;"></div>
+        <div class="max-w-4xl mx-auto px-4 text-center relative z-10">
+            <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-brand-100 text-brand-800 text-xs sm:text-sm font-semibold mb-4 sm:mb-6 shadow-sm border border-brand-200">
+                <span class="flex h-2 w-2 relative">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-2 w-2 bg-brand-500"></span>
+                </span>
+                คำนวณวัตถุดิบอัตโนมัติทุกเมนู
+            </div>
+            <h2 class="text-3xl sm:text-5xl font-black text-gray-900 leading-tight tracking-tight mb-4 sm:mb-6">
+                เปิดตำรับ <span class="bg-gradient-to-r from-brand-500 to-amber-600 bg-clip-text text-transparent">ความอร่อย</span> ประจำครอบครัว
+            </h2>
+            <p class="text-sm sm:text-lg text-gray-600 max-w-2xl mx-auto font-light leading-relaxed mb-8 sm:mb-12">
+                รวบรวมสูตรอาหารเด็ดที่ผ่านการคัดสรรมาแล้วอย่างดี พร้อมระบบคำนวณสัดส่วนวัตถุดิบอัจฉริยะตามปริมาณที่คุณต้องการทำ สะดวก รวดเร็ว ทำตามง่าย อร่อยแน่นอน
+            </p>
+            
+            <!-- Live Search Bar -->
+            <div class="max-w-xl mx-auto bg-white rounded-2xl shadow-xl shadow-brand-600/5 p-2 border border-brand-100 flex items-center gap-2">
+                <div class="pl-3 text-gray-400">
+                    <i class="fa-solid fa-magnifying-glass text-lg"></i>
+                </div>
+                <input 
+                    type="text" 
+                    id="searchInput"
+                    placeholder="ค้นหาสูตรอาหาร หรือ ส่วนผสม..." 
+                    class="w-full py-2.5 sm:py-3 px-2 text-base text-gray-800 placeholder-gray-400 focus:outline-none bg-transparent"
+                >
+                <button 
+                    id="searchClearBtn"
+                    class="hidden p-2 text-gray-400 hover:text-gray-600 transition-colors"
+                    title="ล้างคำค้นหา"
+                >
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Filters & Main Directory Grid -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20 flex-grow w-full">
+        
+        <!-- Category Filter Tabs -->
+        <div class="flex justify-center mb-8 sm:mb-12">
+            <div class="inline-flex p-1.5 bg-amber-100/50 rounded-2xl border border-brand-100 overflow-x-auto max-w-full no-scrollbar">
+                <button 
+                    onclick="filterCategory('all')" 
+                    id="btn-all" 
+                    class="category-tab px-4 sm:px-6 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 flex items-center gap-2 whitespace-nowrap bg-brand-600 text-white shadow-md shadow-brand-600/10"
+                >
+                    <i class="fa-solid fa-border-all"></i>
+                    <span>ทั้งหมด</span>
+                    <span id="count-all" class="bg-white/20 text-white text-xs px-2 py-0.5 rounded-md">8</span>
+                </button>
+                <button 
+                    onclick="filterCategory('airfryer')" 
+                    id="btn-airfryer" 
+                    class="category-tab px-4 sm:px-6 py-2.5 rounded-xl text-sm font-semibold text-gray-600 hover:text-brand-700 transition-all duration-300 flex items-center gap-2 whitespace-nowrap"
+                >
+                    <i class="fa-solid fa-fire"></i>
+                    <span>Air Fryer</span>
+                    <span id="count-airfryer" class="bg-gray-200 text-gray-700 text-xs px-2 py-0.5 rounded-md">3</span>
+                </button>
+                <button 
+                    onclick="filterCategory('food')" 
+                    id="btn-food" 
+                    class="category-tab px-4 sm:px-6 py-2.5 rounded-xl text-sm font-semibold text-gray-600 hover:text-brand-700 transition-all duration-300 flex items-center gap-2 whitespace-nowrap"
+                >
+                    <i class="fa-solid fa-bowl-food"></i>
+                    <span>อาหาร</span>
+                    <span id="count-food" class="bg-gray-200 text-gray-700 text-xs px-2 py-0.5 rounded-md">2</span>
+                </button>
+                <button 
+                    onclick="filterCategory('drink')" 
+                    id="btn-drink" 
+                    class="category-tab px-4 sm:px-6 py-2.5 rounded-xl text-sm font-semibold text-gray-600 hover:text-brand-700 transition-all duration-300 flex items-center gap-2 whitespace-nowrap"
+                >
+                    <i class="fa-solid fa-glass-water"></i>
+                    <span>เครื่องดื่ม</span>
+                    <span id="count-drink" class="bg-gray-200 text-gray-700 text-xs px-2 py-0.5 rounded-md">3</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Recipe Grid -->
+        <div id="recipeGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            <!-- Dynamic Recipe Cards will be inserted here -->
+        </div>
+
+        <!-- Empty State (No results found) -->
+        <div id="emptyState" class="hidden text-center py-20">
+            <div class="bg-amber-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto text-brand-500 text-3xl mb-6">
+                <i class="fa-regular fa-face-frown-open"></i>
+            </div>
+            <h3 class="text-xl font-bold text-gray-800 mb-2">ไม่พบสูตรอาหารที่ค้นหา</h3>
+            <p class="text-gray-500 max-w-md mx-auto">ลองเปลี่ยนคำค้นหา หรือคลิกปุ่มตัวกรองหมวดหมู่อื่นเพื่อค้นหาเมนูที่คุณต้องการ</p>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-gray-400 py-12 border-t border-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-6">
+            <div class="flex items-center gap-3">
+                <div class="bg-brand-500 w-9 h-9 rounded-lg flex items-center justify-center text-white">
+                    <i class="fa-solid fa-utensils"></i>
+                </div>
+                <div>
+                    <span class="text-white font-bold text-lg leading-none">Family Menu</span>
+                    <p class="text-xs mt-0.5">สูตรอาหารแสนอร่อยคู่ครัวคุณ</p>
+                </div>
+            </div>
+            <p class="text-xs text-center md:text-right">
+                © 2026 Family Menu. พัฒนาขึ้นด้วยความใส่ใจเพื่อใช้ในครอบครัว
+            </p>
+        </div>
+    </footer>
+
+    <!-- Recipe Data and Interactive Scripts -->
+    <script>
+        const recipes = [
+            {
+                name: "คอหมูย่าง Air Fryer",
+                category: "airfryer",
+                categoryName: "Air Fryer",
+                path: "Air Fryer/คอหมูย่าง.html",
+                image: "Air Fryer/คอหมูย่าง.png",
+                description: "คอหมูย่างเกรียมฉ่ำ เนื้อนุ่มละมุน ย่างในหม้อทอดไร้น้ำมัน พร้อมน้ำจิ้มแจ่วรสเด็ด",
+                tags: ["หม้อทอด", "ปิ้งย่าง", "ทำง่าย"],
+                icon: "fa-fire"
+            },
+            {
+                name: "หมูย่าง Air Fryer",
+                category: "airfryer",
+                categoryName: "Air Fryer",
+                path: "Air Fryer/หมูย่าง.html",
+                image: "Air Fryer/หมูย่าง.png",
+                description: "หมูย่างสูตรเข้มข้น หอมกลิ่นเครื่องหมัก ย่างด้วยหม้อทอดไร้น้ำมัน สะดวก รวดเร็ว",
+                tags: ["หม้อทอด", "ปิ้งย่าง", "สูตรดั้งเดิม"],
+                icon: "fa-fire"
+            },
+            {
+                name: "เนื้อย่าง Air Fryer",
+                category: "airfryer",
+                categoryName: "Air Fryer",
+                path: "Air Fryer/เนื้อย่าง.html",
+                image: "Air Fryer/เนื้อย่าง.png",
+                description: "เนื้อย่างติดมันกำลังดี ย่างระดับความสุกตามใจชอบ หอม นุ่มละมุนลิ้น",
+                tags: ["หม้อทอด", "เนื้อ", "ปาร์ตี้"],
+                icon: "fa-fire"
+            },
+            {
+                name: "ขนมจีนน้ำเงี้ยว",
+                category: "food",
+                categoryName: "อาหาร",
+                path: "อาหาร/ขนมจีนน้ำเงี้ยว.HTML", // Precise casing
+                image: "อาหาร/ขนมจีนน้ำเงี้ยว.png",
+                description: "ขนมจีนน้ำเงี้ยวสูตรเหนือแท้ๆ รสชาติเข้มข้น จัดจ้านด้วยเครื่องแกงและดอกงิ้วบานสะพรั่ง",
+                tags: ["อาหารเหนือ", "เมนูเส้น", "สูตรดั้งเดิม"],
+                icon: "fa-bowl-food"
+            },
+            {
+                name: "น้ำพริกอ่อง",
+                category: "food",
+                categoryName: "อาหาร",
+                path: "อาหาร/น้ำพริกอ่อง.html",
+                image: "อาหาร/น้ำพริกอ่อง.png",
+                description: "น้ำพริกอ่องรสเปรี้ยวหวานกลมกล่อมจากมะเขือเทศส้ม ทานเคียงผักสดและแคบหมู",
+                tags: ["อาหารเหนือ", "น้ำพริก", "สุขภาพ"],
+                icon: "fa-bowl-food"
+            },
+            {
+                name: "ชาเขียวเย็น",
+                category: "drink",
+                categoryName: "เครื่องดื่ม",
+                path: "เครื่องดื่ม/ชาเขียว.html",
+                image: "เครื่องดื่ม/ชาเขียว.png",
+                description: "ชาเขียวนมเย็นสีเขียวพาสเทล หอมกลิ่นมะลิและใบชาเขียวชั้นเลิศ หวานมันกลมกล่อม",
+                tags: ["ชาเขียว", "นมเย็น", "สดชื่น"],
+                icon: "fa-glass-water"
+            },
+            {
+                name: "ชาไทยเย็น",
+                category: "drink",
+                categoryName: "เครื่องดื่ม",
+                path: "เครื่องดื่ม/ชาไทย.Html", // Precise casing
+                image: "เครื่องดื่ม/ชาไทย.png",
+                description: "ชาไทยสีส้มเข้มข้นแบบโบราณ หอมกลิ่นใบชาไทยแท้ๆ หวานมัน หอมอร่อย ดับกระหาย",
+                tags: ["ชาไทย", "เครื่องดื่มเย็น", "เมนูยอดฮิต"],
+                icon: "fa-glass-water"
+            },
+            {
+                name: "นมเย็น",
+                category: "drink",
+                categoryName: "เครื่องดื่ม",
+                path: "เครื่องดื่ม/นมเย็น.html",
+                image: "เครื่องดื่ม/นมเย็น.png",
+                description: "นมเย็นสีชมพูหวานละมุน เมนูโปรดของทุกคน หอมกลิ่นสละ หอมหวานเย็นชื่นใจ",
+                tags: ["นมเย็น", "เครื่องดื่มเย็น", "ทำง่ายมาก"],
+                icon: "fa-glass-water"
+            }
+        ];
+
+        let currentActiveCategory = 'all';
+
+        // Render function
+        function renderRecipes(recipesToRender) {
+            const grid = document.getElementById('recipeGrid');
+            const emptyState = document.getElementById('emptyState');
+            
+            if (recipesToRender.length === 0) {
+                grid.classList.add('hidden');
+                emptyState.classList.remove('hidden');
+                return;
+            }
+            
+            grid.classList.remove('hidden');
+            emptyState.classList.add('hidden');
+            
+            grid.innerHTML = recipesToRender.map(recipe => {
+                // Determine icon and color based on category
+                let categoryColorClass = "bg-amber-100 text-amber-800";
+                if (recipe.category === "airfryer") categoryColorClass = "bg-orange-100 text-orange-800";
+                if (recipe.category === "food") categoryColorClass = "bg-red-100 text-red-800";
+                if (recipe.category === "drink") categoryColorClass = "bg-emerald-100 text-emerald-800";
+                
+                // HTML structure for card
+                return `
+                    <div class="recipe-card flex flex-col bg-white rounded-3xl overflow-hidden border border-brand-100/60 shadow-sm group h-full">
+                        <!-- Card Header Image -->
+                        <div class="relative overflow-hidden aspect-[4/3] bg-brand-50">
+                            <img 
+                                src="${recipe.image}" 
+                                alt="${recipe.name}"
+                                loading="lazy"
+                                class="w-full h-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-110"
+                                onerror="this.onerror=null; this.src='data:image/svg+xml;charset=UTF-8,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'100%25\' height=\'100%25\' viewBox=\'0 0 400 300\'%3E%3Crect width=\'100%25\' height=\'100%25\' fill=\'%23fffbeb\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' dominant-baseline=\'middle\' text-anchor=\'middle\' font-size=\'18\' fill=\'%23b45309\' font-family=\'Prompt\'%3E${recipe.name}%3C/text%3E%3C/svg%3E';"
+                            />
+                            <div class="absolute top-4 left-4">
+                                <span class="px-3 py-1 rounded-full text-xs font-semibold ${categoryColorClass} shadow-sm backdrop-blur-md flex items-center gap-1.5 border border-white/20">
+                                    <i class="fa-solid ${recipe.icon}"></i>
+                                    ${recipe.categoryName}
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Card Body -->
+                        <div class="p-6 flex flex-col flex-grow">
+                            <h3 class="text-xl font-bold text-gray-900 group-hover:text-brand-600 transition-colors mb-2 line-clamp-1">
+                                ${recipe.name}
+                            </h3>
+                            <p class="text-gray-500 text-sm font-light leading-relaxed mb-4 flex-grow line-clamp-2">
+                                ${recipe.description}
+                            </p>
+                            
+                            <!-- Tags -->
+                            <div class="flex flex-wrap gap-1.5 mb-6">
+                                ${recipe.tags.map(tag => `
+                                    <span class="text-[11px] font-medium text-gray-500 bg-gray-100 px-2 py-0.5 rounded-md">
+                                        #${tag}
+                                    </span>
+                                `).join('')}
+                            </div>
+                            
+                            <!-- Button Link -->
+                            <a 
+                                href="${recipe.path}" 
+                                class="w-full inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-brand-50 hover:bg-brand-500 hover:text-white text-brand-700 font-bold text-sm transition-all duration-300 border border-brand-100 group-hover:border-brand-500 group-hover:shadow-md group-hover:shadow-brand-500/15"
+                            >
+                                <span>เปิดดูสูตรอาหาร</span>
+                                <i class="fa-solid fa-arrow-right transition-transform duration-300 group-hover:translate-x-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Filter Function
+        function filterCategory(category) {
+            currentActiveCategory = category;
+            
+            // Toggle active classes on tab buttons
+            document.querySelectorAll('.category-tab').forEach(tab => {
+                tab.className = "category-tab px-4 sm:px-6 py-2.5 rounded-xl text-sm font-semibold text-gray-600 hover:text-brand-700 transition-all duration-300 flex items-center gap-2 whitespace-nowrap";
+            });
+            
+            const activeBtn = document.getElementById(`btn-${category}`);
+            if (activeBtn) {
+                activeBtn.className = "category-tab px-4 sm:px-6 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 flex items-center gap-2 whitespace-nowrap bg-brand-600 text-white shadow-md shadow-brand-600/10";
+            }
+            
+            applyFilterAndSearch();
+        }
+
+        // Apply Filter and Search combined
+        function applyFilterAndSearch() {
+            const query = document.getElementById('searchInput').value.trim().toLowerCase();
+            const clearBtn = document.getElementById('searchClearBtn');
+            
+            // Show/hide clear button
+            if (query.length > 0) {
+                clearBtn.classList.remove('hidden');
+            } else {
+                clearBtn.classList.add('hidden');
+            }
+            
+            let filtered = recipes;
+            
+            // Category Filter
+            if (currentActiveCategory !== 'all') {
+                filtered = filtered.filter(recipe => recipe.category === currentActiveCategory);
+            }
+            
+            // Search Query Filter
+            if (query.length > 0) {
+                filtered = filtered.filter(recipe => {
+                    const matchesName = recipe.name.toLowerCase().includes(query);
+                    const matchesDesc = recipe.description.toLowerCase().includes(query);
+                    const matchesTags = recipe.tags.some(tag => tag.toLowerCase().includes(query));
+                    const matchesCategory = recipe.categoryName.toLowerCase().includes(query);
+                    return matchesName || matchesDesc || matchesTags || matchesCategory;
+                });
+            }
+            
+            renderRecipes(filtered);
+        }
+
+        // Update counts on filter tabs
+        function updateCategoryCounts() {
+            document.getElementById('count-all').innerText = recipes.length;
+            document.getElementById('count-airfryer').innerText = recipes.filter(r => r.category === 'airfryer').length;
+            document.getElementById('count-food').innerText = recipes.filter(r => r.category === 'food').length;
+            document.getElementById('count-drink').innerText = recipes.filter(r => r.category === 'drink').length;
+        }
+
+        // Initialize event listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            // Hide header and footer if loaded inside an iframe
+            if (window.self !== window.top) {
+                const header = document.querySelector('header');
+                if (header) header.style.display = 'none';
+                const footer = document.querySelector('footer');
+                if (footer) footer.style.display = 'none';
+                
+                document.body.style.paddingBottom = '0';
+                
+                // Adjust Hero section padding to make it look clean inside the iframe panel
+                const hero = document.querySelector('section.relative');
+                if (hero) {
+                    hero.style.paddingTop = '1.5rem';
+                    hero.style.paddingBottom = '1.5rem';
+                }
+            }
+
+            // Initial render
+            updateCategoryCounts();
+            renderRecipes(recipes);
+            
+            // Search inputs
+            const searchInput = document.getElementById('searchInput');
+            const clearBtn = document.getElementById('searchClearBtn');
+            
+            searchInput.addEventListener('input', applyFilterAndSearch);
+            
+            clearBtn.addEventListener('click', () => {
+                searchInput.value = '';
+                applyFilterAndSearch();
+                searchInput.focus();
+            });
+        });
+    </script>
+</body>
+</html>
