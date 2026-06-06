@@ -3,9 +3,46 @@ const globalLoading = document.getElementById('globalLoading');
 
 // Navigation Logic
 document.querySelectorAll('.nav-item').forEach(item => {
-  item.addEventListener('click', (e) => {
+  item.addEventListener('click', async (e) => {
     e.preventDefault();
     const targetId = item.getAttribute('data-target');
+    
+    // Password protection for Mona Expenses
+    if (targetId === 'mona-expenses' && sessionStorage.getItem('monaUnlocked') !== 'true') {
+      const { value: password } = await Swal.fire({
+        title: '🔒 ยืนยันตัวตน',
+        input: 'password',
+        inputPlaceholder: 'กรอกรหัสผ่านเพื่อเข้าใช้งาน',
+        showCancelButton: true,
+        confirmButtonText: 'เข้าสู่ระบบ',
+        cancelButtonText: 'ยกเลิก',
+        confirmButtonColor: 'var(--primary-color)',
+        customClass: {
+          popup: 'glass-panel'
+        }
+      });
+
+      if (password === 'Admin1234') {
+        sessionStorage.setItem('monaUnlocked', 'true');
+        Swal.fire({
+          icon: 'success',
+          title: 'เข้าสู่ระบบสำเร็จ',
+          timer: 1000,
+          showConfirmButton: false,
+          customClass: { popup: 'glass-panel' }
+        });
+      } else {
+        if (password !== undefined) {
+          Swal.fire({
+            icon: 'error',
+            title: 'รหัสผ่านไม่ถูกต้อง',
+            text: 'คุณไม่สามารถเข้าถึงหน้านี้ได้',
+            customClass: { popup: 'glass-panel' }
+          });
+        }
+        return; // Stop navigation
+      }
+    }
     
     // Update active nav item
     document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
