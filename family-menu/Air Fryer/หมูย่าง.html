@@ -272,37 +272,33 @@
                                                     </p>
                                                 </div>
 
-                                                <div className="overflow-x-auto">
-                                                    <table className="w-full text-sm text-left text-gray-600 rounded-lg overflow-hidden">
-                                                        <thead className="text-xs text-white uppercase bg-gray-700">
-                                                            <tr>
-                                                                <th className="px-4 py-3">ขั้นตอน</th>
-                                                                <th className="px-4 py-3"><div className="flex items-center gap-1"><ThermometerIcon size={14}/> อุณหภูมิ</div></th>
-                                                                <th className="px-4 py-3"><div className="flex items-center gap-1"><ClockIcon size={14}/> เวลา</div></th>
-                                                                <th className="px-4 py-3">เป้าหมาย</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            <tr className="bg-white border-b">
-                                                                <td className="px-4 py-3 font-medium text-gray-900">รอบที่ 1 (ทำให้สุก)</td>
-                                                                <td className="px-4 py-3">180°C</td>
-                                                                <td className="px-4 py-3">10 - 12 นาที</td>
-                                                                <td className="px-4 py-3">เนื้อสุกทั่วถึงและกักเก็บความฉ่ำ</td>
-                                                            </tr>
-                                                            <tr className="bg-gray-50 border-b">
-                                                                <td className="px-4 py-3 font-medium text-gray-900">กลับด้านเนื้อหมู</td>
-                                                                <td className="px-4 py-3">-</td>
-                                                                <td className="px-4 py-3">-</td>
-                                                                <td className="px-4 py-3">เพื่อให้โดนลมร้อนสม่ำเสมอ</td>
-                                                            </tr>
-                                                            <tr className="bg-white">
-                                                                <td className="px-4 py-3 font-medium text-gray-900">รอบที่ 2 (ทำสี/ไล่น้ำมัน)</td>
-                                                                <td className="px-4 py-3">200°C</td>
-                                                                <td className="px-4 py-3">3 - 5 นาที</td>
-                                                                <td className="px-4 py-3">ผิวเกรียมสวย หอมกลิ่นย่าง</td>
-                                                            </tr>
-                                                        </tbody>
-                                                    </table>
+                                                <div className="space-y-4 mt-3">
+                                                    <div className="p-4 bg-orange-50/70 border border-orange-100 rounded-xl">
+                                                        <div className="font-bold text-orange-800 text-base flex items-center gap-2 mb-1">
+                                                            🔥 รอบที่ 1: ทำให้สุก
+                                                        </div>
+                                                        <p className="text-gray-700 leading-relaxed">
+                                                            ใช้ไฟ <span className="bg-orange-100 text-orange-800 px-2 py-0.5 rounded font-mono font-bold">180°C</span> เวลา <span className="font-bold">10 - 12 นาที</span> (เป้าหมาย: เพื่อให้เนื้อหมูสุกทั่วถึงและกักเก็บความฉ่ำ)
+                                                        </p>
+                                                    </div>
+                                                    
+                                                    <div className="p-4 bg-amber-50/50 border border-amber-100 rounded-xl">
+                                                        <div className="font-bold text-amber-800 text-base flex items-center gap-2 mb-1">
+                                                            🔄 กลับด้านเนื้อหมู
+                                                        </div>
+                                                        <p className="text-gray-700 leading-relaxed">
+                                                            เปิดหม้อทอดออกมาเพื่อกลับด้านเนื้อหมู (เป้าหมาย: เพื่อให้ลมร้อนสัมผัสชิ้นเนื้ออย่างสม่ำเสมอเท่ากันทุกด้าน)
+                                                        </p>
+                                                    </div>
+                                                    
+                                                    <div className="p-4 bg-red-50/70 border border-red-100 rounded-xl">
+                                                        <div className="font-bold text-red-800 text-base flex items-center gap-2 mb-1">
+                                                            🔥 รอบที่ 2: ทำสี/ไล่น้ำมัน
+                                                        </div>
+                                                        <p className="text-gray-700 leading-relaxed">
+                                                            ใช้ไฟ <span className="bg-red-100 text-red-800 px-2 py-0.5 rounded font-mono font-bold">200°C</span> เวลา <span className="font-bold">3 - 5 นาที</span> (เป้าหมาย: เพื่อให้ผิวขอบเกรียมสวย หอมกลิ่นย่าง)
+                                                        </p>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
