@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>สูตรเคาหยก..ในตำนาน</title>
+    <!-- โหลด Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- โหลด Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Kanit', sans-serif;
+            background-color: #fdf8f5; /* สีพื้นหลังโทนอบอุ่น */
+        }
+        .ingredient-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px dashed #e2e8f0;
+        }
+        .ingredient-item:last-child {
+            border-bottom: none;
+        }
+    </style>
+</head>
+<body class="text-gray-800 antialiased selection:bg-amber-200 selection:text-amber-900">
+
+    <div class="max-w-4xl mx-auto px-4 py-8 md:py-12">
+        <!-- Header Section -->
+        <header class="bg-white rounded-3xl shadow-lg overflow-hidden mb-8">
+            <div class="bg-amber-600 px-6 py-10 md:py-16 text-center text-white relative overflow-hidden">
+                <!-- ตกแต่งพื้นหลังเล็กน้อย -->
+                <div class="absolute top-0 left-0 w-full h-full opacity-10 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwb2x5Z29uIHBvaW50cz0iMTIgMiAxNS4wOSA4LjI2IDIyIDkuMjcgMTcgMTQuMTQgMTguMTggMjEgMTIgMTcuNzcgNS44MiAyMSA3IDE0LjE0IDIgOS4yNyA4LjkxIDguMjYgMTIgMiIvPjwvc3ZnPg==')]"></div>
+                
+                <h1 class="text-4xl md:text-5xl font-semibold mb-4 relative z-10">🥢 สูตรเคาหยก..ในตำนาน</h1>
+                <p class="text-amber-100 text-lg relative z-10">หมูสามชั้นนุ่มละลายในปาก หอมกลิ่นเครื่องเทศ ผสานความอร่อยกับเผือกทอด</p>
+            </div>
+
+            <!-- Calculator Section -->
+            <div class="p-6 md:p-8 bg-amber-50 border-b border-amber-100">
+                <div class="max-w-xl mx-auto text-center">
+                    <h2 class="text-xl font-medium text-amber-800 mb-4">🧮 คำนวณสัดส่วนวัตถุดิบ (บัญญัติไตรยางค์)</h2>
+                    <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                        <label for="porkWeight" class="text-gray-700 whitespace-nowrap">น้ำหนักหมูสามชั้นที่ต้องการ:</label>
+                        <div class="relative flex items-center">
+                            <input type="number" id="porkWeight" value="1" min="0.1" step="0.1" 
+                                class="w-32 text-center text-xl font-semibold text-amber-700 bg-white border-2 border-amber-300 rounded-lg py-2 px-4 focus:outline-none focus:border-amber-500 transition-colors shadow-sm">
+                            <span class="absolute right-4 text-gray-500">กก.</span>
+                        </div>
+                        <!-- เพิ่มปุ่มรีเซ็ตตรงนี้ -->
+                        <button id="resetBtn" class="px-4 py-2 bg-white border-2 border-amber-200 text-amber-700 hover:bg-amber-100 hover:border-amber-300 rounded-lg transition-colors shadow-sm font-medium focus:outline-none focus:ring-2 focus:ring-amber-400">
+                            🔄 รีเซ็ต
+                        </button>
+                    </div>
+                    <p class="text-sm text-gray-500 mt-3">เปลี่ยนตัวเลขน้ำหนักหมู แล้ววัตถุดิบด้านล่างจะปรับตามอัตโนมัติ</p>
+                </div>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-8">
+            <!-- Ingredients Sidebar -->
+            <div class="md:col-span-5 space-y-6">
+                <!-- หมูและผัก -->
+                <div class="bg-white rounded-2xl shadow-md p-6">
+                    <h3 class="text-xl font-semibold text-amber-600 mb-4 flex items-center">
+                        <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+                        หมูและผัก
+                    </h3>
+                    <div class="ingredient-item">
+                        <span class="text-gray-700">หมูสามชั้น</span>
+                        <span class="font-medium text-amber-700"><span id="val-pork" class="scale-val" data-base="1">1</span> กก.</span>
+                    </div>
+                    <div class="ingredient-item">
+                        <span class="text-gray-700">เผือก</span>
+                        <span class="font-medium text-amber-700"><span id="val-taro" class="scale-val" data-base="1">1</span> หัว</span>
+                    </div>
+                    <div class="ingredient-item">
+                        <span class="text-gray-700">รากผักชี + ต้นหอม</span>
+                        <span class="text-gray-500 text-sm">(สำหรับต้มหมู)</span>
+                    </div>
+                    <div class="ingredient-item">
+                        <span class="text-gray-700">ต้นหอม, ผักชี</span>
+                        <span class="text-gray-500 text-sm">(สำหรับโรยหน้า)</span>
+                    </div>
+                </div>
+
+                <!-- เครื่องปรุงหมักหมู -->
+                <div class="bg-white rounded-2xl shadow-md p-6">
+                    <h3 class="text-xl font-semibold text-amber-600 mb-4 flex items-center">
+                        <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
+                        เครื่องปรุงหมักหมู
+                    </h3>
+                    <div class="ingredient-item">
+                        <span class="text-gray-700">น้ำส้มสายชู</span>
+                        <span class="text-gray-500 text-sm">(พอท่วมหนังหมู)</span>
+                    </div>
+                    <div class="ingredient-item">
+                        <span class="text-gray-700">เกลือ</span>
+                        <span class="font-medium text-amber-700"><span id="val-salt-marinade" class="scale-val" data-base="1">1</span> ช้อนชา</span>
+                    </div>
+                </div>
+
+                <!-- น้ำซอส -->
+                <div class="bg-white rounded-2xl shadow-md p-6">
+                    <h3 class="text-xl font-semibold text-amber-600 mb-4 flex items-center">
+                        <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path></svg>
+                        น้ำซอส
+                    </h3>
+                    <div class="ingredient-item">
+                        <span class="text-gray-700">เต้าหู้ยี้ + น้ำราด</span>
+                        <span class="font-medium text-amber-700"><span id="val-tofu" class="scale-val" data-base="8">8</span> ก้อนเล็ก</span>
+                    </div>
+                    <div class="ingredient-item">
+                        <span class="text-gray-700">ผงพะโล้</span>
+                        <span class="font-medium text-amber-700"><span id="val-fivespice" class="scale-val" data-base="60">60</span> กรัม</span>
+                    </div>
+                    <div class="ingredient-item">
+                        <span class="text-gray-700">กระเทียม (บุบพอแตก)</span>
+                        <span class="font-medium text-amber-700"><span id="val-garlic" class="scale-val" data-base="10">10</span> หัว</span>
+                    </div>
+                    <div class="ingredient-item">
+                        <span class="text-gray-700">หัวหอม (หั่นหยาบ)</span>
+                        <span class="font-medium text-amber-700"><span id="val-shallot" class="scale-val" data-base="10">10</span> หัว</span>
+                    </div>
+                    <div class="ingredient-item">
+                        <span class="text-gray-700">น้ำส้มสายชู</span>
+                        <span class="font-medium text-amber-700"><span id="val-vinegar" class="scale-val" data-base="2">2</span> ช้อนโต๊ะ</span>
+                    </div>
+                    <div class="ingredient-item">
+                        <span class="text-gray-700">เต้าเจี้ยว</span>
+                        <span class="font-medium text-amber-700"><span id="val-soybean" class="scale-val" data-base="2">2</span> ช้อนโต๊ะ</span>
+                    </div>
+                    <div class="ingredient-item">
+                        <span class="text-gray-700">ซีอิ๊วขาว</span>
+                        <span class="font-medium text-amber-700"><span id="val-lightsoy" class="scale-val" data-base="2">2</span> ช้อนโต๊ะ</span>
+                    </div>
+                    <div class="ingredient-item">
+                        <span class="text-gray-700">ซีอิ๊วดำ</span>
+                        <span class="font-medium text-amber-700"><span id="val-darksoy" class="scale-val" data-base="2">2</span> ช้อนโต๊ะ</span>
+                    </div>
+                    <div class="ingredient-item">
+                        <span class="text-gray-700">น้ำตาลทราย</span>
+                        <span class="font-medium text-amber-700"><span id="val-sugar" class="scale-val" data-base="2">2</span> ช้อนโต๊ะ</span>
+                    </div>
+                    <div class="ingredient-item">
+                        <span class="text-gray-700">เกลือ</span>
+                        <span class="font-medium text-amber-700"><span id="val-salt-sauce" class="scale-val" data-base="2">2</span> ช้อนชา</span>
+                    </div>
+                    <div class="ingredient-item">
+                        <span class="text-gray-700">น้ำเปล่า</span>
+                        <span class="font-medium text-amber-700"><span id="val-water" class="scale-val" data-base="500">500</span> ml</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Instructions Main Content -->
+            <div class="md:col-span-7">
+                <div class="bg-white rounded-2xl shadow-md p-6 md:p-8 h-full">
+                    <h2 class="text-2xl font-semibold text-amber-600 mb-6 border-b-2 border-amber-100 pb-3">👨‍🍳 วิธีทำ</h2>
+                    
+                    <div class="space-y-8">
+                        <!-- Step 1 -->
+                        <div class="flex">
+                            <div class="flex-shrink-0 mr-4">
+                                <div class="w-10 h-10 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center font-bold text-lg">1</div>
+                            </div>
+                            <div>
+                                <h4 class="text-lg font-medium text-gray-800 mb-2">ต้มหมูสามชั้น</h4>
+                                <ul class="list-disc list-inside text-gray-600 space-y-1">
+                                    <li>ต้มน้ำใส่รากผักชีและต้นหอมให้เดือด</li>
+                                    <li>ใส่หมูสามชั้นลงไปต้ม ประมาณ 30 นาที</li>
+                                    <li>เสร็จแล้วนำหมูลงแช่น้ำเย็นทันที</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Step 2 -->
+                        <div class="flex">
+                            <div class="flex-shrink-0 mr-4">
+                                <div class="w-10 h-10 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center font-bold text-lg">2</div>
+                            </div>
+                            <div>
+                                <h4 class="text-lg font-medium text-gray-800 mb-2">หมักหมู</h4>
+                                <ul class="list-disc list-inside text-gray-600 space-y-1">
+                                    <li>ใช้ส้อมหรือไม้จิ้มฟันจิ้มหนังหมูให้ทั่ว</li>
+                                    <li>ซับหมูให้แห้ง แล้วหมักด้วยน้ำส้มสายชู (โดยแช่ให้ท่วมเฉพาะส่วนหนังหมู) + เกลือ ประมาณ 30 นาที</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Step 3 -->
+                        <div class="flex">
+                            <div class="flex-shrink-0 mr-4">
+                                <div class="w-10 h-10 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center font-bold text-lg">3</div>
+                            </div>
+                            <div>
+                                <h4 class="text-lg font-medium text-gray-800 mb-2">ทอดหมู</h4>
+                                <ul class="list-disc list-inside text-gray-600 space-y-1">
+                                    <li>ล้างหมูที่หมักแล้วซับให้แห้ง</li>
+                                    <li>ทอดหมูให้หนังฟูกรอบและเหลืองสวย</li>
+                                    <li>นำลงแช่น้ำเย็นอีกครั้ง แล้วขูดรอยไหม้บนหนังออก</li>
+                                    <li>นำหมูกลับไปต้มต่ออีก 30 นาที</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Step 4 -->
+                        <div class="flex">
+                            <div class="flex-shrink-0 mr-4">
+                                <div class="w-10 h-10 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center font-bold text-lg">4</div>
+                            </div>
+                            <div>
+                                <h4 class="text-lg font-medium text-gray-800 mb-2">ทอดเผือก</h4>
+                                <ul class="list-disc list-inside text-gray-600 space-y-1">
+                                    <li>หั่นเผือกเป็นแผ่นหรือชิ้นพอดีคำ</li>
+                                    <li>ทอดจนกรอบ แล้วพักไว้</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Step 5 -->
+                        <div class="flex">
+                            <div class="flex-shrink-0 mr-4">
+                                <div class="w-10 h-10 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center font-bold text-lg">5</div>
+                            </div>
+                            <div>
+                                <h4 class="text-lg font-medium text-gray-800 mb-2">ทำซอส</h4>
+                                <ul class="list-disc list-inside text-gray-600 space-y-1">
+                                    <li>ตั้งกระทะ ใส่น้ำมันเล็กน้อย</li>
+                                    <li>ผัดกระเทียมและหอมจนหอม</li>
+                                    <li>ใส่เต้าหู้ยี้ ผงพะโล้ และเครื่องปรุงซอสทั้งหมด</li>
+                                    <li>เติมน้ำ <span class="font-semibold text-amber-600"><span id="val-water-step" data-base="500">500</span> ml</span> เคี่ยวจนเข้ากันดี</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Step 6 -->
+                        <div class="flex">
+                            <div class="flex-shrink-0 mr-4">
+                                <div class="w-10 h-10 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center font-bold text-lg">6</div>
+                            </div>
+                            <div>
+                                <h4 class="text-lg font-medium text-gray-800 mb-2">ผัดรวม</h4>
+                                <ul class="list-disc list-inside text-gray-600 space-y-1">
+                                    <li>แบ่งซอสบางส่วนมาคลุกกับเผือกทอด</li>
+                                    <li>อีกส่วนผัดคลุกกับหมูสามชั้นที่หั่นเป็นชิ้น</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Step 7 -->
+                        <div class="flex">
+                            <div class="flex-shrink-0 mr-4">
+                                <div class="w-10 h-10 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center font-bold text-lg">7</div>
+                            </div>
+                            <div>
+                                <h4 class="text-lg font-medium text-gray-800 mb-2">นึ่ง</h4>
+                                <ul class="list-disc list-inside text-gray-600 space-y-1">
+                                    <li>เรียงหมูสามชั้นสลับกับเผือกในถ้วย (ให้หนังหมูหันลงด้านล่าง)</li>
+                                    <li>ราดซอสที่เหลือลงไป</li>
+                                    <li>นึ่งประมาณ 30 นาทีจนทุกอย่างนุ่มเข้าเนื้อ</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Step 8 -->
+                        <div class="flex">
+                            <div class="flex-shrink-0 mr-4">
+                                <div class="w-10 h-10 rounded-full bg-green-100 text-green-700 flex items-center justify-center font-bold text-lg">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                </div>
+                            </div>
+                            <div>
+                                <h4 class="text-lg font-medium text-gray-800 mb-2">เสิร์ฟ</h4>
+                                <ul class="list-disc list-inside text-gray-600 space-y-1">
+                                    <li>คว่ำถ้วยลงบนจานให้หมูเรียงสวยด้านบน</li>
+                                    <li>โรยหน้าด้วยต้นหอมและผักชี พร้อมเสิร์ฟร้อนๆ 😋</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer class="mt-12 text-center text-gray-400 text-sm">
+            <p>Recipe dynamically scaled based on base ratio of 1kg pork belly.</p>
+        </footer>
+    </div>
+
+    <!-- Script สำหรับคำนวณบัญญัติไตรยางค์ -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const inputPork = document.getElementById('porkWeight');
+            const scaleElements = document.querySelectorAll('.scale-val');
+            const waterStepText = document.getElementById('val-water-step');
+            const resetBtn = document.getElementById('resetBtn');
+
+            // ฟังก์ชันจัดรูปแบบตัวเลข (ไม่ให้ทศนิยมยาวเกิน และตัด .00 ออก)
+            const formatNumber = (num) => {
+                return parseFloat(num.toFixed(2)).toString();
+            };
+
+            // ฟังก์ชันคำนวณและอัปเดตค่าทั้งหมด
+            const calculateRecipe = () => {
+                let weight = parseFloat(inputPork.value);
+                
+                // ป้องกันค่าติดลบหรือ 0
+                if (isNaN(weight) || weight <= 0) {
+                    weight = 0;
+                }
+
+                // สัดส่วน = น้ำหนักที่กรอก / 1 (เพราะสูตรตั้งต้นคือ 1 กก.)
+                const multiplier = weight / 1.0;
+
+                // อัปเดตทุก Element ที่มีคลาส scale-val
+                scaleElements.forEach(el => {
+                    const baseVal = parseFloat(el.getAttribute('data-base'));
+                    const newVal = baseVal * multiplier;
+                    el.textContent = formatNumber(newVal);
+                });
+
+                // อัปเดตปริมาณน้ำในข้อความวิธีทำขั้นตอนที่ 5 ด้วย
+                if(waterStepText) {
+                    const baseWater = parseFloat(waterStepText.getAttribute('data-base'));
+                    waterStepText.textContent = formatNumber(baseWater * multiplier);
+                }
+            };
+
+            // ดักจับ Event เมื่อมีการพิมพ์หรือเปลี่ยนตัวเลขในช่อง Input
+            inputPork.addEventListener('input', calculateRecipe);
+            
+            // ดักจับ Event ปุ่มรีเซ็ต
+            if (resetBtn) {
+                resetBtn.addEventListener('click', () => {
+                    inputPork.value = 1;
+                    calculateRecipe(); // สั่งให้คำนวณใหม่หลังจากเปลี่ยนค่ากลับเป็น 1
+                });
+            }
+            
+            // เรียกใช้ครั้งแรกตอนโหลดหน้า
+            calculateRecipe();
+        });
+    </script>
+</body>
+</html>
