@@ -107,23 +107,35 @@ async function loadMonaExpensesDashboard() {
       document.getElementById('meMonthTotal').innerText = `฿${monthTotal.toLocaleString('th-TH', {minimumFractionDigits: 2})}`;
       document.getElementById('meYearTotal').innerText = `฿${yearTotal.toLocaleString('th-TH', {minimumFractionDigits: 2})}`;
       
-      // Breakdown List
-      let breakdownHtml = '';
-      Object.entries(breakdown).sort((a,b)=>b[1]-a[1]).forEach(([cat, val]) => {
-        const percent = yearTotal > 0 ? (val / yearTotal * 100).toFixed(1) : 0;
-        breakdownHtml += `
-          <div class="mb-2">
-            <div class="d-flex justify-content-between text-sm">
-              <span>${cat}</span>
-              <span class="fw-bold">฿${val.toLocaleString('th-TH')} (${percent}%)</span>
-            </div>
-            <div style="background:#eee; height:8px; border-radius:4px; margin-top:5px; overflow:hidden;">
-              <div style="background:var(--accent-pink); width:${percent}%; height:100%;"></div>
-            </div>
-          </div>
-        `;
+      // Breakdown List logic removed as we use Pie Chart now
+
+      
+      // Pie Chart
+      const ctx = document.getElementById('meChart').getContext('2d');
+      if (typeof meChartInstance !== 'undefined' && meChartInstance) {
+        meChartInstance.destroy();
+      }
+      const labels = Object.keys(breakdown);
+      const dataValues = Object.values(breakdown);
+      const colors = ['#EC4899', '#8B5CF6', '#4F46E5', '#10B981', '#F59E0B', '#3B82F6', '#EF4444', '#14B8A6', '#F43F5E'];
+      
+      // We need to declare it globally or at least on window
+      window.meChartInstance = new Chart(ctx, {
+        type: 'pie',
+        data: {
+          labels: labels,
+          datasets: [{
+            data: dataValues,
+            backgroundColor: colors.slice(0, labels.length),
+            borderWidth: 2,
+            borderColor: '#ffffff'
+          }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: { legend: { position: 'right', labels: { font: { family: 'Outfit, Sarabun' }, usePointStyle: true } } }
+        }
       });
-      document.getElementById('meBreakdownList').innerHTML = breakdownHtml;
       
       // Transactions
       const sortedData = [...data].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 20);

@@ -48,12 +48,12 @@ function ksSelectKid(kid) {
   const stats = calculateKidStats(ksData[currentKid.toLowerCase()]);
   document.getElementById('ksSelectedBalance').innerText = stats.balance.toLocaleString('th-TH', {minimumFractionDigits: 2});
   
-  // Reset tabs to default (Deposit)
+  // Reset tabs to default (Transaction)
   const container = document.getElementById('ksActionView').querySelector('.tabs-container');
   container.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   container.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-  container.querySelector('.tab-btn[data-tab="ks-deposit"]').classList.add('active');
-  document.getElementById('ks-deposit').classList.add('active');
+  container.querySelector('.tab-btn[data-tab="ks-transaction"]').classList.add('active');
+  document.getElementById('ks-transaction').classList.add('active');
 }
 
 function ksBackToPortal() {
@@ -101,14 +101,10 @@ async function ksSubmitTransaction(type, amount, detail, formId) {
   }
 }
 
-document.getElementById('ksDepositForm').addEventListener('submit', (e) => {
+document.getElementById('ksTransactionForm').addEventListener('submit', (e) => {
   e.preventDefault();
-  ksSubmitTransaction('ฝาก', document.getElementById('ksDepAmount').value, document.getElementById('ksDepDetail').value, 'ksDepositForm');
-});
-
-document.getElementById('ksWithdrawForm').addEventListener('submit', (e) => {
-  e.preventDefault();
-  ksSubmitTransaction('ถอน', document.getElementById('ksWithAmount').value, document.getElementById('ksWithDetail').value, 'ksWithdrawForm');
+  const type = document.querySelector('input[name="ksType"]:checked').value;
+  ksSubmitTransaction(type, document.getElementById('ksAmount').value, document.getElementById('ksDetail').value, 'ksTransactionForm');
 });
 
 // Dashboard Logic

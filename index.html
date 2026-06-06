@@ -218,44 +218,36 @@
 
               <div class="tabs-container mt-2">
                 <div class="tabs">
-                  <button class="tab-btn active" data-tab="ks-deposit">ฝากเงิน</button>
-                  <button class="tab-btn" data-tab="ks-withdraw">ถอนเงิน</button>
+                  <button class="tab-btn active" data-tab="ks-transaction">ทำรายการ</button>
                   <button class="tab-btn" data-tab="ks-individual-dashboard">แดชบอร์ด</button>
                 </div>
                 
-                <!-- Deposit -->
-                <div class="tab-content active" id="ks-deposit">
-                  <form id="ksDepositForm">
+                <!-- Transaction Form -->
+                <div class="tab-content active" id="ks-transaction">
+                  <form id="ksTransactionForm">
                     <div class="form-group">
-                      <label>ยอดเงินที่ฝาก (บาท)</label>
-                      <div class="input-group">
-                        <span class="input-prefix text-success">฿</span>
-                        <input type="number" id="ksDepAmount" class="input-control pl-prefix" placeholder="0.00" step="0.01" required>
+                      <label>ประเภทรายการ</label>
+                      <div class="d-flex gap-3">
+                        <label class="d-flex align-center" style="gap: 5px; cursor: pointer;">
+                          <input type="radio" name="ksType" value="ฝาก" checked> <span class="text-success fw-bold">ฝากเงิน</span>
+                        </label>
+                        <label class="d-flex align-center" style="gap: 5px; cursor: pointer;">
+                          <input type="radio" name="ksType" value="ถอน"> <span class="text-danger fw-bold">ถอนเงิน</span>
+                        </label>
                       </div>
                     </div>
                     <div class="form-group">
-                      <label>รายละเอียด/แหล่งที่มา</label>
-                      <input type="text" id="ksDepDetail" class="input-control" placeholder="เช่น ค่าขนม, เงินฝากประจำ" required>
-                    </div>
-                    <button type="submit" class="btn btn-success w-full mt-4">บันทึกเงินฝาก</button>
-                  </form>
-                </div>
-
-                <!-- Withdraw -->
-                <div class="tab-content" id="ks-withdraw">
-                  <form id="ksWithdrawForm">
-                    <div class="form-group">
-                      <label>ยอดเงินที่ถอน (บาท)</label>
+                      <label>ยอดเงิน (บาท)</label>
                       <div class="input-group">
-                        <span class="input-prefix text-danger">฿</span>
-                        <input type="number" id="ksWithAmount" class="input-control pl-prefix" placeholder="0.00" step="0.01" required>
+                        <span class="input-prefix text-primary">฿</span>
+                        <input type="number" id="ksAmount" class="input-control pl-prefix" placeholder="0.00" step="0.01" required>
                       </div>
                     </div>
                     <div class="form-group">
-                      <label>เหตุผลการถอน</label>
-                      <input type="text" id="ksWithDetail" class="input-control" placeholder="เช่น ซื้อของเล่น, อุปกรณ์การเรียน" required>
+                      <label>รายละเอียด/หมายเหตุ</label>
+                      <input type="text" id="ksDetail" class="input-control" placeholder="เช่น ค่าขนม, ซื้อของเล่น" required>
                     </div>
-                    <button type="submit" class="btn btn-danger w-full mt-4">บันทึกการถอนเงิน</button>
+                    <button type="submit" class="btn btn-primary w-full mt-4">บันทึกรายการ</button>
                   </form>
                 </div>
                 
@@ -362,7 +354,9 @@
                 </div>
               </div>
               <h4 class="mt-4 text-left">สัดส่วนค่าใช้จ่าย</h4>
-              <div id="meBreakdownList" class="mt-2 text-left"></div>
+              <div class="chart-wrapper mt-3 mb-4">
+                <canvas id="meChart"></canvas>
+              </div>
               <h4 class="mt-4 text-left">ประวัติการใช้จ่าย</h4>
               <div id="meTransactionList" class="mt-2 text-left list-wrapper"></div>
             </div>
