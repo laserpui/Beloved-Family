@@ -44,6 +44,9 @@ function ksSelectKid(kid) {
   document.getElementById('ksSelectedAvatar').src = kid === 'namo' ? 'Namo.png' : 'Mona.png';
   document.getElementById('ksSelectedName').innerText = kid === 'namo' ? 'นโม (Namo)' : 'โมนา (Mona)';
   
+  // Set default date to today when selecting a kid
+  document.getElementById('ksDate').valueAsDate = new Date();
+  
   // Set current balance based on cache
   const stats = calculateKidStats(ksData[currentKid.toLowerCase()]);
   document.getElementById('ksSelectedBalance').innerText = stats.balance.toLocaleString('th-TH', {minimumFractionDigits: 2});
@@ -65,7 +68,7 @@ function ksBackToPortal() {
 }
 
 // Submit Transaction
-async function ksSubmitTransaction(type, amount, detail, formId) {
+async function ksSubmitTransaction(type, amount, detail, dateVal, formId) {
   if (isNaN(amount) || amount <= 0) {
     Swal.fire('ข้อผิดพลาด', 'กรุณาระบุจำนวนเงินที่ถูกต้อง', 'error');
     return;
@@ -74,8 +77,6 @@ async function ksSubmitTransaction(type, amount, detail, formId) {
   showLoading(true);
   
   try {
-    // Current date YYYY-MM-DD
-    const dateVal = new Date().toISOString().split('T')[0];
     const requestUrl = `${KS_SCRIPT_URL}?action=add&sheetName=${currentKid}&type=${encodeURIComponent(type)}&description=${encodeURIComponent(detail)}&amount=${amount}&date=${encodeURIComponent(dateVal)}`;
     
     const response = await fetch(requestUrl);
@@ -88,7 +89,7 @@ async function ksSubmitTransaction(type, amount, detail, formId) {
       
       // Update local balance immediately
       const kidArr = ksData[currentKid.toLowerCase()];
-      kidArr.push({ type: type, amount: parseFloat(amount), date: new Date().toISOString() });
+      kidArr.push({ type: type, amount: parseFloat(amount), date: dateVal });
       const stats = calculateKidStats(kidArr);
       document.getElementById('ksSelectedBalance').innerText = stats.balance.toLocaleString('th-TH', {minimumFractionDigits: 2});
       
@@ -104,7 +105,8 @@ async function ksSubmitTransaction(type, amount, detail, formId) {
 document.getElementById('ksTransactionForm').addEventListener('submit', (e) => {
   e.preventDefault();
   const type = document.querySelector('input[name="ksType"]:checked').value;
-  ksSubmitTransaction(type, document.getElementById('ksAmount').value, document.getElementById('ksDetail').value, 'ksTransactionForm');
+  const dateVal = document.getElementById('ksDate').value;
+  ksSubmitTransaction(type, document.getElementById('ksAmount').value, document.getElementById('ksDetail').value, dateVal, 'ksTransactionForm');
 });
 
 // Dashboard Logic
