@@ -133,40 +133,48 @@
                     <div class="flex-shrink-0 w-10 h-10 bg-orange-500/20 text-orange-400 rounded-full flex items-center justify-center font-bold text-xl border border-orange-500/50">3</div>
                     <div class="w-full">
                         <h4 class="text-lg font-medium text-white">วอร์มเตาและย่างด้วย Air Fryer</h4>
-                        <p class="text-slate-300 mt-1 mb-3">เนื้อหนา 1 เซนติเมตร ต้องการ <strong>"ไฟแรง ระยะเวลากระชับ"</strong> เพื่อไม่ให้เนื้อสุกจนแห้งไปถึงข้างใน เริ่มด้วยการวอร์มหม้อทอด (Preheat) ที่อุณหภูมิ <strong>200°C เป็นเวลา 3-5 นาที</strong> เพื่อให้ตะแกรงร้อนจัด จากนั้นวางเนื้อลงบนตะแกรงโดยไม่ให้ซ้อนทับกัน เพื่อให้ลมร้อนรีดไขมันส่วนเกินลงไปด้านล่างและช่วยคงความฉ่ำไว้ แล้วย่างตามระดับความสุกดังนี้:</p>
+                        <p class="text-slate-300 mt-1 mb-3">เนื้อหนา 1 เซนติเมตร ต้องการ <strong>"ไฟแรง ระยะเวลากระชับ"</strong> เพื่อไม่ให้เนื้อสุกจนแห้งไปถึงข้างใน เริ่มด้วยการวอร์มหม้อทอด (Preheat) ที่อุณหภูมิ <strong>200°C เป็นเวลา 3-5 นาที</strong> จากนั้นวางเนื้อลงบนตะแกรงสลัดน้ำมัน (ไม่ให้ซ้อนทับกัน) เพื่อรีดไขมันส่วนเกินลงด้านล่างแต่ยังคงความฉ่ำไว้ แล้วย่างตามเวลาด้านล่าง:</p>
                         
-                        <!-- Responsive Table -->
-                        <div class="overflow-x-auto table-container rounded-lg border border-slate-600 bg-slate-900/50">
-                            <table class="w-full text-left border-collapse min-w-[500px]">
-                                <thead>
-                                    <tr class="bg-slate-700/50 text-slate-200">
-                                        <th class="p-3 border-b border-slate-600">ระดับความสุก</th>
-                                        <th class="p-3 border-b border-slate-600 text-center">อุณหภูมิ</th>
-                                        <th class="p-3 border-b border-slate-600 text-center">เวลารวม</th>
-                                        <th class="p-3 border-b border-slate-600">คำแนะนำ / การกลับด้าน</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="text-slate-300">
-                                    <tr class="border-b border-slate-700/50 hover:bg-slate-800/50 transition">
-                                        <td class="p-3 font-medium text-red-300">🥩 Medium Rare (ฉ่ำอมชมพู)</td>
-                                        <td class="p-3 text-center font-semibold text-orange-400">200°C</td>
-                                        <td class="p-3 text-center font-semibold text-white">4 นาที</td>
-                                        <td class="p-3">กลับด้านตอนนาทีที่ 2 (ย่างข้างละ 2 นาที)</td>
-                                    </tr>
-                                    <tr class="border-b border-slate-700/50 hover:bg-slate-800/50 transition">
-                                        <td class="p-3 font-medium text-pink-300">🥩 Medium (สุกกำลังดี)</td>
-                                        <td class="p-3 text-center font-semibold text-orange-400">200°C</td>
-                                        <td class="p-3 text-center font-semibold text-white">5-6 นาที</td>
-                                        <td class="p-3">กลับด้านตอนนาทีที่ 3 (ย่างต่ออีก 2-3 นาที)</td>
-                                    </tr>
-                                    <tr class="hover:bg-slate-800/50 transition">
-                                        <td class="p-3 font-medium text-amber-500">🥩 Well Done (สุกทั่วถึง แต่ไม่แห้ง)</td>
-                                        <td class="p-3 text-center font-semibold text-emerald-400">180°C</td>
-                                        <td class="p-3 text-center font-semibold text-white">7-8 นาที</td>
-                                        <td class="p-3">กลับด้านครึ่งทาง (ย่างข้างละประมาณ 3.5 - 4 นาที)</td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                        <!-- Responsive Cooking Times (Text Cards) -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                            <div class="p-4 bg-slate-700/30 border border-slate-600/50 rounded-2xl shadow-sm hover:border-orange-500/30 transition-all flex flex-col justify-between">
+                                <div>
+                                    <div class="font-bold text-rose-400 text-base flex items-center gap-2 mb-2">
+                                        <span>🥩</span> Medium Rare (ฉ่ำอมชมพู)
+                                    </div>
+                                    <div class="space-y-1.5 text-xs text-slate-300">
+                                        <p class="flex justify-between border-b border-slate-700/50 pb-1.5"><span class="text-slate-400">อุณหภูมิ:</span> <span class="font-bold text-orange-400">200°C</span></p>
+                                        <p class="flex justify-between border-b border-slate-700/50 pb-1.5"><span class="text-slate-400">เวลารวม:</span> <span class="font-bold text-white">4 นาที</span></p>
+                                    </div>
+                                </div>
+                                <p class="pt-2 text-xs text-slate-300 leading-relaxed border-t border-slate-700/50 mt-2"><span class="text-slate-400 block mb-0.5">การกลับด้าน:</span>กลับด้านตอนนาทีที่ 2 (ย่างข้างละ 2 นาที)</p>
+                            </div>
+                            
+                            <div class="p-4 bg-slate-700/30 border border-slate-600/50 rounded-2xl shadow-sm hover:border-orange-500/30 transition-all flex flex-col justify-between">
+                                <div>
+                                    <div class="font-bold text-pink-400 text-base flex items-center gap-2 mb-2">
+                                        <span>🥩</span> Medium (สุกกำลังดี)
+                                    </div>
+                                    <div class="space-y-1.5 text-xs text-slate-300">
+                                        <p class="flex justify-between border-b border-slate-700/50 pb-1.5"><span class="text-slate-400">อุณหภูมิ:</span> <span class="font-bold text-orange-400">200°C</span></p>
+                                        <p class="flex justify-between border-b border-slate-700/50 pb-1.5"><span class="text-slate-400">เวลารวม:</span> <span class="font-bold text-white">5-6 นาที</span></p>
+                                    </div>
+                                </div>
+                                <p class="pt-2 text-xs text-slate-300 leading-relaxed border-t border-slate-700/50 mt-2"><span class="text-slate-400 block mb-0.5">การกลับด้าน:</span>กลับด้านตอนนาทีที่ 3 (ย่างต่ออีก 2-3 นาที)</p>
+                            </div>
+                            
+                            <div class="p-4 bg-slate-700/30 border border-slate-600/50 rounded-2xl shadow-sm hover:border-orange-500/30 transition-all flex flex-col justify-between">
+                                <div>
+                                    <div class="font-bold text-amber-500 text-base flex items-center gap-2 mb-2">
+                                        <span>🥩</span> Well Done (สุกทั่วถึง)
+                                    </div>
+                                    <div class="space-y-1.5 text-xs text-slate-300">
+                                        <p class="flex justify-between border-b border-slate-700/50 pb-1.5"><span class="text-slate-400">อุณหภูมิ:</span> <span class="font-bold text-emerald-400">180°C</span></p>
+                                        <p class="flex justify-between border-b border-slate-700/50 pb-1.5"><span class="text-slate-400">เวลารวม:</span> <span class="font-bold text-white">7-8 นาที</span></p>
+                                    </div>
+                                </div>
+                                <p class="pt-2 text-xs text-slate-300 leading-relaxed border-t border-slate-700/50 mt-2"><span class="text-slate-400 block mb-0.5">การกลับด้าน:</span>กลับด้านครึ่งทาง (ย่างข้างละ 3.5-4 นาที)</p>
+                            </div>
                         </div>
                     </div>
                 </div>
