@@ -1,5 +1,9 @@
 // Main App Logic for Navigation and Utility
 const globalLoading = document.getElementById('globalLoading');
+const ADMIN_PASSWORD = 'Admin1234';
+const protectedPages = {
+  'mona-expenses': 'monaUnlocked'
+};
 
 // Navigation Logic
 document.querySelectorAll('.nav-item').forEach(item => {
@@ -7,8 +11,10 @@ document.querySelectorAll('.nav-item').forEach(item => {
     e.preventDefault();
     const targetId = item.getAttribute('data-target');
     
-    // Password protection for Mona Expenses
-    if (targetId === 'mona-expenses' && sessionStorage.getItem('monaUnlocked') !== 'true') {
+    const unlockKey = protectedPages[targetId];
+
+    // Password protection for private sections
+    if (unlockKey && sessionStorage.getItem(unlockKey) !== 'true') {
       const { value: password } = await Swal.fire({
         title: '🔒 ยืนยันตัวตน',
         input: 'password',
@@ -22,8 +28,8 @@ document.querySelectorAll('.nav-item').forEach(item => {
         }
       });
 
-      if (password === 'Admin1234') {
-        sessionStorage.setItem('monaUnlocked', 'true');
+      if (password === ADMIN_PASSWORD) {
+        sessionStorage.setItem(unlockKey, 'true');
         Swal.fire({
           icon: 'success',
           title: 'เข้าสู่ระบบสำเร็จ',
@@ -53,6 +59,40 @@ document.querySelectorAll('.nav-item').forEach(item => {
     document.getElementById(targetId).classList.add('active');
   });
 });
+
+const familyExpensesSheetLink = document.getElementById('familyExpensesSheetLink');
+if (familyExpensesSheetLink) {
+  familyExpensesSheetLink.addEventListener('click', async (e) => {
+    e.preventDefault();
+
+    const { value: password } = await Swal.fire({
+      title: '🔐 ยืนยันตัวตน',
+      input: 'password',
+      inputPlaceholder: 'กรอกรหัสผ่านเพื่อเข้าใช้งาน',
+      showCancelButton: true,
+      confirmButtonText: 'เข้าสู่ระบบ',
+      cancelButtonText: 'ยกเลิก',
+      confirmButtonColor: 'var(--primary-color)',
+      customClass: {
+        popup: 'glass-panel'
+      }
+    });
+
+    if (password === ADMIN_PASSWORD) {
+      window.open(familyExpensesSheetLink.href, '_blank', 'noopener,noreferrer');
+      return;
+    }
+
+    if (password !== undefined) {
+      Swal.fire({
+        icon: 'error',
+        title: 'รหัสผ่านไม่ถูกต้อง',
+        text: 'ไม่สามารถเปิด Google Sheet ได้',
+        customClass: { popup: 'glass-panel' }
+      });
+    }
+  });
+}
 
 // Tab Logic
 document.querySelectorAll('.tab-btn').forEach(btn => {
