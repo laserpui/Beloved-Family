@@ -4,344 +4,215 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>หมูย่าง Air Fryer สูตรลับเชฟมืออาชีพ</title>
-    
-    <!-- นำเข้า Tailwind CSS สำหรับความสวยงาม -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- นำเข้า React และ ReactDOM -->
-    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
-    
-    <!-- นำเข้า Babel สำหรับแปลงโค้ด JSX ให้ทำงานบนเบราว์เซอร์ได้โดยตรง -->
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-
-    <!-- ตั้งค่าฟอนต์ -->
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap');
-        body { font-family: 'Sarabun', sans-serif; }
+        body { font-family: 'Sarabun', system-ui, sans-serif; }
     </style>
 </head>
-<body>
-    <!-- จุดที่ React จะนำหน้าเว็บมาแสดงผล -->
-    <div id="root"></div>
+<body class="bg-orange-50 text-gray-800">
+    <div class="min-h-screen">
+        <header class="bg-gradient-to-r from-orange-600 to-red-600 text-white py-12 px-4 shadow-lg text-center relative">
+            <div class="absolute top-4 left-4 z-20">
+                <a href="../index.html" class="inline-flex items-center gap-2 bg-white/20 hover:bg-white/30 active:scale-95 text-white text-sm font-semibold px-4 py-2 rounded-xl backdrop-blur-md transition-all shadow-sm border border-white/10">
+                    <span aria-hidden="true">←</span>
+                    <span>กลับหน้าหลัก</span>
+                </a>
+            </div>
+            <div class="max-w-4xl mx-auto flex flex-col items-center">
+                <div class="text-5xl mb-4" aria-hidden="true">👨‍🍳</div>
+                <h1 class="text-3xl md:text-5xl font-bold mb-4">หมูย่าง Air Fryer สูตรลับเชฟมืออาชีพ</h1>
+                <p class="text-lg md:text-xl opacity-90 max-w-2xl">กรอบนอก ฉ่ำใน ด้วยหม้อทอดไร้น้ำมัน พร้อมน้ำจิ้มแจ่วมะนาวรสเด็ด</p>
+            </div>
+        </header>
 
-    <!-- โค้ดแอปพลิเคชัน React -->
-    <script type="text/babel">
-        const { useState } = React;
-
-        // --- ชุดไอคอนแบบ SVG (แทนที่ Lucide เพื่อให้ทำงานในไฟล์เดียวได้) ---
-        const ChefHatIcon = ({ size = 24, className = "" }) => (
-            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M6 13.87A4 4 0 0 1 7.41 6a5.11 5.11 0 0 1 1.05-1.54 5 5 0 0 1 7.08 0A5.11 5.11 0 0 1 16.59 6 4 4 0 0 1 18 13.87V21H6Z"></path><line x1="6" y1="17" x2="18" y2="17"></line></svg>
-        );
-        const FlameIcon = ({ size = 24, className = "" }) => (
-            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path></svg>
-        );
-        const UtensilsIcon = ({ size = 24, className = "" }) => (
-            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"></path><path d="M7 2v20"></path><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"></path></svg>
-        );
-        const ClockIcon = ({ size = 24, className = "" }) => (
-            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-        );
-        const ThermometerIcon = ({ size = 24, className = "" }) => (
-            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"></path></svg>
-        );
-        const InfoIcon = ({ size = 24, className = "" }) => (
-            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-        );
-        const MinusIcon = ({ size = 24, className = "" }) => (
-            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-        );
-        const PlusIcon = ({ size = 24, className = "" }) => (
-            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-        );
-        const RotateCcwIcon = ({ size = 24, className = "" }) => (
-            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
-        );
-        const ArrowLeftIcon = ({ size = 20, className = "" }) => (
-            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
-        );
-
-        // --- เริ่มต้น App ---
-        function App() {
-            // ตั้งค่าเริ่มต้นที่เนื้อหมู 500 กรัม
-            const [porkWeight, setPorkWeight] = useState(500);
-
-            // ฟังก์ชันจัดการการเปลี่ยนแปลงน้ำหนักหมู
-            const handleWeightChange = (e) => {
-                const value = parseInt(e.target.value);
-                if (!isNaN(value) && value >= 0) {
-                    setPorkWeight(value);
-                } else if (e.target.value === '') {
-                    setPorkWeight('');
-                }
-            };
-
-            const adjustWeight = (amount) => {
-                setPorkWeight((prev) => Math.max(100, (Number(prev) || 0) + amount));
-            };
-
-            const resetWeight = () => {
-                setPorkWeight(500);
-            };
-
-            // ฟังก์ชันคำนวณปริมาณเครื่องปรุง (บัญญัติไตรยางค์)
-            const calculateAmount = (baseAmount) => {
-                if (!porkWeight) return 0;
-                const calculated = (baseAmount * porkWeight) / 500;
-                // ปัดเศษทศนิยม 1 ตำแหน่งถ้าไม่ลงตัว
-                return Number.isInteger(calculated) ? calculated : calculated.toFixed(1);
-            };
-
-            return (
-                <div className="min-h-screen bg-orange-50 font-sans text-gray-800">
-                    {/* Header Section */}
-                    <header className="bg-gradient-to-r from-orange-600 to-red-600 text-white py-12 px-4 shadow-lg text-center relative">
-                        {/* ปุ่มกลับหน้าแรก */}
-                        <div className="absolute top-4 left-4 z-20">
-                            <a href="../index.html" className="inline-flex items-center gap-2 bg-white/20 hover:bg-white/30 active:scale-95 text-white text-sm font-semibold px-4 py-2 rounded-xl backdrop-blur-md transition-all shadow-sm border border-white/10">
-                                <ArrowLeftIcon size={16} />
-                                <span>กลับหน้าหลัก</span>
-                            </a>
-                        </div>
-
-                        <div className="max-w-4xl mx-auto flex flex-col items-center">
-                            <ChefHatIcon size={48} className="mb-4" />
-                            <h1 className="text-3xl md:text-5xl font-bold mb-4">
-                                หมูย่าง Air Fryer สูตรลับเชฟมืออาชีพ
-                            </h1>
-                            <p className="text-lg md:text-xl opacity-90 max-w-2xl">
-                                กรอบนอก ฉ่ำใน ด้วยหม้อทอดไร้น้ำมัน พร้อมน้ำจิ้มแจ่วมะนาวรสเด็ด
-                            </p>
-                        </div>
-                    </header>
-
-                    <main className="max-w-5xl mx-auto px-4 py-8">
-                        
-                        {/* Calculator Section */}
-                        <section className="bg-white rounded-2xl shadow-md p-6 md:p-8 mb-8 border-t-4 border-orange-500">
-                            <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-                                <div className="flex-1 text-center md:text-left">
-                                    <h2 className="text-2xl font-bold text-orange-600 mb-2 flex items-center justify-center md:justify-start gap-2">
-                                        <UtensilsIcon size={24} />
-                                        ปรับสัดส่วนสูตรอาหาร
-                                    </h2>
-                                    <p className="text-gray-600">
-                                        ใส่ปริมาณเนื้อหมูที่คุณมี ระบบจะคำนวณเครื่องปรุงทั้งหมดให้โดยอัตโนมัติ
-                                    </p>
-                                </div>
-                                
-                                <div className="flex flex-col items-center gap-3">
-                                    <div className="flex items-center gap-4 bg-orange-100 p-4 rounded-xl">
-                                        <button 
-                                            onClick={() => adjustWeight(-100)}
-                                            className="w-10 h-10 flex items-center justify-center bg-white text-orange-600 rounded-full shadow hover:bg-orange-50 transition"
-                                        >
-                                            <MinusIcon size={20} />
-                                        </button>
-                                        
-                                        <div className="flex flex-col items-center">
-                                            <div className="flex items-baseline gap-2">
-                                                <input
-                                                    type="number"
-                                                    value={porkWeight}
-                                                    onChange={handleWeightChange}
-                                                    className="w-24 text-3xl font-bold text-center bg-transparent border-b-2 border-orange-400 focus:outline-none focus:border-orange-600 text-gray-800"
-                                                />
-                                                <span className="text-lg font-medium text-gray-600">กรัม</span>
-                                            </div>
-                                        </div>
-
-                                        <button 
-                                            onClick={() => adjustWeight(100)}
-                                            className="w-10 h-10 flex items-center justify-center bg-white text-orange-600 rounded-full shadow hover:bg-orange-50 transition"
-                                        >
-                                            <PlusIcon size={20} />
-                                        </button>
-                                    </div>
-
-                                    {/* ปุ่มรีเซ็ต จะแสดงเมื่อค่าน้ำหนักไม่ใช่ 500 */}
-                                    {porkWeight !== 500 && (
-                                        <button 
-                                            onClick={resetWeight}
-                                            className="flex items-center gap-1.5 text-sm font-medium text-gray-500 hover:text-orange-600 transition-colors bg-white px-3 py-1 rounded-full shadow-sm border border-gray-200 hover:border-orange-300"
-                                        >
-                                            <RotateCcwIcon size={14} />
-                                            คืนค่าเริ่มต้น (500 กรัม)
-                                        </button>
-                                    )}
-                                </div>
+        <main class="max-w-5xl mx-auto px-4 py-8">
+            <section class="bg-white rounded-2xl shadow-md p-6 md:p-8 mb-8 border-t-4 border-orange-500">
+                <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+                    <div class="flex-1 text-center md:text-left">
+                        <h2 class="text-2xl font-bold text-orange-600 mb-2">ปรับสัดส่วนสูตรอาหาร</h2>
+                        <p class="text-gray-600">ใส่ปริมาณเนื้อหมูที่คุณมี ระบบจะคำนวณเครื่องปรุงทั้งหมดให้โดยอัตโนมัติ</p>
+                    </div>
+                    <div class="flex flex-col items-center gap-3">
+                        <div class="flex items-center gap-4 bg-orange-100 p-4 rounded-xl">
+                            <button id="decreaseWeight" class="w-10 h-10 flex items-center justify-center bg-white text-orange-600 rounded-full shadow hover:bg-orange-50 transition" type="button">−</button>
+                            <div class="flex items-baseline gap-2">
+                                <input id="porkWeight" type="number" value="500" min="0" class="w-24 text-3xl font-bold text-center bg-transparent border-b-2 border-orange-400 focus:outline-none focus:border-orange-600 text-gray-800">
+                                <span class="text-lg font-medium text-gray-600">กรัม</span>
                             </div>
-                        </section>
-
-                        {/* Content Grid */}
-                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                            
-                            {/* Left Column: Ingredients */}
-                            <div className="lg:col-span-5 space-y-8">
-                                
-                                {/* Pork Ingredients */}
-                                <div className="bg-white rounded-2xl shadow-md p-6">
-                                    <h3 className="text-xl font-bold mb-4 pb-2 border-b-2 border-orange-100 flex items-center gap-2">
-                                        <FlameIcon className="text-orange-500" size={20} />
-                                        วัตถุดิบหมักหมู
-                                    </h3>
-                                    <ul className="space-y-3">
-                                        <li className="flex justify-between items-center bg-orange-50 p-2 rounded">
-                                            <span className="font-semibold text-orange-800">เนื้อสันคอหมู</span>
-                                            <span className="font-bold">{porkWeight || 0} กรัม</span>
-                                        </li>
-                                        {[
-                                            { name: 'รากผักชี กระเทียม พริกไทยดำ (โขลก)', base: 1, unit: 'ช้อนโต๊ะ' },
-                                            { name: 'ซอสหอยนางรม', base: 2, unit: 'ช้อนโต๊ะ' },
-                                            { name: 'ซีอิ๊วขาว', base: 1, unit: 'ช้อนโต๊ะ' },
-                                            { name: 'น้ำตาลปี๊บ', base: 1, unit: 'ช้อนโต๊ะ' },
-                                            { name: 'น้ำมันพืช', base: 1, unit: 'ช้อนชา' },
-                                        ].map((item, idx) => (
-                                            <li key={idx} className="flex justify-between items-center text-gray-700 border-b border-gray-100 pb-2">
-                                                <span>{item.name}</span>
-                                                <span className="font-medium text-orange-600">
-                                                    {calculateAmount(item.base)} {item.unit}
-                                                </span>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </div>
-
-                                {/* Sauce Ingredients */}
-                                <div className="bg-white rounded-2xl shadow-md p-6">
-                                    <h3 className="text-xl font-bold mb-4 pb-2 border-b-2 border-red-100 flex items-center gap-2">
-                                        <FlameIcon className="text-red-500" size={20} />
-                                        วัตถุดิบน้ำจิ้มแจ่วมะนาว
-                                    </h3>
-                                    <ul className="space-y-3">
-                                        {[
-                                            { name: 'น้ำปลาแท้', base: 3, unit: 'ช้อนโต๊ะ' },
-                                            { name: 'น้ำมะนาวคั้นสด', base: 3, unit: 'ช้อนโต๊ะ' },
-                                            { name: 'น้ำตาลปี๊บ', base: 1, unit: 'ช้อนโต๊ะ' },
-                                            { name: 'พริกป่น', base: 1.5, unit: 'ช้อนโต๊ะ' },
-                                            { name: 'ข้าวคั่ว (คั่วใหม่)', base: 1, unit: 'ช้อนโต๊ะ' },
-                                        ].map((item, idx) => (
-                                            <li key={idx} className="flex justify-between items-center text-gray-700 border-b border-gray-100 pb-2">
-                                                <span>{item.name}</span>
-                                                <span className="font-medium text-red-600">
-                                                    {calculateAmount(item.base)} {item.unit}
-                                                </span>
-                                            </li>
-                                        ))}
-                                        <li className="flex justify-between items-center text-gray-700 pb-2">
-                                            <span>ผักชีฝรั่งซอย และหอมแดงซอย</span>
-                                            <span className="font-medium text-red-600">ตามชอบ</span>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-
-                            {/* Right Column: Instructions */}
-                            <div className="lg:col-span-7 space-y-8">
-                                <div className="bg-white rounded-2xl shadow-md p-6 md:p-8">
-                                    <h2 className="text-2xl font-bold mb-6 text-gray-800 flex items-center gap-2">
-                                        <ChefHatIcon className="text-orange-500" size={28} />
-                                        ขั้นตอนการทำ
-                                    </h2>
-
-                                    <div className="space-y-8">
-                                        {/* Step 1 */}
-                                        <div className="flex gap-4">
-                                            <div className="flex-shrink-0 w-10 h-10 rounded-full bg-orange-100 text-orange-600 font-bold flex items-center justify-center text-lg">1</div>
-                                            <div>
-                                                <h4 className="text-lg font-bold text-gray-800 mb-1">การเตรียมและหมักหมู</h4>
-                                                <p className="text-gray-600 leading-relaxed mb-2">
-                                                    นำเนื้อสันคอหมูมาหั่นให้มีความหนาประมาณ 1.5 - 2 เซนติเมตร (ความหนานี้จะทำให้เนื้อฉ่ำพอดีเมื่ออบ) ใช้ส้อมจิ้มให้ทั่วชิ้นเนื้อเพื่อให้เครื่องปรุงซึมลึก
-                                                </p>
-                                                <p className="text-gray-600 leading-relaxed">
-                                                    ผสมเครื่องปรุงหมักทั้งหมด นวดจนน้ำตาลปี๊บละลาย แล้วนำเนื้อหมูลงไปคลุกเคล้า นวดต่อประมาณ 5 นาที หมักทิ้งไว้ในตู้เย็นอย่างน้อย 30 นาที
-                                                </p>
-                                            </div>
-                                        </div>
-
-                                        {/* Step 2 */}
-                                        <div className="flex gap-4">
-                                            <div className="flex-shrink-0 w-10 h-10 rounded-full bg-orange-100 text-orange-600 font-bold flex items-center justify-center text-lg">2</div>
-                                            <div className="w-full">
-                                                <h4 className="text-lg font-bold text-gray-800 mb-2">การย่างด้วย Air Fryer (Two-Stage Cooking)</h4>
-                                                
-                                                <div className="bg-blue-50 border-l-4 border-blue-400 p-4 mb-4 rounded-r-lg">
-                                                    <p className="text-sm text-blue-800 flex items-start gap-2">
-                                                        <InfoIcon size={16} className="mt-0.5 flex-shrink-0" />
-                                                        <span><strong>Tip จากเชฟ:</strong> ไม่จำเป็นต้องวอร์มเตา แต่แนะนำให้ฉีดสเปรย์น้ำมันบางๆ หรือทาน้ำมันเล็กน้อยที่ตะแกรงหม้อทอดเพื่อกันเนื้อติด</span>
-                                                    </p>
-                                                </div>
-
-                                                <div className="space-y-4 mt-3">
-                                                    <div className="p-4 bg-orange-50/70 border border-orange-100 rounded-xl">
-                                                        <div className="font-bold text-orange-800 text-base flex items-center gap-2 mb-1">
-                                                            🔥 รอบที่ 1: ทำให้สุก
-                                                        </div>
-                                                        <p className="text-gray-700 leading-relaxed">
-                                                            ใช้ไฟ <span className="bg-orange-100 text-orange-800 px-2 py-0.5 rounded font-mono font-bold">180°C</span> เวลา <span className="font-bold">10 - 12 นาที</span> (เป้าหมาย: เพื่อให้เนื้อหมูสุกทั่วถึงและกักเก็บความฉ่ำ)
-                                                        </p>
-                                                    </div>
-                                                    
-                                                    <div className="p-4 bg-amber-50/50 border border-amber-100 rounded-xl">
-                                                        <div className="font-bold text-amber-800 text-base flex items-center gap-2 mb-1">
-                                                            🔄 กลับด้านเนื้อหมู
-                                                        </div>
-                                                        <p className="text-gray-700 leading-relaxed">
-                                                            เปิดหม้อทอดออกมาเพื่อกลับด้านเนื้อหมู (เป้าหมาย: เพื่อให้ลมร้อนสัมผัสชิ้นเนื้ออย่างสม่ำเสมอเท่ากันทุกด้าน)
-                                                        </p>
-                                                    </div>
-                                                    
-                                                    <div className="p-4 bg-red-50/70 border border-red-100 rounded-xl">
-                                                        <div className="font-bold text-red-800 text-base flex items-center gap-2 mb-1">
-                                                            🔥 รอบที่ 2: ทำสี/ไล่น้ำมัน
-                                                        </div>
-                                                        <p className="text-gray-700 leading-relaxed">
-                                                            ใช้ไฟ <span className="bg-red-100 text-red-800 px-2 py-0.5 rounded font-mono font-bold">200°C</span> เวลา <span className="font-bold">3 - 5 นาที</span> (เป้าหมาย: เพื่อให้ผิวขอบเกรียมสวย หอมกลิ่นย่าง)
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        {/* Step 3 */}
-                                        <div className="flex gap-4">
-                                            <div className="flex-shrink-0 w-10 h-10 rounded-full bg-orange-100 text-orange-600 font-bold flex items-center justify-center text-lg">3</div>
-                                            <div>
-                                                <h4 className="text-lg font-bold text-gray-800 mb-1">การทำน้ำจิ้มแจ่วมะนาว</h4>
-                                                <p className="text-gray-600 leading-relaxed">
-                                                    ระหว่างรอหมูอบ ให้ผสมน้ำปลา น้ำมะนาว และน้ำตาลปี๊บ คนจนน้ำตาลละลายสนิท จากนั้นใส่พริกป่น ข้าวคั่ว หอมแดง และผักชีฝรั่ง ชิมรสให้ได้ เปรี้ยว เค็ม เผ็ด และหวานปลาย
-                                                </p>
-                                            </div>
-                                        </div>
-
-                                        {/* Step 4 */}
-                                        <div className="flex gap-4">
-                                            <div className="flex-shrink-0 w-10 h-10 rounded-full bg-orange-100 text-orange-600 font-bold flex items-center justify-center text-lg">4</div>
-                                            <div>
-                                                <h4 className="text-lg font-bold text-gray-800 mb-1">การพักเนื้อ (Resting) และจัดเสิร์ฟ</h4>
-                                                <p className="text-red-600 font-medium mb-1">⚠️ สำคัญมาก: ห้ามหั่นหมูทันทีที่เอาออกจากเตา!</p>
-                                                <p className="text-gray-600 leading-relaxed">
-                                                    ให้นำหมูย่างมาพักไว้บนเขียงประมาณ 3-5 นาที เพื่อให้น้ำหวานในเนื้อ (Juices) กระจายตัวกลับเข้าสู่เส้นใยเนื้อ หากหั่นทันทีน้ำจะไหลออกหมดและเนื้อจะแห้ง เมื่อพักเสร็จแล้วหั่นเฉียงเป็นชิ้นพอดีคำ เสิร์ฟคู่กับน้ำจิ้มแจ่ว
-                                                </p>
-                                            </div>
-                                        </div>
-
-                                    </div>
-                                </div>
-                            </div>
+                            <button id="increaseWeight" class="w-10 h-10 flex items-center justify-center bg-white text-orange-600 rounded-full shadow hover:bg-orange-50 transition" type="button">+</button>
                         </div>
-                    </main>
-                    
-                    <footer className="bg-gray-800 text-gray-400 py-6 text-center mt-8">
-                        <p>© 2026 Chef's Secret Recipe. Developed for Air Fryer Lovers.</p>
-                    </footer>
+                        <button id="resetWeight" class="hidden items-center gap-1.5 text-sm font-medium text-gray-500 hover:text-orange-600 transition-colors bg-white px-3 py-1 rounded-full shadow-sm border border-gray-200 hover:border-orange-300" type="button">
+                            คืนค่าเริ่มต้น (500 กรัม)
+                        </button>
+                    </div>
                 </div>
-            );
+            </section>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <div class="lg:col-span-5 space-y-8">
+                    <section class="bg-white rounded-2xl shadow-md p-6">
+                        <h3 class="text-xl font-bold mb-4 pb-2 border-b-2 border-orange-100 flex items-center gap-2">
+                            <span aria-hidden="true">🔥</span> วัตถุดิบหมักหมู
+                        </h3>
+                        <ul id="marinadeList" class="space-y-3"></ul>
+                    </section>
+
+                    <section class="bg-white rounded-2xl shadow-md p-6">
+                        <h3 class="text-xl font-bold mb-4 pb-2 border-b-2 border-red-100 flex items-center gap-2">
+                            <span aria-hidden="true">🌶️</span> วัตถุดิบน้ำจิ้มแจ่วมะนาว
+                        </h3>
+                        <ul id="sauceList" class="space-y-3"></ul>
+                    </section>
+                </div>
+
+                <div class="lg:col-span-7 space-y-8">
+                    <section class="bg-white rounded-2xl shadow-md p-6 md:p-8">
+                        <h2 class="text-2xl font-bold mb-6 text-gray-800 flex items-center gap-2">
+                            <span aria-hidden="true">👨‍🍳</span> ขั้นตอนการทำ
+                        </h2>
+                        <div class="space-y-8">
+                            <div class="flex gap-4">
+                                <div class="flex-shrink-0 w-10 h-10 rounded-full bg-orange-100 text-orange-600 font-bold flex items-center justify-center text-lg">1</div>
+                                <div>
+                                    <h4 class="text-lg font-bold text-gray-800 mb-1">การเตรียมและหมักหมู</h4>
+                                    <p class="text-gray-600 leading-relaxed mb-2">นำเนื้อสันคอหมูมาหั่นให้มีความหนาประมาณ 1.5 - 2 เซนติเมตร ใช้ส้อมจิ้มให้ทั่วชิ้นเนื้อเพื่อให้เครื่องปรุงซึมลึก</p>
+                                    <p class="text-gray-600 leading-relaxed">ผสมเครื่องปรุงหมักทั้งหมด นวดจนน้ำตาลปี๊บละลาย แล้วนำเนื้อหมูลงไปคลุกเคล้า นวดต่อประมาณ 5 นาที หมักทิ้งไว้ในตู้เย็นอย่างน้อย 30 นาที</p>
+                                </div>
+                            </div>
+
+                            <div class="flex gap-4">
+                                <div class="flex-shrink-0 w-10 h-10 rounded-full bg-orange-100 text-orange-600 font-bold flex items-center justify-center text-lg">2</div>
+                                <div class="w-full">
+                                    <h4 class="text-lg font-bold text-gray-800 mb-2">การย่างด้วย Air Fryer</h4>
+                                    <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-4 rounded-r-lg">
+                                        <p class="text-sm text-blue-800"><strong>Tip จากเชฟ:</strong> ไม่จำเป็นต้องวอร์มเตา แต่แนะนำให้ฉีดสเปรย์น้ำมันบาง ๆ หรือทาน้ำมันเล็กน้อยที่ตะแกรงหม้อทอดเพื่อกันเนื้อติด</p>
+                                    </div>
+                                    <div class="overflow-x-auto">
+                                        <table class="w-full text-sm text-left text-gray-600 rounded-lg overflow-hidden">
+                                            <thead class="text-xs text-white uppercase bg-gray-700">
+                                                <tr>
+                                                    <th class="px-4 py-3">ขั้นตอน</th>
+                                                    <th class="px-4 py-3">อุณหภูมิ</th>
+                                                    <th class="px-4 py-3">เวลา</th>
+                                                    <th class="px-4 py-3">เป้าหมาย</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr class="bg-white border-b">
+                                                    <td class="px-4 py-3 font-medium text-gray-900">รอบที่ 1</td>
+                                                    <td class="px-4 py-3">180°C</td>
+                                                    <td class="px-4 py-3">10 - 12 นาที</td>
+                                                    <td class="px-4 py-3">เนื้อสุกทั่วถึงและกักเก็บความฉ่ำ</td>
+                                                </tr>
+                                                <tr class="bg-gray-50 border-b">
+                                                    <td class="px-4 py-3 font-medium text-gray-900">กลับด้านเนื้อหมู</td>
+                                                    <td class="px-4 py-3">-</td>
+                                                    <td class="px-4 py-3">-</td>
+                                                    <td class="px-4 py-3">ให้โดนลมร้อนสม่ำเสมอ</td>
+                                                </tr>
+                                                <tr class="bg-white">
+                                                    <td class="px-4 py-3 font-medium text-gray-900">รอบที่ 2</td>
+                                                    <td class="px-4 py-3">200°C</td>
+                                                    <td class="px-4 py-3">3 - 5 นาที</td>
+                                                    <td class="px-4 py-3">ผิวเกรียมสวย หอมกลิ่นย่าง</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex gap-4">
+                                <div class="flex-shrink-0 w-10 h-10 rounded-full bg-orange-100 text-orange-600 font-bold flex items-center justify-center text-lg">3</div>
+                                <div>
+                                    <h4 class="text-lg font-bold text-gray-800 mb-1">การทำน้ำจิ้มแจ่วมะนาว</h4>
+                                    <p class="text-gray-600 leading-relaxed">ผสมน้ำปลา น้ำมะนาว และน้ำตาลปี๊บ คนจนน้ำตาลละลายสนิท จากนั้นใส่พริกป่น ข้าวคั่ว หอมแดง และผักชีฝรั่ง ชิมรสให้ได้เปรี้ยว เค็ม เผ็ด และหวานปลาย</p>
+                                </div>
+                            </div>
+
+                            <div class="flex gap-4">
+                                <div class="flex-shrink-0 w-10 h-10 rounded-full bg-orange-100 text-orange-600 font-bold flex items-center justify-center text-lg">4</div>
+                                <div>
+                                    <h4 class="text-lg font-bold text-gray-800 mb-1">การพักเนื้อและจัดเสิร์ฟ</h4>
+                                    <p class="text-red-600 font-medium mb-1">สำคัญมาก: ห้ามหั่นหมูทันทีที่เอาออกจากเตา</p>
+                                    <p class="text-gray-600 leading-relaxed">พักหมูย่างไว้บนเขียงประมาณ 3-5 นาที แล้วหั่นเฉียงเป็นชิ้นพอดีคำ เสิร์ฟคู่กับน้ำจิ้มแจ่ว</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </main>
+
+        <footer class="bg-gray-800 text-gray-400 py-6 text-center mt-8">
+            <p>© 2026 Chef's Secret Recipe. Developed for Air Fryer Lovers.</p>
+        </footer>
+    </div>
+
+    <script>
+        const BASE_WEIGHT = 500;
+        const marinade = [
+            { name: 'เนื้อสันคอหมู', base: 500, unit: 'กรัม', fixed: true },
+            { name: 'รากผักชี กระเทียม พริกไทยดำ (โขลก)', base: 1, unit: 'ช้อนโต๊ะ' },
+            { name: 'ซอสหอยนางรม', base: 2, unit: 'ช้อนโต๊ะ' },
+            { name: 'ซีอิ๊วขาว', base: 1, unit: 'ช้อนโต๊ะ' },
+            { name: 'น้ำตาลปี๊บ', base: 1, unit: 'ช้อนโต๊ะ' },
+            { name: 'น้ำมันพืช', base: 1, unit: 'ช้อนชา' },
+        ];
+        const sauce = [
+            { name: 'น้ำปลาแท้', base: 3, unit: 'ช้อนโต๊ะ' },
+            { name: 'น้ำมะนาวคั้นสด', base: 3, unit: 'ช้อนโต๊ะ' },
+            { name: 'น้ำตาลปี๊บ', base: 1, unit: 'ช้อนโต๊ะ' },
+            { name: 'พริกป่น', base: 1.5, unit: 'ช้อนโต๊ะ' },
+            { name: 'ข้าวคั่ว (คั่วใหม่)', base: 1, unit: 'ช้อนโต๊ะ' },
+            { name: 'ผักชีฝรั่งซอย และหอมแดงซอย', text: 'ตามชอบ' },
+        ];
+
+        function formatAmount(value) {
+            return Number.isInteger(value) ? value : Number(value.toFixed(1));
         }
 
-        // นำ App ไปแสดงผลบนหน้าเว็บ
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<App />);
+        function listItem(name, amountText, colorClass) {
+            return `<li class="flex justify-between items-center text-gray-700 border-b border-gray-100 pb-2">
+                <span>${name}</span>
+                <span class="font-medium ${colorClass}">${amountText}</span>
+            </li>`;
+        }
+
+        function render() {
+            const input = document.getElementById('porkWeight');
+            const weight = Math.max(0, Number(input.value) || 0);
+            const ratio = weight / BASE_WEIGHT;
+            document.getElementById('marinadeList').innerHTML = marinade.map((item) => {
+                const value = item.fixed ? weight : formatAmount(item.base * ratio);
+                const rowClass = item.fixed ? 'font-bold text-orange-800' : 'text-orange-600';
+                return listItem(item.name, `${value} ${item.unit}`, rowClass);
+            }).join('');
+            document.getElementById('sauceList').innerHTML = sauce.map((item) => {
+                if (item.text) return listItem(item.name, item.text, 'text-red-600');
+                return listItem(item.name, `${formatAmount(item.base * ratio)} ${item.unit}`, 'text-red-600');
+            }).join('');
+            document.getElementById('resetWeight').classList.toggle('hidden', weight === BASE_WEIGHT);
+            document.getElementById('resetWeight').classList.toggle('flex', weight !== BASE_WEIGHT);
+        }
+
+        document.getElementById('porkWeight').addEventListener('input', render);
+        document.getElementById('decreaseWeight').addEventListener('click', () => {
+            const input = document.getElementById('porkWeight');
+            input.value = Math.max(100, (Number(input.value) || 0) - 100);
+            render();
+        });
+        document.getElementById('increaseWeight').addEventListener('click', () => {
+            const input = document.getElementById('porkWeight');
+            input.value = (Number(input.value) || 0) + 100;
+            render();
+        });
+        document.getElementById('resetWeight').addEventListener('click', () => {
+            document.getElementById('porkWeight').value = BASE_WEIGHT;
+            render();
+        });
+        render();
     </script>
 </body>
 </html>
