@@ -128,98 +128,117 @@ function loadFamilyExpensesSheetTransactions() {
     document.head.appendChild(script);
   });
 }
+function renderFamilyExpensesDashboardData(data, isAllSheetData = false) {
+  const transactions = data.transactions || [];
+  const categories = data.categories || {};
+  const labels = Object.keys(categories);
+  const values = Object.values(categories);
+  const colors = ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40', '#8A2BE2', '#00FA9A'];
+
+  document.getElementById('feMonthName').innerText = isAllSheetData ? 'ทั้งหมดใน Sheet' : (data.monthName || '');
+  document.getElementById('feTotalAmount').innerText = (data.totalAmount || 0).toLocaleString('th-TH', {minimumFractionDigits: 2});
+
+  let listHTML = '';
+  labels.forEach((cat, index) => {
+    const val = values[index] || 0;
+    listHTML += `
+      <div class="list-item">
+        <div>
+          <span class="dot-indicator" style="background-color: ${colors[index % colors.length]}; display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 8px;"></span>
+          ${feEscapeHtml(cat)}
+        </div>
+        <div class="fw-bold">฿${val.toLocaleString('th-TH', {minimumFractionDigits: 2})}</div>
+      </div>
+    `;
+  });
+  document.getElementById('feCategoryList').innerHTML = listHTML || '<div class="text-center text-muted p-4">ไม่มีข้อมูลแยกตามประเภท</div>';
+
+  let txHTML = '';
+  if (transactions.length > 0) {
+    transactions.forEach(tx => {
+      const detail = feEscapeHtml(tx.detail || 'ไม่ระบุรายละเอียด');
+      const category = feEscapeHtml(tx.category || '');
+      const date = feEscapeHtml(tx.date || '');
+      const remark = tx.remark ? ` | ${feEscapeHtml(tx.remark)}` : '';
+      const amount = feParseAmount(tx.amount);
+
+      txHTML += `
+        <div class="list-item">
+          <div>
+            <div class="list-item-title">${detail}</div>
+            <div class="list-item-subtitle mt-1">
+              <span class="list-item-tag">${category}</span>
+              ${date}${remark}
+            </div>
+          </div>
+          <div class="list-item-amount text-danger">-฿${amount.toLocaleString('th-TH', {minimumFractionDigits: 2})}</div>
+        </div>
+      `;
+    });
+  } else {
+    txHTML = '<div class="text-center text-muted p-4">ไม่มีรายการค่าใช้จ่าย</div>';
+  }
+  document.getElementById('feTransactionList').innerHTML = txHTML;
+
+  const ctx = document.getElementById('feChart').getContext('2d');
+  if (feChartInstance) feChartInstance.destroy();
+
+  feChartInstance = new Chart(ctx, {
+    type: 'doughnut',
+    data: { labels: labels, datasets: [{ data: values, backgroundColor: colors, borderWidth: 2, hoverOffset: 5 }] },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { position: 'right', labels: { font: { family: 'Sarabun' }, usePointStyle: true } } },
+      cutout: '65%'
+    }
+  });
+}
+
+function buildFamilyExpensesSummary(transactions) {
+  const categories = {};
+  let totalAmount = 0;
+
+  transactions.forEach(tx => {
+    const amount = feParseAmount(tx.amount);
+    const category = tx.category || 'ไม่ระบุประเภท';
+    totalAmount += amount;
+    categories[category] = (categories[category] || 0) + amount;
+  });
+
+  return { totalAmount, categories, transactions };
+}
+
 // Load Dashboard
 async function loadFamilyExpensesDashboard() {
   document.getElementById('feDashboardContent').style.display = 'none';
   document.getElementById('feDashboardLoading').style.display = 'block';
-  
+
   try {
-    const response = await fetch(FE_SCRIPT_URL, {
-      method: 'POST',
-      body: JSON.stringify({ action: "getSummary" })
-    });
-    
-    const data = await response.json();
-    if (data.result === "success") {
-      document.getElementById('feMonthName').innerText = data.monthName || "";
-      document.getElementById('feTotalAmount').innerText = (data.totalMonth || 0).toLocaleString('th-TH', {minimumFractionDigits: 2});
-      
-      const labels = data.categories ? Object.keys(data.categories) : [];
-      const values = data.categories ? Object.values(data.categories) : [];
-      const colors = ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40', '#8A2BE2', '#00FA9A'];
-      
-      // Categories List
-      let listHTML = '';
-      labels.forEach((cat, index) => {
-        const val = values[index] || 0;
-        listHTML += `
-          <div class="list-item">
-            <div>
-              <span class="dot-indicator" style="background-color: ${colors[index % colors.length]}; display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 8px;"></span>
-              ${cat}
-            </div>
-            <div class="fw-bold">฿${val.toLocaleString('th-TH', {minimumFractionDigits: 2})}</div>
-          </div>
-        `;
-      });
-      document.getElementById('feCategoryList').innerHTML = listHTML;
-      
-      // Transactions
-      let transactions = data.transactions || [];
-      try {
-        transactions = await loadFamilyExpensesSheetTransactions();
-      } catch (sheetError) {
-        console.warn('Family Expenses full history fallback:', sheetError);
-      }
+    try {
+      const allTransactions = await loadFamilyExpensesSheetTransactions();
+      renderFamilyExpensesDashboardData(buildFamilyExpensesSummary(allTransactions), true);
+    } catch (sheetError) {
+      console.warn('Family Expenses full sheet load failed, using monthly API fallback:', sheetError);
 
-      let txHTML = '';
-      if (transactions && transactions.length > 0) {
-        transactions.forEach(tx => {
-          const detail = feEscapeHtml(tx.detail || 'ไม่ระบุรายละเอียด');
-          const category = feEscapeHtml(tx.category || '');
-          const date = feEscapeHtml(tx.date || '');
-          const remark = tx.remark ? ` | ${feEscapeHtml(tx.remark)}` : '';
-          const amount = feParseAmount(tx.amount);
-
-          txHTML += `
-            <div class="list-item">
-              <div>
-                <div class="list-item-title">${detail}</div>
-                <div class="list-item-subtitle mt-1">
-                  <span class="list-item-tag">${category}</span>
-                  ${date}${remark}
-                </div>
-              </div>
-              <div class="list-item-amount text-danger">-฿${amount.toLocaleString('th-TH', {minimumFractionDigits: 2})}</div>
-            </div>
-          `;
-        });
-      } else {
-        txHTML = '<div class="text-center text-muted p-4">ไม่มีรายการค่าใช้จ่าย</div>';
-      }
-      document.getElementById('feTransactionList').innerHTML = txHTML;
-      
-      // Chart
-      const ctx = document.getElementById('feChart').getContext('2d');
-      if (feChartInstance) feChartInstance.destroy();
-      
-      feChartInstance = new Chart(ctx, {
-        type: 'doughnut',
-        data: { labels: labels, datasets: [{ data: values, backgroundColor: colors, borderWidth: 2, hoverOffset: 5 }] },
-        options: {
-          responsive: true, maintainAspectRatio: false,
-          plugins: { legend: { position: 'right', labels: { font: { family: 'Sarabun' }, usePointStyle: true } } },
-          cutout: '65%'
-        }
+      const response = await fetch(FE_SCRIPT_URL, {
+        method: 'POST',
+        body: JSON.stringify({ action: "getSummary" })
       });
-      
-      feDataLoaded = true;
-      document.getElementById('feDashboardLoading').style.display = 'none';
-      document.getElementById('feDashboardContent').style.display = 'block';
-      
-    } else {
-      throw new Error(data.error);
+
+      const data = await response.json();
+      if (data.result !== "success") throw new Error(data.error);
+
+      renderFamilyExpensesDashboardData({
+        totalAmount: data.totalMonth || 0,
+        categories: data.categories || {},
+        transactions: data.transactions || [],
+        monthName: data.monthName || ''
+      }, false);
     }
+
+    feDataLoaded = true;
+    document.getElementById('feDashboardLoading').style.display = 'none';
+    document.getElementById('feDashboardContent').style.display = 'block';
   } catch (error) {
     document.getElementById('feDashboardLoading').innerHTML = `<p class="text-danger">โหลดข้อมูลไม่สำเร็จ: ${error.message}</p>`;
   }
