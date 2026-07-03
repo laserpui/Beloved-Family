@@ -1,5 +1,7 @@
 // Family Expenses Logic
 const FE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxez7PAYXUP_1CSqoz5jNss-ghfdx1GUx1br7Gf4BCmslmi9yRYZFvunJv3LQ6Jvu-U/exec';
+const FE_SHEET_ID = '15uCkK5vXVg-6zh3nq3gpIOQXI7H-p75kcEDwwdNPRHk';
+const FE_SHEET_GID = '2076362911';
 let feChartInstance = null;
 let feDataLoaded = false;
 
@@ -48,6 +50,84 @@ document.getElementById('feForm').addEventListener('submit', async (e) => {
   }
 });
 
+function feEscapeHtml(value) {
+  return String(value ?? '').replace(/[&<>"']/g, char => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
+  }[char]));
+}
+
+function feFormatSheetCell(cell) {
+  if (!cell) return '';
+  if (cell.f !== undefined && cell.f !== null) return cell.f;
+  if (cell.v instanceof Date) {
+    return cell.v.toLocaleDateString('th-TH', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    });
+  }
+  return cell.v ?? '';
+}
+
+function feParseAmount(value) {
+  if (typeof value === 'number') return value;
+  const numeric = parseFloat(String(value ?? '').replace(/,/g, ''));
+  return Number.isFinite(numeric) ? numeric : 0;
+}
+
+function feParseDateValue(dateText) {
+  const match = String(dateText || '').match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if (!match) return 0;
+  return new Date(Number(match[3]), Number(match[2]) - 1, Number(match[1])).getTime();
+}
+
+function loadFamilyExpensesSheetTransactions() {
+  return new Promise((resolve, reject) => {
+    const callbackName = `__feSheetCallback_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+    const script = document.createElement('script');
+    const query = encodeURIComponent('select B,C,D,E,F where B is not null');
+    const cleanup = () => {
+      delete window[callbackName];
+      script.remove();
+    };
+
+    window[callbackName] = (response) => {
+      cleanup();
+
+      if (!response || response.status === 'error') {
+        reject(new Error(response?.errors?.[0]?.detailed_message || 'Unable to read sheet transactions'));
+        return;
+      }
+
+      const rows = response.table?.rows || [];
+      const transactions = rows.map(row => {
+        const cells = row.c || [];
+        const date = feFormatSheetCell(cells[0]);
+        const category = feFormatSheetCell(cells[1]);
+        const detail = feFormatSheetCell(cells[2]);
+        const amount = feParseAmount(feFormatSheetCell(cells[3]));
+        const remark = feFormatSheetCell(cells[4]);
+
+        return { date, category, detail, amount, remark };
+      }).filter(tx => tx.date && tx.amount > 0);
+
+      transactions.sort((a, b) => feParseDateValue(b.date) - feParseDateValue(a.date));
+      resolve(transactions);
+    };
+
+    script.onerror = () => {
+      cleanup();
+      reject(new Error('Unable to load sheet transactions'));
+    };
+
+    script.src = `https://docs.google.com/spreadsheets/d/${FE_SHEET_ID}/gviz/tq?gid=${FE_SHEET_GID}&headers=1&tqx=responseHandler:${callbackName}&tq=${query}`;
+    document.head.appendChild(script);
+  });
+}
 // Load Dashboard
 async function loadFamilyExpensesDashboard() {
   document.getElementById('feDashboardContent').style.display = 'none';
@@ -85,24 +165,37 @@ async function loadFamilyExpensesDashboard() {
       document.getElementById('feCategoryList').innerHTML = listHTML;
       
       // Transactions
+      let transactions = data.transactions || [];
+      try {
+        transactions = await loadFamilyExpensesSheetTransactions();
+      } catch (sheetError) {
+        console.warn('Family Expenses full history fallback:', sheetError);
+      }
+
       let txHTML = '';
-      if (data.transactions && data.transactions.length > 0) {
-        data.transactions.forEach(tx => {
+      if (transactions && transactions.length > 0) {
+        transactions.forEach(tx => {
+          const detail = feEscapeHtml(tx.detail || 'ไม่ระบุรายละเอียด');
+          const category = feEscapeHtml(tx.category || '');
+          const date = feEscapeHtml(tx.date || '');
+          const remark = tx.remark ? ` | ${feEscapeHtml(tx.remark)}` : '';
+          const amount = feParseAmount(tx.amount);
+
           txHTML += `
             <div class="list-item">
               <div>
-                <div class="list-item-title">${tx.detail || 'ไม่ระบุรายละเอียด'}</div>
+                <div class="list-item-title">${detail}</div>
                 <div class="list-item-subtitle mt-1">
-                  <span class="list-item-tag">${tx.category}</span>
-                  ${tx.date}
+                  <span class="list-item-tag">${category}</span>
+                  ${date}${remark}
                 </div>
               </div>
-              <div class="list-item-amount text-danger">-฿${tx.amount.toLocaleString('th-TH', {minimumFractionDigits: 2})}</div>
+              <div class="list-item-amount text-danger">-฿${amount.toLocaleString('th-TH', {minimumFractionDigits: 2})}</div>
             </div>
           `;
         });
       } else {
-        txHTML = '<div class="text-center text-muted p-4">ไม่มีรายการค่าใช้จ่ายในเดือนนี้</div>';
+        txHTML = '<div class="text-center text-muted p-4">ไม่มีรายการค่าใช้จ่าย</div>';
       }
       document.getElementById('feTransactionList').innerHTML = txHTML;
       
