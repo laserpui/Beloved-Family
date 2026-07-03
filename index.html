@@ -167,7 +167,16 @@
           
           <div class="tab-content" id="fe-dashboard">
             <div class="glass-panel text-center" id="feDashboardContent" style="display:none;">
-              <h3>สรุปค่าใช้จ่าย <span id="feMonthName" class="text-primary">ทั้งหมดใน Sheet</span></h3>
+                            <div class="dashboard-title-row">
+                <div>
+                  <h3>สรุปค่าใช้จ่าย <span id="feMonthName" class="text-primary">ทั้งหมดใน Sheet</span></h3>
+                  <div id="feLastUpdated" class="text-sm">รออัปเดตข้อมูล</div>
+                </div>
+                <button type="button" id="feRefreshDashboard" class="btn btn-refresh" aria-label="Refresh Family Expenses dashboard">
+                  <i class="fa-solid fa-rotate-right me-2"></i>
+                  Refresh
+                </button>
+              </div>
               <div class="summary-box">
                 <div class="text-sm">ยอดใช้จ่ายรวมทั้งหมด (บาท)</div>
                 <div class="amount-large text-danger" id="feTotalAmount">0.00</div>
@@ -416,8 +425,7 @@
   </div>
 
   <script src="app.js"></script>
-  <script src="family-expenses-data.js?v=20260703-snapshot-v2"></script>
-  <script src="family-expenses.js?v=20260703-all-sheet-v3"></script>
+  <script src="family-expenses.js?v=20260703-live-refresh-v1"></script>
   <script src="kids-savings.js"></script>
   <script src="mona-expenses.js"></script>
 </body>

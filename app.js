@@ -109,9 +109,12 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
     document.getElementById(targetId).classList.add('active');
     
     // Trigger resize for charts if they are in the target tab
-    if(targetId === 'fe-dashboard' && typeof feChartInstance !== 'undefined') {
-      setTimeout(() => feChartInstance.resize(), 100);
-      if(!feDataLoaded) loadFamilyExpensesDashboard();
+    if(targetId === 'fe-dashboard' && typeof loadFamilyExpensesDashboard === 'function') {
+      feDataLoaded = false;
+      loadFamilyExpensesDashboard(true);
+      if (typeof startFamilyExpensesAutoRefresh === 'function') startFamilyExpensesAutoRefresh();
+    } else if (typeof stopFamilyExpensesAutoRefresh === 'function') {
+      stopFamilyExpensesAutoRefresh();
     }
     if(targetId === 'me-dashboard' && !meDataLoaded) {
       loadMonaExpensesDashboard();
