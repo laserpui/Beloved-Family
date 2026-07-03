@@ -39,6 +39,15 @@ document.getElementById('feForm').addEventListener('submit', async (e) => {
     }
     
     await fetch(FE_SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) });
+    if (Array.isArray(window.FE_ALL_TRANSACTIONS_SNAPSHOT)) {
+      window.FE_ALL_TRANSACTIONS_SNAPSHOT.unshift({
+        date: feFormatInputDate(payload.date),
+        category: payload.category,
+        detail: payload.detail,
+        amount: feParseAmount(payload.amount),
+        remark: payload.remark || ''
+      });
+    }
     showLoading(false);
     showToast('บันทึกสำเร็จ!', 'ข้อมูลค่าใช้จ่ายครอบครัวถูกบันทึกแล้ว');
     document.getElementById('feForm').reset();
@@ -85,17 +94,39 @@ function feParseDateValue(dateText) {
   return new Date(Number(match[3]), Number(match[2]) - 1, Number(match[1])).getTime();
 }
 
+
+function feFormatInputDate(dateText) {
+  const match = String(dateText || '').match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!match) return dateText || '';
+  return `${match[3]}/${match[2]}/${match[1]}`;
+}
 function loadFamilyExpensesSheetTransactions() {
   return new Promise((resolve, reject) => {
     const callbackName = `__feSheetCallback_${Date.now()}_${Math.random().toString(36).slice(2)}`;
     const script = document.createElement('script');
     const query = encodeURIComponent('select B,C,D,E,F where B is not null');
+    let settled = false;
+
     const cleanup = () => {
       delete window[callbackName];
+      clearTimeout(timeoutId);
       script.remove();
     };
 
+    const fail = (error) => {
+      if (settled) return;
+      settled = true;
+      cleanup();
+      reject(error);
+    };
+
+    const timeoutId = setTimeout(() => {
+      fail(new Error('Sheet direct load timed out'));
+    }, 5000);
+
     window[callbackName] = (response) => {
+      if (settled) return;
+      settled = true;
       cleanup();
 
       if (!response || response.status === 'error') {
@@ -120,13 +151,25 @@ function loadFamilyExpensesSheetTransactions() {
     };
 
     script.onerror = () => {
-      cleanup();
-      reject(new Error('Unable to load sheet transactions'));
+      fail(new Error('Unable to load sheet transactions'));
     };
 
     script.src = `https://docs.google.com/spreadsheets/d/${FE_SHEET_ID}/gviz/tq?gid=${FE_SHEET_GID}&headers=1&tqx=responseHandler:${callbackName}&tq=${query}`;
     document.head.appendChild(script);
   });
+}
+function getFamilyExpensesSnapshotTransactions() {
+  const snapshot = Array.isArray(window.FE_ALL_TRANSACTIONS_SNAPSHOT) ? window.FE_ALL_TRANSACTIONS_SNAPSHOT : [];
+  return snapshot
+    .map(tx => ({
+      date: tx.date || '',
+      category: tx.category || '',
+      detail: tx.detail || '',
+      amount: feParseAmount(tx.amount),
+      remark: tx.remark || ''
+    }))
+    .filter(tx => tx.date && tx.amount > 0)
+    .sort((a, b) => feParseDateValue(b.date) - feParseDateValue(a.date));
 }
 function renderFamilyExpensesDashboardData(data, isAllSheetData = false) {
   const transactions = data.transactions || [];
@@ -218,22 +261,27 @@ async function loadFamilyExpensesDashboard() {
       const allTransactions = await loadFamilyExpensesSheetTransactions();
       renderFamilyExpensesDashboardData(buildFamilyExpensesSummary(allTransactions), true);
     } catch (sheetError) {
-      console.warn('Family Expenses full sheet load failed, using monthly API fallback:', sheetError);
+      console.warn('Family Expenses full sheet load failed, using bundled all-sheet snapshot:', sheetError);
 
-      const response = await fetch(FE_SCRIPT_URL, {
-        method: 'POST',
-        body: JSON.stringify({ action: "getSummary" })
-      });
+      const snapshotTransactions = getFamilyExpensesSnapshotTransactions();
+      if (snapshotTransactions.length > 0) {
+        renderFamilyExpensesDashboardData(buildFamilyExpensesSummary(snapshotTransactions), true);
+      } else {
+        const response = await fetch(FE_SCRIPT_URL, {
+          method: 'POST',
+          body: JSON.stringify({ action: "getSummary" })
+        });
 
-      const data = await response.json();
-      if (data.result !== "success") throw new Error(data.error);
+        const data = await response.json();
+        if (data.result !== "success") throw new Error(data.error);
 
-      renderFamilyExpensesDashboardData({
-        totalAmount: data.totalMonth || 0,
-        categories: data.categories || {},
-        transactions: data.transactions || [],
-        monthName: data.monthName || ''
-      }, false);
+        renderFamilyExpensesDashboardData({
+          totalAmount: data.totalMonth || 0,
+          categories: data.categories || {},
+          transactions: data.transactions || [],
+          monthName: data.monthName || ''
+        }, false);
+      }
     }
 
     feDataLoaded = true;
