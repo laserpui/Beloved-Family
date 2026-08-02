@@ -1,60 +1,119 @@
 // Kids Savings Logic
 const KS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw03dmTKLEPprmYUmPhxpzzIzOxsPjiHgTdtVvHYYNx-1cO2x7f20QmpX0ofW16qnqm/exec';
+const KS_REQUEST_TIMEOUT_MS = 12000;
+const KS_ALLOW_LEGACY_GET_FALLBACK = true;
 let currentKid = '';
 let ksData = { namo: [], mona: [] };
+let ksChartInstance = null;
 
-// Initial Load Balance
-async function ksLoadBalances() {
-  try {
-    const response = await fetch(`${KS_SCRIPT_URL}?action=read`);
-    const result = await response.json();
-    if (result && result.success) {
-      ksData = result.data;
-      
-      const namoStats = calculateKidStats(ksData.namo);
-      const monaStats = calculateKidStats(ksData.mona);
-      
-      document.getElementById('ksNamoBalance').innerText = namoStats.balance.toLocaleString('th-TH', {minimumFractionDigits: 2});
-      document.getElementById('ksMonaBalance').innerText = monaStats.balance.toLocaleString('th-TH', {minimumFractionDigits: 2});
-    }
-  } catch(e) {
-    console.error("Kids Savings Load Error:", e);
+function setKidsSavingsStatus(message, isError = false) {
+  const status = document.getElementById('ksLastUpdated');
+  if (!status) return;
+  status.textContent = message;
+  status.classList.toggle('text-danger', isError);
+}
+
+function normalizeKidsSavingsData(data) {
+  return {
+    namo: Array.isArray(data?.namo) ? data.namo : [],
+    mona: Array.isArray(data?.mona) ? data.mona : []
+  };
+}
+
+function calculateKidStats(transactions = []) {
+  return { balance: BelovedUtils.calculateSavingsBalance(transactions) };
+}
+
+function updateKidsSavingsBalances() {
+  const namoStats = calculateKidStats(ksData.namo);
+  const monaStats = calculateKidStats(ksData.mona);
+
+  document.getElementById('ksNamoBalance').innerText = namoStats.balance.toLocaleString('th-TH', { minimumFractionDigits: 2 });
+  document.getElementById('ksMonaBalance').innerText = monaStats.balance.toLocaleString('th-TH', { minimumFractionDigits: 2 });
+
+  if (currentKid) {
+    const selectedStats = calculateKidStats(ksData[currentKid.toLowerCase()]);
+    document.getElementById('ksSelectedBalance').innerText = selectedStats.balance.toLocaleString('th-TH', { minimumFractionDigits: 2 });
   }
 }
 
-function calculateKidStats(transactions) {
-  let balance = 0;
-  transactions.forEach(t => {
-    if (t.type === "ฝาก") balance += t.amount;
-    else if (t.type === "ถอน") balance -= t.amount;
-  });
-  return { balance };
+async function ksLoadBalances() {
+  const response = await BelovedUtils.fetchWithTimeout(
+    `${KS_SCRIPT_URL}?action=read&_=${Date.now()}`,
+    { cache: 'no-store' },
+    KS_REQUEST_TIMEOUT_MS
+  );
+  if (!response.ok) throw new Error(`Kids Savings API ตอบกลับ ${response.status}`);
+
+  const result = await response.json();
+  if (!result?.success) throw new Error(result?.error || 'ไม่สามารถอ่านข้อมูล Kids Savings ได้');
+
+  ksData = normalizeKidsSavingsData(result.data);
+  updateKidsSavingsBalances();
+  setKidsSavingsStatus(`อัปเดตล่าสุด: ${new Date().toLocaleTimeString('th-TH', {
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit'
+  })}`);
+  return ksData;
 }
 
-// Load Balances on start
-ksLoadBalances();
+async function ksRefreshData(showFeedback = true) {
+  showLoading(true, 'กำลังโหลดข้อมูล Kids Savings ล่าสุด...');
+  const refreshButton = document.getElementById('ksRefresh');
+  if (refreshButton) refreshButton.disabled = true;
 
-// Select Kid
+  try {
+    await ksLoadBalances();
+    if (currentKid && document.getElementById('ks-individual-dashboard')?.classList.contains('active')) {
+      renderKidsSavingsDashboard();
+    }
+    if (showFeedback) showToast('อัปเดตแล้ว', 'โหลดข้อมูลเงินออมล่าสุดเรียบร้อย', 'success');
+    return true;
+  } catch (error) {
+    console.error('Kids Savings Load Error:', error);
+    setKidsSavingsStatus(`โหลดไม่สำเร็จ: ${error.message}`, true);
+    if (showFeedback) await showFormError('รีเฟรชไม่สำเร็จ', error.message || 'ไม่สามารถโหลดข้อมูล Kids Savings ได้');
+    return false;
+  } finally {
+    showLoading(false);
+    if (refreshButton) refreshButton.disabled = false;
+  }
+}
+
+ksLoadBalances().catch(error => {
+  console.error('Kids Savings Load Error:', error);
+  setKidsSavingsStatus(`โหลดไม่สำเร็จ: ${error.message}`, true);
+});
+
+document.querySelectorAll('[data-kid]').forEach(card => {
+  const selectKid = () => ksSelectKid(card.dataset.kid);
+  card.addEventListener('click', selectKid);
+  card.addEventListener('keydown', event => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      selectKid();
+    }
+  });
+});
+
 function ksSelectKid(kid) {
   currentKid = kid === 'namo' ? 'Namo' : 'Mona';
-  
+
   document.getElementById('ksPortal').style.display = 'none';
   document.getElementById('ksActionView').style.display = 'block';
-  
-  document.getElementById('ksSelectedAvatar').src = kid === 'namo' ? 'Namo.png' : 'Mona.png';
+
+  const selectedAvatar = document.getElementById('ksSelectedAvatar');
+  selectedAvatar.src = kid === 'namo' ? 'Namo.png' : 'Mona.png';
+  selectedAvatar.alt = kid === 'namo' ? 'รูปนโม' : 'รูปโมนา';
   document.getElementById('ksSelectedName').innerText = kid === 'namo' ? 'นโม (Namo)' : 'โมนา (Mona)';
-  
-  // Set default date to today when selecting a kid
-  document.getElementById('ksDate').valueAsDate = new Date();
-  
-  // Set current balance based on cache
-  const stats = calculateKidStats(ksData[currentKid.toLowerCase()]);
-  document.getElementById('ksSelectedBalance').innerText = stats.balance.toLocaleString('th-TH', {minimumFractionDigits: 2});
-  
-  // Reset tabs to default (Transaction)
+  document.getElementById('ksDate').value = BelovedUtils.getLocalDateInputValue();
+
+  updateKidsSavingsBalances();
+
   const container = document.getElementById('ksActionView').querySelector('.tabs-container');
-  container.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  container.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  container.querySelectorAll('.tab-btn').forEach(button => button.classList.remove('active'));
+  container.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
   container.querySelector('.tab-btn[data-tab="ks-transaction"]').classList.add('active');
   document.getElementById('ks-transaction').classList.add('active');
 }
@@ -63,156 +122,201 @@ function ksBackToPortal() {
   currentKid = '';
   document.getElementById('ksActionView').style.display = 'none';
   document.getElementById('ksPortal').style.display = 'grid';
-  // Reload balances to show updated values
-  ksLoadBalances();
+  ksRefreshData(false);
 }
 
-// Submit Transaction
-async function ksSubmitTransaction(type, amount, detail, dateVal, formId) {
-  if (isNaN(amount) || amount <= 0) {
-    Swal.fire('ข้อผิดพลาด', 'กรุณาระบุจำนวนเงินที่ถูกต้อง', 'error');
+async function parseKidsSavingsResponse(response) {
+  if (!response.ok) throw new Error(`Kids Savings API ตอบกลับ ${response.status}`);
+  const text = await response.text();
+  let result;
+  try {
+    result = JSON.parse(text);
+  } catch {
+    const unsupportedError = new Error('Kids Savings API ยังไม่รองรับ POST');
+    unsupportedError.code = 'POST_UNSUPPORTED';
+    throw unsupportedError;
+  }
+  if (!result?.success) throw new Error(result?.error || 'ระบบไม่ยืนยันการบันทึกข้อมูล');
+  return result;
+}
+
+async function ksSaveTransaction(payload) {
+  try {
+    const postResponse = await BelovedUtils.fetchWithTimeout(KS_SCRIPT_URL, {
+      method: 'POST',
+      cache: 'no-store',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ action: 'add', ...payload })
+    }, KS_REQUEST_TIMEOUT_MS);
+    return await parseKidsSavingsResponse(postResponse);
+  } catch (postError) {
+    const canUseLegacyFallback = postError?.code === 'POST_UNSUPPORTED'
+      || postError?.name === 'TypeError'
+      || /Failed to fetch/i.test(postError?.message || '');
+    if (!KS_ALLOW_LEGACY_GET_FALLBACK || !canUseLegacyFallback) throw postError;
+    console.warn('Kids Savings POST unavailable; using legacy GET fallback:', postError.message);
+
+    const requestUrl = `${KS_SCRIPT_URL}?action=add&sheetName=${encodeURIComponent(payload.sheetName)}&type=${encodeURIComponent(payload.type)}&description=${encodeURIComponent(payload.description)}&amount=${payload.amount}&date=${encodeURIComponent(payload.date)}&_=${Date.now()}`;
+    const legacyResponse = await BelovedUtils.fetchWithTimeout(
+      requestUrl,
+      { cache: 'no-store' },
+      KS_REQUEST_TIMEOUT_MS
+    );
+    return await parseKidsSavingsResponse(legacyResponse);
+  }
+}
+
+async function ksSubmitTransaction(type, amountValue, detail, dateValue, formId) {
+  const amount = BelovedUtils.validatePositiveAmount(amountValue);
+  if (!currentKid) {
+    await showFormError('ยังไม่ได้เลือกบัญชี', 'กรุณาเลือกนโมหรือโมนาก่อนทำรายการ');
     return;
   }
-  
-  showLoading(true);
-  
+  if (amount === null) {
+    await showFormError('จำนวนเงินไม่ถูกต้อง', 'กรุณาระบุจำนวนเงินที่มากกว่า 0 บาท');
+    return;
+  }
+  if (!dateValue) {
+    await showFormError('วันที่ไม่ถูกต้อง', 'กรุณาระบุวันที่ทำรายการ');
+    return;
+  }
+
+  const kidKey = currentKid.toLowerCase();
+  const currentBalance = calculateKidStats(ksData[kidKey]).balance;
+  if (type === 'ถอน' && amount > currentBalance) {
+    await showFormError('ยอดเงินไม่เพียงพอ', `ยอดคงเหลือปัจจุบัน ฿${currentBalance.toLocaleString('th-TH', { minimumFractionDigits: 2 })}`);
+    return;
+  }
+
+  const submitButton = document.getElementById('ksSubmitButton');
+  setButtonBusy(submitButton, true);
+  showLoading(true, 'กำลังบันทึกรายการเงินออม...');
+
   try {
-    const requestUrl = `${KS_SCRIPT_URL}?action=add&sheetName=${currentKid}&type=${encodeURIComponent(type)}&description=${encodeURIComponent(detail)}&amount=${amount}&date=${encodeURIComponent(dateVal)}`;
-    
-    const response = await fetch(requestUrl);
-    const result = await response.json();
-    
-    if (result && result.success) {
-      showLoading(false);
-      showToast('บันทึกสำเร็จ!', `บันทึก${type}เงิน ${amount} บาท สำเร็จ`);
-      document.getElementById(formId).reset();
-      
-      // Update local balance immediately
-      const kidArr = ksData[currentKid.toLowerCase()];
-      kidArr.push({ type: type, amount: parseFloat(amount), date: dateVal });
-      const stats = calculateKidStats(kidArr);
-      document.getElementById('ksSelectedBalance').innerText = stats.balance.toLocaleString('th-TH', {minimumFractionDigits: 2});
-      
-    } else {
-      throw new Error(result.error);
-    }
+    await ksSaveTransaction({
+      sheetName: currentKid,
+      type,
+      description: detail,
+      amount,
+      date: dateValue
+    });
+
+    const form = document.getElementById(formId);
+    form.reset();
+    document.getElementById('ksDate').value = BelovedUtils.getLocalDateInputValue();
+
+    ksData[kidKey].push({ type, amount, description: detail, date: dateValue });
+    updateKidsSavingsBalances();
+    setKidsSavingsStatus(`บันทึกล่าสุด: ${new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })}`);
+
+    showToast('บันทึกสำเร็จ', `${type}เงิน ฿${amount.toLocaleString('th-TH', { minimumFractionDigits: 2 })} ในบัญชี ${currentKid}`, 'success');
   } catch (error) {
+    console.error('Kids Savings Save Error:', error);
+    await showFormError('บันทึกไม่สำเร็จ', error.message || 'กรุณาตรวจสอบอินเทอร์เน็ตแล้วลองอีกครั้ง');
+  } finally {
     showLoading(false);
-    Swal.fire('เกิดข้อผิดพลาด', 'ไม่สามารถบันทึกรายการได้ โปรดลองอีกครั้ง', 'error');
+    setButtonBusy(submitButton, false);
   }
 }
 
-document.getElementById('ksTransactionForm').addEventListener('submit', (e) => {
-  e.preventDefault();
-  const type = document.querySelector('input[name="ksType"]:checked').value;
-  const dateVal = document.getElementById('ksDate').value;
-  ksSubmitTransaction(type, document.getElementById('ksAmount').value, document.getElementById('ksDetail').value, dateVal, 'ksTransactionForm');
+document.getElementById('ksTransactionForm')?.addEventListener('submit', event => {
+  event.preventDefault();
+  ksSubmitTransaction(
+    document.querySelector('input[name="ksType"]:checked')?.value,
+    document.getElementById('ksAmount').value,
+    document.getElementById('ksDetail').value.trim(),
+    document.getElementById('ksDate').value,
+    'ksTransactionForm'
+  );
 });
 
-// Dashboard Logic
-// Dashboard Logic
-let ksChartInstance = null;
-function renderKidsSavingsDashboard() {
-  if (!ksData || !currentKid) return;
-  
-  const kidKey = currentKid.toLowerCase();
-  const kidData = ksData[kidKey];
-  if (!kidData) return;
+document.getElementById('ksRefresh')?.addEventListener('click', () => ksRefreshData(true));
+document.getElementById('ksBackButton')?.addEventListener('click', ksBackToPortal);
 
+function renderKidsSavingsDashboard() {
+  if (!currentKid) return;
+
+  const kidKey = currentKid.toLowerCase();
+  const kidData = ksData[kidKey] || [];
   let totalDeposit = 0;
   let totalWithdraw = 0;
-  
-  // Transactions list
-  let allTx = [];
   const icon = kidKey === 'namo' ? '👦' : '👧';
   const kidNameThai = kidKey === 'namo' ? 'นโม' : 'โมนา';
-  
-  kidData.forEach(t => {
-    if (t.type === 'ฝาก') totalDeposit += parseFloat(t.amount);
-    else if (t.type === 'ถอน') totalWithdraw += parseFloat(t.amount);
-    
-    allTx.push({...t, kid: kidNameThai, icon: icon});
-  });
-  
-  document.getElementById('ksDashTotalDeposit').innerText = `฿${totalDeposit.toLocaleString('th-TH', {minimumFractionDigits: 2})}`;
-  document.getElementById('ksDashTotalWithdraw').innerText = `฿${totalWithdraw.toLocaleString('th-TH', {minimumFractionDigits: 2})}`;
-  
-  allTx.sort((a,b) => new Date(b.date) - new Date(a.date));
-  const recentTx = allTx.slice(0, 20);
-  
-  let txHtml = '';
-  recentTx.forEach(t => {
-    const isDeposit = t.type === 'ฝาก';
-    const amountClass = isDeposit ? 'text-success' : 'text-danger';
-    const amountSign = isDeposit ? '+' : '-';
-    
-    // Format Date
-    let dateStr = "";
-    try {
-      const d = new Date(t.date);
-      dateStr = `${d.getDate().toString().padStart(2, '0')}/${(d.getMonth()+1).toString().padStart(2, '0')}/${d.getFullYear()+543}`;
-    } catch(e) { dateStr = t.date; }
 
-    txHtml += `
+  const transactions = kidData.map(transaction => {
+    const amount = Number(transaction.amount) || 0;
+    if (transaction.type === 'ฝาก') totalDeposit += amount;
+    if (transaction.type === 'ถอน') totalWithdraw += amount;
+    return { ...transaction, amount, kid: kidNameThai, icon };
+  });
+
+  document.getElementById('ksDashTotalDeposit').innerText = `฿${totalDeposit.toLocaleString('th-TH', { minimumFractionDigits: 2 })}`;
+  document.getElementById('ksDashTotalWithdraw').innerText = `฿${totalWithdraw.toLocaleString('th-TH', { minimumFractionDigits: 2 })}`;
+
+  const recentTransactions = transactions.sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 20);
+  const transactionHtml = recentTransactions.map(transaction => {
+    const isDeposit = transaction.type === 'ฝาก';
+    const date = new Date(transaction.date);
+    const dateText = Number.isNaN(date.getTime())
+      ? escapeHtml(transaction.date)
+      : date.toLocaleDateString('th-TH', { day: '2-digit', month: '2-digit', year: 'numeric' });
+
+    return `
       <div class="list-item">
         <div class="d-flex align-center">
-          <div class="me-2 text-center" style="width: 40px; height: 40px; background: #f0f4f8; border-radius: 50%; display:flex; align-items:center; justify-content:center; font-size: 1.2rem;">${t.icon}</div>
+          <div class="transaction-icon me-2">${transaction.icon}</div>
           <div>
-            <div class="list-item-title">${t.kid} - ${t.type}</div>
-            <div class="list-item-subtitle mt-1">${dateStr} | ${t.description || t.detail || ''}</div>
+            <div class="list-item-title">${escapeHtml(transaction.kid)} - ${escapeHtml(transaction.type)}</div>
+            <div class="list-item-subtitle mt-1">${dateText} | ${escapeHtml(transaction.description || transaction.detail || '')}</div>
           </div>
         </div>
-        <div class="list-item-amount ${amountClass}">${amountSign}฿${parseFloat(t.amount).toLocaleString('th-TH')}</div>
+        <div class="list-item-amount ${isDeposit ? 'text-success' : 'text-danger'}">
+          ${isDeposit ? '+' : '-'}฿${transaction.amount.toLocaleString('th-TH', { minimumFractionDigits: 2 })}
+        </div>
       </div>
     `;
-  });
-  document.getElementById('ksTransactionList').innerHTML = txHtml || '<div class="text-center text-muted p-4">ไม่มีประวัติรายการ</div>';
+  }).join('');
 
-  // Chart Rendering
-  const ctx = document.getElementById('ksChart').getContext('2d');
+  document.getElementById('ksTransactionList').innerHTML =
+    transactionHtml || '<div class="text-center text-muted p-4">ไม่มีประวัติรายการ</div>';
+
+  const canvas = document.getElementById('ksChart');
+  if (!canvas) return;
   if (ksChartInstance) ksChartInstance.destroy();
 
   const monthsData = {};
   let cumulative = 0;
-  
-  [...kidData].sort((a,b) => new Date(a.date) - new Date(b.date)).forEach(t => {
-    cumulative += (t.type === 'ฝาก' ? parseFloat(t.amount) : -parseFloat(t.amount));
-    try {
-      const d = new Date(t.date);
-      const ym = `${d.getFullYear()}-${(d.getMonth()+1).toString().padStart(2, '0')}`;
-      monthsData[ym] = cumulative;
-    } catch(e){}
-  });
-  
-  const sortedMonths = Object.keys(monthsData).sort();
-  let lastVal = 0;
-  const chartData = sortedMonths.map(m => {
-    if (monthsData[m] === undefined) return lastVal;
-    lastVal = monthsData[m];
-    return lastVal;
+  [...kidData].sort((a, b) => new Date(a.date) - new Date(b.date)).forEach(transaction => {
+    const amount = Number(transaction.amount) || 0;
+    const date = new Date(transaction.date);
+    if (Number.isNaN(date.getTime())) return;
+    cumulative += transaction.type === 'ฝาก' ? amount : -amount;
+    const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+    monthsData[monthKey] = cumulative;
   });
 
-  const colorBorder = kidKey === 'namo' ? '#36A2EB' : '#FF6384';
-  const colorBg = kidKey === 'namo' ? 'rgba(54, 162, 235, 0.1)' : 'rgba(255, 99, 132, 0.1)';
+  const labels = Object.keys(monthsData).sort();
+  const borderColor = kidKey === 'namo' ? '#36A2EB' : '#FF6384';
+  const backgroundColor = kidKey === 'namo' ? 'rgba(54, 162, 235, 0.1)' : 'rgba(255, 99, 132, 0.1)';
 
-  ksChartInstance = new Chart(ctx, {
+  ksChartInstance = new Chart(canvas.getContext('2d'), {
     type: 'line',
     data: {
-      labels: sortedMonths,
-      datasets: [
-        { 
-          label: kidNameThai, 
-          data: chartData, 
-          borderColor: colorBorder, 
-          backgroundColor: colorBg, 
-          fill: true, 
-          tension: 0.3 
-        }
-      ]
+      labels,
+      datasets: [{
+        label: kidNameThai,
+        data: labels.map(month => monthsData[month]),
+        borderColor,
+        backgroundColor,
+        fill: true,
+        tension: 0.3
+      }]
     },
     options: {
-      responsive: true, maintainAspectRatio: false,
+      responsive: true,
+      maintainAspectRatio: false,
       interaction: { mode: 'index', intersect: false },
+      plugins: { legend: { labels: { font: { family: 'Sarabun' } } } }
     }
   });
 }

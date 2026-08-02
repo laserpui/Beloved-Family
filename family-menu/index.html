@@ -10,7 +10,7 @@
     <meta name="keywords" content="สูตรอาหาร, คำนวณสูตรอาหาร, หม้อทอดไร้น้ำมัน, อาหารเหนือ, ชาไทย, ชาเขียว, นมเย็น, คอหมูย่าง, น้ำพริกอ่อง, ขนมจีนน้ำเงี้ยว">
     
     <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="assets/vendor/tailwind-play-20260802.js"></script>
     <!-- Font Awesome Icons -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <!-- Google Fonts - Prompt & Sarabun -->
@@ -131,7 +131,7 @@
         <div class="flex justify-center mb-8 sm:mb-12">
             <div class="inline-flex p-1.5 bg-amber-100/50 rounded-2xl border border-brand-100 overflow-x-auto max-w-full no-scrollbar">
                 <button 
-                    onclick="filterCategory('all')" 
+                    data-filter-category="all" 
                     id="btn-all" 
                     class="category-tab px-4 sm:px-6 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 flex items-center gap-2 whitespace-nowrap bg-brand-600 text-white shadow-md shadow-brand-600/10"
                 >
@@ -140,7 +140,7 @@
                     <span id="count-all" class="bg-white/20 text-white text-xs px-2 py-0.5 rounded-md">9</span>
                 </button>
                 <button 
-                    onclick="filterCategory('airfryer')" 
+                    data-filter-category="airfryer" 
                     id="btn-airfryer" 
                     class="category-tab px-4 sm:px-6 py-2.5 rounded-xl text-sm font-semibold text-gray-600 hover:text-brand-700 transition-all duration-300 flex items-center gap-2 whitespace-nowrap"
                 >
@@ -149,7 +149,7 @@
                     <span id="count-airfryer" class="bg-gray-200 text-gray-700 text-xs px-2 py-0.5 rounded-md">3</span>
                 </button>
                 <button 
-                    onclick="filterCategory('food')" 
+                    data-filter-category="food" 
                     id="btn-food" 
                     class="category-tab px-4 sm:px-6 py-2.5 rounded-xl text-sm font-semibold text-gray-600 hover:text-brand-700 transition-all duration-300 flex items-center gap-2 whitespace-nowrap"
                 >
@@ -158,7 +158,7 @@
                     <span id="count-food" class="bg-gray-200 text-gray-700 text-xs px-2 py-0.5 rounded-md">3</span>
                 </button>
                 <button 
-                    onclick="filterCategory('drink')" 
+                    data-filter-category="drink" 
                     id="btn-drink" 
                     class="category-tab px-4 sm:px-6 py-2.5 rounded-xl text-sm font-semibold text-gray-600 hover:text-brand-700 transition-all duration-300 flex items-center gap-2 whitespace-nowrap"
                 >
@@ -330,7 +330,7 @@
                                 alt="${recipe.name}"
                                 loading="lazy"
                                 class="w-full h-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-110"
-                                onerror="this.onerror=null; this.src='data:image/svg+xml;charset=UTF-8,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'100%25\' height=\'100%25\' viewBox=\'0 0 400 300\'%3E%3Crect width=\'100%25\' height=\'100%25\' fill=\'%23fffbeb\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' dominant-baseline=\'middle\' text-anchor=\'middle\' font-size=\'18\' fill=\'%23b45309\' font-family=\'Prompt\'%3E${recipe.name}%3C/text%3E%3C/svg%3E';"
+                                data-fallback-title="${recipe.name}"
                             />
                             <div class="absolute top-4 left-4">
                                 <span class="px-3 py-1 rounded-full text-xs font-semibold ${categoryColorClass} shadow-sm backdrop-blur-md flex items-center gap-1.5 border border-white/20">
@@ -370,6 +370,17 @@
                     </div>
                 `;
             }).join('');
+
+            grid.querySelectorAll('img[data-fallback-title]').forEach(image => {
+                image.addEventListener('error', () => {
+                    const title = image.dataset.fallbackTitle || 'Recipe';
+                    const safeTitle = title.replace(/[&<>"']/g, character => ({
+                        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+                    })[character]);
+                    const fallbackSvg = '<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300"><rect width="400" height="300" fill="#fffbeb"/><text x="200" y="150" dominant-baseline="middle" text-anchor="middle" font-size="18" fill="#b45309" font-family="Prompt">' + safeTitle + '</text></svg>';
+                    image.src = 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(fallbackSvg);
+                }, { once: true });
+            });
         }
 
         // Filter Function
@@ -393,6 +404,10 @@
         function applyFilterAndSearch() {
             const query = document.getElementById('searchInput').value.trim().toLowerCase();
             const clearBtn = document.getElementById('searchClearBtn');
+
+            document.querySelectorAll('[data-filter-category]').forEach(button => {
+                button.addEventListener('click', () => filterCategory(button.dataset.filterCategory));
+            });
             
             // Show/hide clear button
             if (query.length > 0) {

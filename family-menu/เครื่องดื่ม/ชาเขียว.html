@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>เครื่องมือคำนวณสูตรชาเขียว โดยพอล</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="../assets/vendor/tailwind-play-20260802.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap');
@@ -88,7 +88,7 @@
                     <p class="text-[11px] text-gray-400 mt-1">* 0% คือสูตรปกติ (หวานมัน) / ยิ่งตัวเลขมาก ยิ่งลดน้ำตาลและนมข้นลง</p>
                 </div>
                 
-                <button onclick="resetForm()" 
+                <button type="button" data-reset-form 
                         class="w-full py-2.5 px-4 rounded-xl border-2 border-dashed border-gray-300 text-gray-500 hover:border-red-300 hover:text-red-500 transition-all text-sm font-medium flex items-center justify-center gap-2 mt-auto bg-gray-50 hover:bg-red-50">
                     <i class="fas fa-undo-alt"></i> คืนค่าเริ่มต้น
                 </button>
@@ -171,7 +171,7 @@
                     </div>
                     <div class="flex items-center gap-2">
                         <input type="number" id="input-${item.id}" 
-                               oninput="handleIngredientChange('${item.id}', this.value)"
+                               data-ingredient-id="${item.id}"
                                class="w-20 text-right font-bold text-green-700 bg-transparent focus:outline-none text-lg md:text-xl"
                                placeholder="0">
                         <span class="text-gray-400 text-xs md:text-sm w-8">${item.unit}</span>
@@ -276,6 +276,12 @@
         }
 
         // เริ่มต้นแอปพลิเคชัน
+        document.getElementById('ingredients').addEventListener('input', event => {
+            const ingredientId = event.target.dataset.ingredientId;
+            if (ingredientId) handleIngredientChange(ingredientId, event.target.value);
+        });
+        document.querySelector('[data-reset-form]').addEventListener('click', resetForm);
+
         initIngredients();
         updateAllFields(1);
     </script>

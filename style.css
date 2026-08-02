@@ -409,7 +409,7 @@ input[type="file"]::file-selector-button:hover {
 /* Dashboard Utils */
 .summary-box { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); margin-top: 15px; }
 .chart-wrapper { height: 300px; position: relative; }
-.stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 20px; }
 .stat-box { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
 
 .list-item {
@@ -488,4 +488,187 @@ input[type="file"]::file-selector-button:hover {
   .btn-refresh {
     width: 100%;
   }
+}
+
+/* Enhanced feedback, refresh and date-filter UI */
+.btn-secondary {
+  background: #E2E8F0;
+  color: var(--text-dark);
+}
+
+.btn-secondary:hover {
+  background: #CBD5E1;
+  transform: translateY(-2px);
+}
+
+.loading-text {
+  color: var(--text-dark);
+  font-weight: 600;
+}
+
+.date-filter-panel {
+  padding: 20px;
+  background: linear-gradient(135deg, rgba(79, 70, 229, 0.06), rgba(236, 72, 153, 0.05));
+  border: 1px solid rgba(79, 70, 229, 0.1);
+  border-radius: 18px;
+  text-align: left;
+}
+
+.date-filter-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.date-filter-grid {
+  display: grid;
+  grid-template-columns: minmax(160px, 1fr) minmax(160px, 1fr) auto auto;
+  align-items: end;
+  gap: 12px;
+}
+
+.transaction-icon {
+  width: 40px;
+  height: 40px;
+  flex: 0 0 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #F1F5F9;
+  font-size: 1.2rem;
+}
+
+.p-4 { padding: 20px; }
+
+.swal2-popup.beloved-popup,
+.swal2-popup.beloved-toast {
+  font-family: 'Outfit', 'Sarabun', sans-serif;
+}
+
+.swal2-popup.beloved-popup {
+  width: min(92vw, 430px);
+  padding: 28px;
+  border: 1px solid rgba(79, 70, 229, 0.08);
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow: 0 24px 70px rgba(30, 41, 59, 0.2);
+}
+
+.swal2-popup.beloved-popup .swal2-input {
+  width: 100%;
+  height: auto;
+  margin: 18px 0 6px;
+  padding: 14px 16px;
+  border: 1px solid #E2E8F0;
+  border-radius: 16px;
+  font-family: inherit;
+}
+
+.swal2-popup.beloved-toast {
+  width: min(92vw, 390px);
+  padding: 16px 18px;
+  border-radius: 20px;
+  border: 1px solid rgba(79, 70, 229, 0.08);
+  box-shadow: 0 18px 45px rgba(30, 41, 59, 0.18);
+}
+
+.swal-btn {
+  min-width: 110px;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 14px;
+  font-family: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.swal-btn:hover {
+  transform: translateY(-1px);
+}
+
+.swal-btn-primary {
+  color: white;
+  background: var(--primary-color);
+  box-shadow: 0 8px 18px rgba(79, 70, 229, 0.22);
+}
+
+.swal-btn-secondary {
+  color: var(--text-dark);
+  background: #E2E8F0;
+}
+
+@media (max-width: 900px) {
+  .date-filter-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  .date-filter-heading {
+    flex-direction: column;
+  }
+
+  .date-filter-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .date-filter-grid .btn {
+    width: 100%;
+  }
+
+  .section-header-actions .btn,
+  .section-header-actions .btn-sheet {
+    flex: 1 1 100%;
+  }
+}
+
+
+/* Accessibility and hardened interaction states */
+.portal-card[role="button"],
+.kid-card[role="button"] {
+  outline: none;
+}
+
+.portal-card[role="button"]:focus-visible,
+.kid-card[role="button"]:focus-visible,
+.nav-item:focus-visible,
+.btn:focus-visible,
+.input-control:focus-visible {
+  outline: 3px solid rgba(79, 70, 229, 0.35);
+  outline-offset: 3px;
+}
+
+.btn:disabled,
+.portal-card[aria-disabled="true"],
+.kid-card[aria-disabled="true"] {
+  opacity: 0.65;
+  cursor: wait;
+  transform: none;
+}
+
+.fe-filter-grid {
+  grid-template-columns: minmax(150px, 1fr) minmax(150px, 1fr) minmax(170px, 0.8fr) auto auto;
+}
+
+@media (max-width: 1100px) {
+  .fe-filter-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  .fe-filter-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.form-label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--text-dark);
 }

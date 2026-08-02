@@ -12,13 +12,11 @@
   
   <!-- Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <script src="https://unpkg.com/lucide@latest"></script>
-
-  <!-- SweetAlert2 -->
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <!-- SweetAlert2 (pinned) -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.8/dist/sweetalert2.all.min.js"></script>
   
-  <!-- Chart.js -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Chart.js (pinned UMD build) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 
   <!-- Main Stylesheet -->
   <link rel="stylesheet" href="style.css">
@@ -69,16 +67,21 @@
         <header class="section-header text-center">
           <h1>Welcome to Beloved Family</h1>
           <p>รวมทุกเรื่องราวและค่าใช้จ่ายของครอบครัวไว้ในที่เดียว</p>
+          <div class="section-header-actions justify-center">
+            <button type="button" id="homeRefresh" class="btn btn-refresh">
+              <i class="fa-solid fa-rotate-right me-2"></i> Refresh
+            </button>
+          </div>
         </header>
 
         <div class="portal-grid">
-          <div class="portal-card" onclick="document.querySelector('.nav-item[data-target=\'family-expenses\']').click()">
+          <div class="portal-card" role="button" tabindex="0" data-navigate="family-expenses" aria-label="เปิด Family Expenses">
             <img class="portal-icon" src="family_expenses_icon.png" alt="Family Expenses" style="object-fit: cover;">
             <h3>Family Expenses</h3>
             <p>บันทึกและสรุปค่าใช้จ่ายส่วนกลางของครอบครัว</p>
           </div>
           
-          <div class="portal-card" onclick="document.querySelector('.nav-item[data-target=\'kids-savings\']').click()">
+          <div class="portal-card" role="button" tabindex="0" data-navigate="kids-savings" aria-label="เปิด Kids Savings">
             <img class="portal-icon" src="kids_savings_icon.png" alt="Kids Savings" style="object-fit: cover;">
             <h3>Kids Savings</h3>
             <p>บันทึกและติดตามเงินออมของนโมและโมนา</p>
@@ -88,14 +91,14 @@
             </div>
           </div>
 
-          <div class="portal-card" onclick="document.querySelector('.nav-item[data-target=\'mona-expenses\']').click()">
+          <div class="portal-card" role="button" tabindex="0" data-navigate="mona-expenses" aria-label="เปิด Mona Gym Expenses">
             <img class="portal-icon" src="mona_gym_icon.png" alt="Mona Gym" style="object-fit: cover;">
             <h3>Mona Gym Expenses</h3>
             <p>บันทึกค่าใช้จ่ายเกี่ยวกับการเรียนยิมนาสติกของโมนา</p>
             <img src="Mona.png" alt="Mona" class="avatar-sm mt-2">
           </div>
           
-          <div class="portal-card" onclick="document.querySelector('.nav-item[data-target=\'family-menu\']').click()">
+          <div class="portal-card" role="button" tabindex="0" data-navigate="family-menu" aria-label="เปิด Family Menu">
             <img class="portal-icon" src="family_menu_icon.png" alt="Family Menu" style="object-fit: cover;">
             <h3>Family Menu</h3>
             <p>คลังสูตรอาหารประจำบ้านและเครื่องมือคำนวณวัตถุดิบ</p>
@@ -109,10 +112,13 @@
           <h2><i class="fa-solid fa-file-invoice-dollar me-2"></i> Family Expenses</h2>
           <p>ระบบบันทึกรายจ่ายครอบครัว</p>
           <div class="section-header-actions">
-            <a id="familyExpensesSheetLink" class="btn btn-sheet" href="https://docs.google.com/spreadsheets/d/15uCkK5vXVg-6zh3nq3gpIOQXI7H-p75kcEDwwdNPRHk/edit?gid=2076362911#gid=2076362911" target="_blank" rel="noopener noreferrer" aria-label="Open Family Expenses Google Sheet">
+            <a id="familyExpensesSheetLink" class="btn btn-sheet" href="#" data-sheet-url="https://docs.google.com/spreadsheets/d/15uCkK5vXVg-6zh3nq3gpIOQXI7H-p75kcEDwwdNPRHk/edit?gid=2076362911#gid=2076362911" rel="noopener noreferrer" aria-label="Open Family Expenses Google Sheet">
               <i class="fa-solid fa-table me-2"></i>
               Open Google Sheet
             </a>
+            <button type="button" id="feHeaderRefresh" class="btn btn-refresh">
+              <i class="fa-solid fa-rotate-right me-2"></i> Refresh
+            </button>
           </div>
         </header>
         
@@ -126,11 +132,11 @@
             <div class="glass-panel">
               <form id="feForm">
                 <div class="form-group">
-                  <label>วันที่ใช้จ่าย</label>
+                  <label for="feDate">วันที่ใช้จ่าย</label>
                   <input type="date" id="feDate" class="input-control" required>
                 </div>
                 <div class="form-group">
-                  <label>ประเภทค่าใช้จ่าย</label>
+                  <label for="feCategory">ประเภทค่าใช้จ่าย</label>
                   <select id="feCategory" class="input-control" required>
                     <option value="" selected disabled>-- เลือกประเภท --</option>
                     <option value="อาหาร">อาหาร</option>
@@ -142,25 +148,25 @@
                   </select>
                 </div>
                 <div class="form-group">
-                  <label>ระบุ (รายละเอียด)</label>
+                  <label for="feDetail">ระบุ (รายละเอียด)</label>
                   <input type="text" id="feDetail" class="input-control" placeholder="เช่น ค่าอาหารเย็น, ซื้อของเข้าบ้าน" required>
                 </div>
                 <div class="form-group">
-                  <label>ยอดค่าใช้จ่าย (บาท)</label>
+                  <label for="feAmount">ยอดค่าใช้จ่าย (บาท)</label>
                   <div class="input-group">
                     <span class="input-prefix">฿</span>
-                    <input type="number" id="feAmount" class="input-control pl-prefix" placeholder="0.00" step="0.01" required>
+                    <input type="number" id="feAmount" class="input-control pl-prefix" placeholder="0.00" min="0.01" step="0.01" inputmode="decimal" required>
                   </div>
                 </div>
                 <div class="form-group">
-                  <label>หมายเหตุ</label>
+                  <label for="feRemark">หมายเหตุ</label>
                   <textarea id="feRemark" class="input-control" rows="2" placeholder="ใส่หมายเหตุเพิ่มเติม (ถ้ามี)"></textarea>
                 </div>
                 <div class="form-group">
-                  <label>รูปใบเสร็จ (ถ้ามี - ขนาดไม่เกิน 2MB)</label>
+                  <label for="feFile">รูปใบเสร็จ (ถ้ามี - ขนาดไม่เกิน 2MB)</label>
                   <input type="file" id="feFile" class="input-control" accept="image/*">
                 </div>
-                <button type="submit" class="btn btn-primary w-full mt-4">บันทึกรายการ</button>
+                <button type="submit" id="feSubmitButton" class="btn btn-primary w-full mt-4">บันทึกรายการ</button>
               </form>
             </div>
           </div>
@@ -176,6 +182,39 @@
                   <i class="fa-solid fa-rotate-right me-2"></i>
                   Refresh
                 </button>
+              </div>
+              <div class="date-filter-panel">
+                <div class="date-filter-heading">
+                  <div>
+                    <h4><i class="fa-solid fa-filter me-2"></i>กรองค่าใช้จ่าย</h4>
+                    <p class="text-sm">กราฟ ยอดรวม และประวัติจะอิงช่วงเวลาที่เลือก</p>
+                  </div>
+                  <div id="feFilterSummary" class="text-sm" aria-live="polite">แสดงข้อมูลทั้งหมด</div>
+                </div>
+                <div class="date-filter-grid fe-filter-grid">
+                  <div class="form-group mb-0">
+                    <label for="feStartDate">ตั้งแต่วันที่</label>
+                    <input type="date" id="feStartDate" class="input-control">
+                  </div>
+                  <div class="form-group mb-0">
+                    <label for="feEndDate">ถึงวันที่</label>
+                    <input type="date" id="feEndDate" class="input-control">
+                  </div>
+                  <div class="form-group mb-0">
+                    <label for="feTransactionLimit">จำนวนรายการ</label>
+                    <select id="feTransactionLimit" class="input-control">
+                      <option value="50" selected>50 รายการล่าสุด</option>
+                      <option value="100">100 รายการล่าสุด</option>
+                      <option value="250">250 รายการล่าสุด</option>
+                    </select>
+                  </div>
+                  <button type="button" id="feApplyDateFilter" class="btn btn-primary">
+                    <i class="fa-solid fa-magnifying-glass me-2"></i>กรอง
+                  </button>
+                  <button type="button" id="feClearDateFilter" class="btn btn-secondary">
+                    <i class="fa-solid fa-xmark me-2"></i>ล้าง
+                  </button>
+                </div>
               </div>
               <div class="summary-box">
                 <div class="text-sm">ยอดใช้จ่ายรวมทั้งหมด (บาท)</div>
@@ -201,6 +240,16 @@
         <header class="section-header">
           <h2><i class="fa-solid fa-piggy-bank me-2"></i> Kids Savings</h2>
           <p>เลือกลูกที่ต้องการบันทึกเงินออม</p>
+          <div class="section-header-actions">
+            <a id="kidsSavingsSheetLink" class="btn btn-sheet" href="#" data-sheet-url="https://docs.google.com/spreadsheets/d/1W9ghP_m2dNKpWdbrh2MW4mHBQQaVSo3AEZNJoJHdDrk/edit" rel="noopener noreferrer" aria-label="Open Kids Savings Google Sheet">
+              <i class="fa-solid fa-table me-2"></i>
+              Open Google Sheet
+            </a>
+            <button type="button" id="ksRefresh" class="btn btn-refresh">
+              <i class="fa-solid fa-rotate-right me-2"></i> Refresh
+            </button>
+          </div>
+          <div id="ksLastUpdated" class="text-sm mt-2" role="status" aria-live="polite">กำลังโหลดข้อมูลเงินออม...</div>
         </header>
         
         <div class="tabs-container">
@@ -210,33 +259,33 @@
           
           <div class="tab-content active" id="ks-home">
             <div class="kids-portal" id="ksPortal">
-              <div class="kid-card" onclick="ksSelectKid('namo')">
+              <div class="kid-card" role="button" tabindex="0" data-kid="namo" aria-label="เปิดบัญชีนโม">
                 <img src="Namo.png" alt="Namo" class="kid-avatar">
                 <h3>นโม (Namo)</h3>
                 <div class="badge">ลูกชาย</div>
                 <div class="balance-box">
                   <div class="text-sm">ยอดเงินคงเหลือ</div>
-                  <div class="balance-amount text-success">฿<span id="ksNamoBalance">0.00</span></div>
+                  <div class="balance-amount text-success" aria-live="polite">฿<span id="ksNamoBalance">0.00</span></div>
                 </div>
               </div>
               
-              <div class="kid-card" onclick="ksSelectKid('mona')">
+              <div class="kid-card" role="button" tabindex="0" data-kid="mona" aria-label="เปิดบัญชีโมนา">
                 <img src="Mona.png" alt="Mona" class="kid-avatar">
                 <h3>โมนา (Mona)</h3>
                 <div class="badge">ลูกสาว</div>
                 <div class="balance-box">
                   <div class="text-sm">ยอดเงินคงเหลือ</div>
-                  <div class="balance-amount text-success">฿<span id="ksMonaBalance">0.00</span></div>
+                  <div class="balance-amount text-success" aria-live="polite">฿<span id="ksMonaBalance">0.00</span></div>
                 </div>
               </div>
             </div>
 
             <!-- Kids Savings Form View (Hidden by default) -->
             <div id="ksActionView" style="display: none;">
-              <button class="btn btn-icon mb-4" onclick="ksBackToPortal()"><i class="fa-solid fa-arrow-left"></i> กลับไปเลือกบัญชี</button>
+              <button type="button" id="ksBackButton" class="btn btn-icon mb-4"><i class="fa-solid fa-arrow-left"></i> กลับไปเลือกบัญชี</button>
               
               <div class="glass-panel profile-header mb-4 text-center">
-                <img src="" id="ksSelectedAvatar" class="avatar-md">
+                <img src="" id="ksSelectedAvatar" class="avatar-md" alt="รูปบัญชีที่เลือก">
                 <h3 id="ksSelectedName"></h3>
                 <div class="balance-display text-success mt-2 fw-bold" style="font-size: 1.2rem;">ยอดปัจจุบัน: ฿<span id="ksSelectedBalance">0.00</span></div>
               </div>
@@ -251,12 +300,12 @@
                 <div class="tab-content active" id="ks-transaction">
                   <form id="ksTransactionForm">
                     <div class="form-group">
-                      <label>วันที่ทำรายการ</label>
+                      <label for="ksDate">วันที่ทำรายการ</label>
                       <input type="date" id="ksDate" class="input-control" required>
                     </div>
                     <div class="form-group">
-                      <label>ประเภทรายการ</label>
-                      <div class="d-flex gap-3">
+                      <div id="ksTypeLabel" class="form-label">ประเภทรายการ</div>
+                      <div class="d-flex gap-3" role="radiogroup" aria-labelledby="ksTypeLabel">
                         <label class="d-flex align-center" style="gap: 5px; cursor: pointer;">
                           <input type="radio" name="ksType" value="ฝาก" checked> <span class="text-success fw-bold">ฝากเงิน</span>
                         </label>
@@ -266,17 +315,17 @@
                       </div>
                     </div>
                     <div class="form-group">
-                      <label>ยอดเงิน (บาท)</label>
+                      <label for="ksAmount">ยอดเงิน (บาท)</label>
                       <div class="input-group">
                         <span class="input-prefix text-primary">฿</span>
-                        <input type="number" id="ksAmount" class="input-control pl-prefix" placeholder="0.00" step="0.01" required>
+                        <input type="number" id="ksAmount" class="input-control pl-prefix" placeholder="0.00" min="0.01" step="0.01" inputmode="decimal" required>
                       </div>
                     </div>
                     <div class="form-group">
-                      <label>รายละเอียด/หมายเหตุ</label>
+                      <label for="ksDetail">รายละเอียด/หมายเหตุ</label>
                       <input type="text" id="ksDetail" class="input-control" placeholder="เช่น ค่าขนม, ซื้อของเล่น" required>
                     </div>
-                    <button type="submit" class="btn btn-primary w-full mt-4">บันทึกรายการ</button>
+                    <button type="submit" id="ksSubmitButton" class="btn btn-primary w-full mt-4">บันทึกรายการ</button>
                   </form>
                 </div>
                 
@@ -320,10 +369,13 @@
             </div>
           </div>
                   <div class="section-header-actions">
-            <a id="monaExpensesSheetLink" class="btn btn-sheet" href="https://docs.google.com/spreadsheets/d/1C0iz8BGgULtNaFPOh6sXlVwk_rfsAFfq6Qm_Qq4tJEo/edit" target="_blank" rel="noopener noreferrer" aria-label="Open Mona Gym Expenses Google Sheet">
+            <a id="monaExpensesSheetLink" class="btn btn-sheet" href="#" data-sheet-url="https://docs.google.com/spreadsheets/d/1C0iz8BGgULtNaFPOh6sXlVwk_rfsAFfq6Qm_Qq4tJEo/edit" rel="noopener noreferrer" aria-label="Open Mona Gym Expenses Google Sheet">
               <i class="fa-solid fa-table me-2"></i>
               Open Google Sheet
             </a>
+            <button type="button" id="meRefresh" class="btn btn-refresh">
+              <i class="fa-solid fa-rotate-right me-2"></i> Refresh
+            </button>
           </div>
         </header>
 
@@ -337,12 +389,12 @@
             <div class="glass-panel">
               <form id="meForm">
                 <div class="form-group">
-                  <label>วันที่ใช้จ่าย</label>
+                  <label for="meDate">วันที่ใช้จ่าย</label>
                   <input type="date" id="meDate" class="input-control" required>
                 </div>
                 <div class="form-group">
-                  <label>ประเภทค่าใช้จ่าย</label>
-                  <select id="meCategory" class="input-control" required onchange="meCheckCustomType(this)">
+                  <label for="meCategory">ประเภทค่าใช้จ่าย</label>
+                  <select id="meCategory" class="input-control" required>
                     <option value="" selected disabled>-- เลือกประเภท --</option>
                     <option value="เรียนยิมนาสติก">เรียนยิมนาสติก</option>
                     <option value="แข่งขันยิมนาสติก">แข่งขันยิมนาสติก</option>
@@ -353,25 +405,25 @@
                   </select>
                 </div>
                 <div class="form-group" id="meCustomTypeGroup" style="display: none;">
-                  <label>ระบุประเภทค่าใช้จ่ายอื่นๆ</label>
+                  <label for="meCustomType">ระบุประเภทค่าใช้จ่ายอื่นๆ</label>
                   <input type="text" id="meCustomType" class="input-control" placeholder="ระบุประเภทค่าใช้จ่าย">
                 </div>
                 <div class="form-group">
-                  <label>ยอดค่าใช้จ่าย (บาท)</label>
+                  <label for="meAmount">ยอดค่าใช้จ่าย (บาท)</label>
                   <div class="input-group">
                     <span class="input-prefix">฿</span>
-                    <input type="number" id="meAmount" class="input-control pl-prefix" placeholder="0.00" step="0.01" required>
+                    <input type="number" id="meAmount" class="input-control pl-prefix" placeholder="0.00" min="0.01" step="0.01" inputmode="decimal" required>
                   </div>
                 </div>
                 <div class="form-group">
-                  <label>หมายเหตุ</label>
+                  <label for="meRemark">หมายเหตุ</label>
                   <textarea id="meRemark" class="input-control" rows="2" placeholder="รายละเอียดเพิ่มเติม (ถ้ามี)"></textarea>
                 </div>
                 <div class="form-group">
-                  <label>รูปใบเสร็จ (ถ้ามี)</label>
+                  <label for="meFile">รูปใบเสร็จ (ถ้ามี)</label>
                   <input type="file" id="meFile" class="input-control" accept="image/*,application/pdf">
                 </div>
-                <button type="submit" class="btn btn-primary bg-gradient-pink w-full mt-4">บันทึกรายการ</button>
+                <button type="submit" id="meSubmitButton" class="btn btn-primary bg-gradient-pink w-full mt-4">บันทึกรายการ</button>
               </form>
             </div>
           </div>
@@ -386,6 +438,35 @@
                 <div class="stat-box">
                   <div class="text-sm">ยอดปีนี้</div>
                   <div class="amount-md text-purple" id="meYearTotal">฿0.00</div>
+                </div>
+                <div class="stat-box">
+                  <div class="text-sm" id="meRangeLabel">ยอดรวมทั้งหมด</div>
+                  <div class="amount-md text-primary" id="meRangeTotal">฿0.00</div>
+                </div>
+              </div>
+              <div class="date-filter-panel mt-4">
+                <div class="date-filter-heading">
+                  <div>
+                    <h4><i class="fa-solid fa-calendar-days me-2"></i>ค้นหาตามช่วงเวลา</h4>
+                    <p class="text-sm">เว้นว่างเพื่อแสดงข้อมูลทั้งหมด</p>
+                  </div>
+                  <div id="meLastUpdated" class="text-sm">รออัปเดตข้อมูล</div>
+                </div>
+                <div class="date-filter-grid">
+                  <div class="form-group mb-0">
+                    <label for="meStartDate">ตั้งแต่วันที่</label>
+                    <input type="date" id="meStartDate" class="input-control">
+                  </div>
+                  <div class="form-group mb-0">
+                    <label for="meEndDate">ถึงวันที่</label>
+                    <input type="date" id="meEndDate" class="input-control">
+                  </div>
+                  <button type="button" id="meApplyDateFilter" class="btn btn-primary">
+                    <i class="fa-solid fa-magnifying-glass me-2"></i>ค้นหา
+                  </button>
+                  <button type="button" id="meClearDateFilter" class="btn btn-secondary">
+                    <i class="fa-solid fa-xmark me-2"></i>ล้างช่วงเวลา
+                  </button>
                 </div>
               </div>
               <h4 class="mt-4 text-left">สัดส่วนค่าใช้จ่าย</h4>
@@ -409,9 +490,14 @@
         <header class="section-header">
           <h2><i class="fa-solid fa-utensils me-2"></i> Family Menu</h2>
           <p>คลังสูตรอาหารประจำบ้านและเครื่องมือคำนวณวัตถุดิบ</p>
+          <div class="section-header-actions">
+            <button type="button" id="familyMenuRefresh" class="btn btn-refresh">
+              <i class="fa-solid fa-rotate-right me-2"></i> Refresh
+            </button>
+          </div>
         </header>
         <div class="glass-panel" style="padding: 0; overflow: hidden; height: calc(100% - 80px); min-height: 450px; border-radius: 24px;">
-          <iframe src="family-menu/index.html" style="width: 100%; height: 100%; border: none; border-radius: 24px;"></iframe>
+          <iframe src="family-menu/index.html" title="คลังสูตรอาหาร Family Menu" loading="lazy" style="width: 100%; height: 100%; border: none; border-radius: 24px;"></iframe>
         </div>
       </section>
 
@@ -421,12 +507,13 @@
   <!-- Loading Overlay -->
   <div id="globalLoading" class="loading-overlay" style="display: none;">
     <div class="spinner"></div>
-    <div class="loading-text mt-3">กำลังประมวลผล...</div>
+    <div id="globalLoadingText" class="loading-text mt-3">กำลังประมวลผล...</div>
   </div>
 
-  <script src="app.js"></script>
-  <script src="family-expenses.js?v=20260703-live-refresh-v1"></script>
-  <script src="kids-savings.js"></script>
-  <script src="mona-expenses.js"></script>
+  <script src="core-utils.js?v=20260802-hardening-v1"></script>
+  <script src="app.js?v=20260802-hardening-v1"></script>
+  <script src="family-expenses.js?v=20260802-hardening-v1"></script>
+  <script src="kids-savings.js?v=20260802-hardening-v1"></script>
+  <script src="mona-expenses.js?v=20260802-hardening-v1"></script>
 </body>
 </html>

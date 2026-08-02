@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>สูตรคอหมูย่าง Air Fryer สไตล์เชฟ</title>
     <!-- นำเข้า Tailwind CSS สำหรับการจัดรูปแบบ Responsive -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="../assets/vendor/tailwind-play-20260802.js"></script>
     <!-- นำเข้า Font Awesome สำหรับไอคอน -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <!-- นำเข้า Font พร้อม จาก Google Fonts -->
@@ -60,23 +60,23 @@
             </div>
             
             <div class="flex items-center justify-center space-x-4">
-                <button onclick="adjustWeight(-100)" class="w-12 h-12 rounded-full bg-orange-100 text-orange-600 hover:bg-orange-200 flex items-center justify-center text-xl transition-colors shadow-sm">
+                <button type="button" data-weight-delta="-100" aria-label="Decrease pork weight by 100 grams" class="w-12 h-12 rounded-full bg-orange-100 text-orange-600 hover:bg-orange-200 flex items-center justify-center text-xl transition-colors shadow-sm">
                     <i class="fa-solid fa-minus"></i>
                 </button>
                 
                 <div class="relative w-40">
-                    <input type="number" id="porkWeight" value="500" min="100" step="50" oninput="calculateIngredients()" class="w-full text-center text-3xl font-bold text-gray-800 bg-gray-50 border-2 border-orange-200 rounded-xl py-3 focus:outline-none focus:border-orange-500 transition-colors">
+                    <input type="number" id="porkWeight" value="500" min="100" step="50" class="w-full text-center text-3xl font-bold text-gray-800 bg-gray-50 border-2 border-orange-200 rounded-xl py-3 focus:outline-none focus:border-orange-500 transition-colors">
                     <span class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 font-medium">กรัม</span>
                 </div>
                 
-                <button onclick="adjustWeight(100)" class="w-12 h-12 rounded-full bg-orange-100 text-orange-600 hover:bg-orange-200 flex items-center justify-center text-xl transition-colors shadow-sm">
+                <button type="button" data-weight-delta="100" aria-label="Increase pork weight by 100 grams" class="w-12 h-12 rounded-full bg-orange-100 text-orange-600 hover:bg-orange-200 flex items-center justify-center text-xl transition-colors shadow-sm">
                     <i class="fa-solid fa-plus"></i>
                 </button>
             </div>
             
             <!-- ปุ่มรีเซ็ต -->
             <div class="text-center mt-6">
-                <button onclick="resetWeight()" class="inline-flex items-center space-x-2 text-sm font-medium text-gray-500 hover:text-orange-600 bg-gray-50 hover:bg-orange-50 border border-gray-200 hover:border-orange-200 px-4 py-2 rounded-full transition-all shadow-sm">
+                <button type="button" data-reset-weight class="inline-flex items-center space-x-2 text-sm font-medium text-gray-500 hover:text-orange-600 bg-gray-50 hover:bg-orange-50 border border-gray-200 hover:border-orange-200 px-4 py-2 rounded-full transition-all shadow-sm">
                     <i class="fa-solid fa-rotate-left"></i>
                     <span>รีเซ็ตค่าเริ่มต้น (500 กรัม)</span>
                 </button>
@@ -285,6 +285,12 @@
         }
 
         // โหลดข้อมูลครั้งแรกเมื่อเปิดหน้าเว็บ
+        document.querySelectorAll('[data-weight-delta]').forEach(button => {
+            button.addEventListener('click', () => adjustWeight(Number(button.dataset.weightDelta)));
+        });
+        document.querySelector('[data-reset-weight]').addEventListener('click', resetWeight);
+        document.getElementById('porkWeight').addEventListener('input', calculateIngredients);
+
         window.onload = function() {
             calculateIngredients();
         };
