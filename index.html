@@ -183,39 +183,6 @@
                   Refresh
                 </button>
               </div>
-              <div class="date-filter-panel">
-                <div class="date-filter-heading">
-                  <div>
-                    <h4><i class="fa-solid fa-filter me-2"></i>กรองค่าใช้จ่าย</h4>
-                    <p class="text-sm">กราฟ ยอดรวม และประวัติจะอิงช่วงเวลาที่เลือก</p>
-                  </div>
-                  <div id="feFilterSummary" class="text-sm" aria-live="polite">แสดงข้อมูลทั้งหมด</div>
-                </div>
-                <div class="date-filter-grid fe-filter-grid">
-                  <div class="form-group mb-0">
-                    <label for="feStartDate">ตั้งแต่วันที่</label>
-                    <input type="date" id="feStartDate" class="input-control">
-                  </div>
-                  <div class="form-group mb-0">
-                    <label for="feEndDate">ถึงวันที่</label>
-                    <input type="date" id="feEndDate" class="input-control">
-                  </div>
-                  <div class="form-group mb-0">
-                    <label for="feTransactionLimit">จำนวนรายการ</label>
-                    <select id="feTransactionLimit" class="input-control">
-                      <option value="50" selected>50 รายการล่าสุด</option>
-                      <option value="100">100 รายการล่าสุด</option>
-                      <option value="250">250 รายการล่าสุด</option>
-                    </select>
-                  </div>
-                  <button type="button" id="feApplyDateFilter" class="btn btn-primary">
-                    <i class="fa-solid fa-magnifying-glass me-2"></i>กรอง
-                  </button>
-                  <button type="button" id="feClearDateFilter" class="btn btn-secondary">
-                    <i class="fa-solid fa-xmark me-2"></i>ล้าง
-                  </button>
-                </div>
-              </div>
               <div class="summary-box">
                 <div class="text-sm">ยอดใช้จ่ายรวมทั้งหมด (บาท)</div>
                 <div class="amount-large text-danger" id="feTotalAmount">0.00</div>

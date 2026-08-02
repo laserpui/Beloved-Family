@@ -201,52 +201,15 @@ function buildFamilyExpensesSummary(transactions, source = 'sheet-live') {
   return { totalAmount, categories, transactions, source };
 }
 
-function feFormatFilterLabel(startValue, endValue) {
-  const format = value => new Date(`${value}T00:00:00`).toLocaleDateString('th-TH', {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric'
-  });
-  if (startValue && endValue) return `${format(startValue)} – ${format(endValue)}`;
-  if (startValue) return `ตั้งแต่ ${format(startValue)}`;
-  if (endValue) return `ถึง ${format(endValue)}`;
-  return 'ทั้งหมด';
-}
-
-function getFilteredFamilyExpensesData(data) {
-  const startValue = document.getElementById('feStartDate')?.value || '';
-  const endValue = document.getElementById('feEndDate')?.value || '';
-  if (!startValue && !endValue) {
-    return { ...data, transactions: [...(data.transactions || [])], filterLabel: 'ทั้งหมด' };
-  }
-
-  const transactions = BelovedUtils.filterByDateRange(
-    data.transactions || [],
-    startValue,
-    endValue,
-    transaction => {
-      const time = feParseDateValue(transaction.date);
-      return time ? new Date(time).toISOString() : '';
-    }
-  );
-
-  const summary = buildFamilyExpensesSummary(transactions, data.source);
-  summary.monthName = data.monthName;
-  summary.filterLabel = feFormatFilterLabel(startValue, endValue);
-  return summary;
-}
-
 function renderFamilyExpensesDashboardData(rawData) {
   feCurrentDashboardData = rawData;
-  const data = getFilteredFamilyExpensesData(rawData);
+  const data = rawData;
   const transactions = data.transactions || [];
   const categories = data.categories || {};
   const labels = Object.keys(categories);
   const values = Object.values(categories);
   const colors = ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40', '#8A2BE2', '#00FA9A'];
-  const sourceLabel = data.filterLabel !== 'ทั้งหมด'
-    ? data.filterLabel
-    : (data.source === 'api-monthly' ? (data.monthName || 'รายเดือน') : 'ทั้งหมดใน Sheet');
+  const sourceLabel = data.source === 'api-monthly' ? (data.monthName || 'รายเดือน') : 'ทั้งหมดใน Sheet';
 
   document.getElementById('feMonthName').innerText = sourceLabel;
   document.getElementById('feTotalAmount').innerText = (data.totalAmount || 0).toLocaleString('th-TH', { minimumFractionDigits: 2 });
@@ -259,9 +222,6 @@ function renderFamilyExpensesDashboardData(rawData) {
       second: '2-digit'
     })}`;
   }
-
-  const filterSummary = document.getElementById('feFilterSummary');
-  if (filterSummary) filterSummary.innerText = `${data.filterLabel} · ${transactions.length.toLocaleString('th-TH')} รายการ`;
 
   document.getElementById('feCategoryList').innerHTML = labels.map((category, index) => {
     const value = values[index] || 0;
@@ -276,8 +236,7 @@ function renderFamilyExpensesDashboardData(rawData) {
     `;
   }).join('') || '<div class="text-center text-muted p-4">ไม่มีข้อมูลแยกตามประเภท</div>';
 
-  const displayLimit = Math.max(1, Number(document.getElementById('feTransactionLimit')?.value) || 50);
-  const visibleTransactions = transactions.slice(0, displayLimit);
+  const visibleTransactions = transactions.slice(0, 50);
   const transactionHtml = visibleTransactions.map(transaction => {
     const remark = transaction.remark ? ` | ${feEscapeHtml(transaction.remark)}` : '';
     const amount = feParseAmount(transaction.amount);
@@ -298,8 +257,8 @@ function renderFamilyExpensesDashboardData(rawData) {
 
   const moreCount = transactions.length - visibleTransactions.length;
   document.getElementById('feTransactionList').innerHTML = transactionHtml
-    + (moreCount > 0 ? `<div class="text-center text-muted p-4">ยังมีอีก ${moreCount.toLocaleString('th-TH')} รายการ กรุณาปรับจำนวนรายการด้านบน</div>` : '')
-    || '<div class="text-center text-muted p-4">ไม่มีรายการค่าใช้จ่ายในช่วงที่เลือก</div>';
+    + (moreCount > 0 ? `<div class="text-center text-muted p-4">ยังมีอีก ${moreCount.toLocaleString('th-TH')} รายการ แสดงเฉพาะ 50 รายการล่าสุด</div>` : '')
+    || '<div class="text-center text-muted p-4">ไม่มีรายการค่าใช้จ่าย</div>';
 
   const canvas = document.getElementById('feChart');
   if (feChartInstance) feChartInstance.destroy();
@@ -377,21 +336,4 @@ function stopFamilyExpensesAutoRefresh() {
 
 document.getElementById('feRefreshDashboard')?.addEventListener('click', () => loadFamilyExpensesDashboard(true));
 
-document.getElementById('feApplyDateFilter')?.addEventListener('click', async () => {
-  if (!feCurrentDashboardData) return;
-  try {
-    renderFamilyExpensesDashboardData(feCurrentDashboardData);
-  } catch (error) {
-    await showFormError('ช่วงเวลาไม่ถูกต้อง', error.message);
-  }
-});
 
-document.getElementById('feClearDateFilter')?.addEventListener('click', () => {
-  document.getElementById('feStartDate').value = '';
-  document.getElementById('feEndDate').value = '';
-  if (feCurrentDashboardData) renderFamilyExpensesDashboardData(feCurrentDashboardData);
-});
-
-document.getElementById('feTransactionLimit')?.addEventListener('change', () => {
-  if (feCurrentDashboardData) renderFamilyExpensesDashboardData(feCurrentDashboardData);
-});
