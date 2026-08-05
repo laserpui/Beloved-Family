@@ -44,7 +44,7 @@
 - การอ่าน API มี timeout และแสดงสถานะผิดพลาดบนหน้าเว็บ
 - ช่องจำนวนเงินตรวจค่ามากกว่า 0 ทั้งใน HTML และ JavaScript
 - การ์ดหลักและการ์ดบัญชีรองรับคีย์บอร์ด
-- Family Expenses รองรับช่วงวันที่และจำกัดรายการที่สร้างใน DOM
+- Family Expenses Dashboard อ่านยอดรวม หมวดหมู่ และประวัติทั้งหมดจาก Google Sheet โดยตรง
 - SweetAlert2 และ Chart.js ล็อกเวอร์ชันแบบเจาะจง
 - Tailwind Play ของ Family Menu เก็บเป็นไฟล์ local พร้อมบันทึกขนาดและ SHA-256
 

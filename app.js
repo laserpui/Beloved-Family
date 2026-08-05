@@ -139,10 +139,6 @@ document.querySelectorAll('.tab-btn').forEach(button => {
   });
 });
 
-document.getElementById('homeRefresh')?.addEventListener('click', () => {
-  showLoading(true, 'กำลังรีเฟรชหน้าแรก...');
-  window.location.reload();
-});
 
 document.getElementById('feHeaderRefresh')?.addEventListener('click', async () => {
   if (typeof loadFamilyExpensesDashboard !== 'function') return;
@@ -150,11 +146,6 @@ document.getElementById('feHeaderRefresh')?.addEventListener('click', async () =
   if (refreshed) showToast('อัปเดตแล้ว', 'โหลดข้อมูล Family Expenses ล่าสุดเรียบร้อย', 'success');
 });
 
-document.getElementById('familyMenuRefresh')?.addEventListener('click', () => {
-  const frame = document.querySelector('#family-menu iframe');
-  if (frame) frame.src = frame.src;
-  showToast('รีเฟรชแล้ว', 'โหลดคลังสูตรอาหารใหม่เรียบร้อย', 'success');
-});
 
 function showLoading(show = true, message = 'กำลังประมวลผล...') {
   if (!globalLoading) return;

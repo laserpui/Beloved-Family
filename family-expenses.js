@@ -166,27 +166,6 @@ function loadFamilyExpensesSheetTransactions() {
   });
 }
 
-async function loadFamilyExpensesApiSummary() {
-  const response = await BelovedUtils.fetchWithTimeout(`${FE_SCRIPT_URL}?_=${Date.now()}`, {
-    method: 'POST',
-    cache: 'no-store',
-    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-    body: JSON.stringify({ action: 'getSummary' })
-  }, FE_REQUEST_TIMEOUT_MS);
-
-  if (!response.ok) throw new Error(`Family Expenses API ตอบกลับ ${response.status}`);
-  const data = await response.json();
-  if (data.result !== 'success') throw new Error(data.error || 'ไม่สามารถอ่านสรุปจาก API ได้');
-
-  return {
-    totalAmount: data.totalMonth || 0,
-    categories: data.categories || {},
-    transactions: data.transactions || [],
-    monthName: data.monthName || '',
-    source: 'api-monthly'
-  };
-}
-
 function buildFamilyExpensesSummary(transactions, source = 'sheet-live') {
   const categories = {};
   let totalAmount = 0;
@@ -209,7 +188,7 @@ function renderFamilyExpensesDashboardData(rawData) {
   const labels = Object.keys(categories);
   const values = Object.values(categories);
   const colors = ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40', '#8A2BE2', '#00FA9A'];
-  const sourceLabel = data.source === 'api-monthly' ? (data.monthName || 'รายเดือน') : 'ทั้งหมดใน Sheet';
+  const sourceLabel = 'ข้อมูลทั้งหมดใน Sheet';
 
   document.getElementById('feMonthName').innerText = sourceLabel;
   document.getElementById('feTotalAmount').innerText = (data.totalAmount || 0).toLocaleString('th-TH', { minimumFractionDigits: 2 });
@@ -236,8 +215,7 @@ function renderFamilyExpensesDashboardData(rawData) {
     `;
   }).join('') || '<div class="text-center text-muted p-4">ไม่มีข้อมูลแยกตามประเภท</div>';
 
-  const visibleTransactions = transactions.slice(0, 50);
-  const transactionHtml = visibleTransactions.map(transaction => {
+  const transactionHtml = transactions.map(transaction => {
     const remark = transaction.remark ? ` | ${feEscapeHtml(transaction.remark)}` : '';
     const amount = feParseAmount(transaction.amount);
 
@@ -255,10 +233,8 @@ function renderFamilyExpensesDashboardData(rawData) {
     `;
   }).join('');
 
-  const moreCount = transactions.length - visibleTransactions.length;
   document.getElementById('feTransactionList').innerHTML = transactionHtml
-    + (moreCount > 0 ? `<div class="text-center text-muted p-4">ยังมีอีก ${moreCount.toLocaleString('th-TH')} รายการ แสดงเฉพาะ 50 รายการล่าสุด</div>` : '')
-    || '<div class="text-center text-muted p-4">ไม่มีรายการค่าใช้จ่าย</div>';
+    || '<div class="text-center text-muted p-4">ไม่มีรายการค่าใช้จ่ายใน Sheet</div>';
 
   const canvas = document.getElementById('feChart');
   if (feChartInstance) feChartInstance.destroy();
@@ -295,14 +271,8 @@ async function loadFamilyExpensesDashboard(forceRefresh = false) {
   refreshButtons.forEach(button => { button.disabled = true; });
 
   try {
-    let dashboardData;
-    try {
-      const allTransactions = await loadFamilyExpensesSheetTransactions();
-      dashboardData = buildFamilyExpensesSummary(allTransactions, 'sheet-live');
-    } catch (sheetError) {
-      console.warn('Family Expenses live sheet load failed, using API fallback:', sheetError);
-      dashboardData = await loadFamilyExpensesApiSummary();
-    }
+    const allTransactions = await loadFamilyExpensesSheetTransactions();
+    const dashboardData = buildFamilyExpensesSummary(allTransactions, 'sheet-live');
 
     renderFamilyExpensesDashboardData(dashboardData);
     feDataLoaded = true;
@@ -310,7 +280,7 @@ async function loadFamilyExpensesDashboard(forceRefresh = false) {
     document.getElementById('feDashboardContent').style.display = 'block';
     return true;
   } catch (error) {
-    loading.innerHTML = `<p class="text-danger">โหลดข้อมูลไม่สำเร็จ: ${feEscapeHtml(error.message)}</p>`;
+    loading.innerHTML = `<p class="text-danger">โหลดข้อมูลทั้งหมดจาก Sheet ไม่สำเร็จ: ${feEscapeHtml(error.message)}</p>`;
     return false;
   } finally {
     feDashboardLoading = false;

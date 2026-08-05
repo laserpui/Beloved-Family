@@ -1,0 +1,12 @@
+{
+  "name": "beloved-family-hub",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "test": "node --test",
+    "check": "node --check core-utils.js && node --check app.js && node --check family-expenses.js && node --check kids-savings.js && node --check mona-expenses.js"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
