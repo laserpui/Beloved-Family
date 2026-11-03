@@ -93,7 +93,8 @@ test('Letter is reachable from navigation and its local assets are present', () 
   assert.match(html, /class="nav-item" data-target="letter"/);
   assert.match(html, /class="portal-card"[^>]+data-navigate="letter"/);
   assert.match(html, /<section id="letter" class="page-section/);
-  assert.match(html, /<iframe src="Letter\/index\.html"[^>]+title="[^"]+"/);
+  assert.match(html, /<iframe src="Letter\/index\.html"[^>]+title="[^"]+"[^>]+style="[^"]*width: 100%; height: 100%/);
+  assert.match(html, /<div class="embedded-app-panel" style="[^"]*height: max\(/);
   for (const file of ['index.html', 'thai-addresses.js']) {
     assert.ok(fs.statSync(path.join(root, 'Letter', file)).size > 0);
   }
