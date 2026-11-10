@@ -316,6 +316,23 @@
         </main>
     </div>
 
+    <!-- MODAL: Edit/Delete Access -->
+    <div id="addressPasswordModal" role="dialog" aria-modal="true" aria-labelledby="addressPasswordTitle" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-md z-[60] items-center justify-center p-4">
+        <div class="glass-modal rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden border border-white/90">
+            <form onsubmit="unlockAddressAction(event)" class="p-6 text-center">
+                <h3 id="addressPasswordTitle" class="text-base font-bold text-slate-900 mb-1.5"></h3>
+                <p id="addressPasswordName" class="text-xs text-slate-500 mb-4"></p>
+                <label for="addressPasswordInput" class="block text-left text-xs font-semibold text-slate-700 mb-1.5">รหัสผู้ดูแล</label>
+                <input id="addressPasswordInput" type="password" required autocomplete="off" class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20">
+                <p id="addressPasswordError" role="alert" class="hidden text-left text-xs text-rose-600 mt-2"></p>
+                <div class="flex gap-2.5 justify-center mt-5">
+                    <button type="submit" id="btnUnlockAddress" class="btn-interactive flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 px-5 rounded-2xl text-xs sm:text-sm">ยืนยันรหัสผ่าน</button>
+                    <button type="button" onclick="cancelAddressAccess()" class="btn-interactive bg-white hover:bg-slate-100 text-slate-700 font-medium py-2.5 px-5 rounded-2xl border border-slate-200 text-xs sm:text-sm">ยกเลิก</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- MODAL: Settings Access -->
     <div id="settingsPasswordModal" role="dialog" aria-modal="true" aria-labelledby="settingsPasswordTitle" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-md z-[60] items-center justify-center p-4">
         <div class="glass-modal rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden border border-white/90">
@@ -406,15 +423,7 @@
                 </div>
                 <div id="testConnResult" class="text-xs p-3 rounded-2xl hidden shadow-sm"></div>
 
-                <!-- Edit Web App URL -->
-                <div class="border-t border-slate-200/70 pt-4">
-                    <label class="block text-xs font-bold text-slate-800 mb-1.5">Web App URL (จาก Google Apps Script)</label>
-                    <input type="text" id="inputSheetUrl" placeholder="https://script.google.com/macros/s/.../exec" class="w-full rounded-2xl border border-slate-200/90 px-3.5 py-2.5 text-xs mb-2 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 focus:outline-none font-mono text-slate-800 bg-white/90 shadow-sm">
-                    <p class="text-[11px] text-slate-500 mb-3.5">หากเว้นว่างไว้ ระบบจะทำงานในโหมด Offline บันทึกในเครื่องเท่านั้น</p>
-                    <button onclick="saveSettings()" class="btn-interactive w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold py-2.5 rounded-2xl text-xs sm:text-sm shadow-md shadow-blue-500/20 transition">
-                        บันทึกการตั้งค่า URL
-                    </button>
-                </div>
+                <p class="text-[11px] text-slate-500 border-t border-slate-200/70 pt-4">ระบบกำหนด Google Apps Script URL ไว้ในโค้ดแล้ว</p>
             </div>
         </div>
     </div>
@@ -574,8 +583,7 @@
     <script>
         const STORAGE_KEY = 'github_address_labels';
         let addresses = [];
-        const savedSheetUrl = localStorage.getItem('sheet_url');
-        let sheetUrl = savedSheetUrl === null ? '' : savedSheetUrl;
+        const sheetUrl = 'https://script.google.com/macros/s/AKfycby80i7xGOewJ3pqErkjhvAHi0Doul5OpZS4ZguzZsdYcYLIHiNJRH7AthXTKWgWAERZ/exec';
         let isSyncing = false;
         let lastSheetLoadSucceeded = false;
 
@@ -1118,6 +1126,10 @@
                 showToast('ไม่พบรายการเดิม กรุณารีเฟรชข้อมูลแล้วลองใหม่');
                 return;
             }
+            if (idInput && authorizedEditId !== idInput) {
+                showToast('กรุณายืนยันรหัสผู้ดูแลก่อนแก้ไขข้อมูล');
+                return;
+            }
             pendingSaveData = { ...newData, id: idInput || generateId() };
             pendingSaveIsEdit = !!idInput;
             document.getElementById('saveConfirmTitle').textContent = idInput ? 'ยืนยันการแก้ไขข้อมูล' : 'ยืนยันการบันทึกข้อมูล';
@@ -1138,6 +1150,10 @@
             pendingSaveData = null;
             pendingSaveIsEdit = false;
             closeModal('saveConfirmModal');
+            if (isEdit && authorizedEditId !== newData.id) {
+                showToast('กรุณายืนยันรหัสผู้ดูแลก่อนแก้ไขข้อมูล');
+                return;
+            }
 
             if (isEdit) {
                 const index = addresses.findIndex(a => a.id === newData.id);
@@ -1170,6 +1186,7 @@
 
         function clearForm() {
             form.reset();
+            authorizedEditId = null;
             legacySelectionSnapshot = null;
             document.getElementById('editId').value = '';
             resetAddressSelectors();
@@ -1429,10 +1446,74 @@
         }
 
         function editAddress(id) {
-            executeEditAddress(id);
+            requestAddressAccess('edit', id);
         }
 
         let deleteTargetId = null;
+        let authorizedEditId = null;
+        let pendingAddressAction = null;
+        let addressAccessNonce = 0;
+
+        function requestAddressAccess(action, id) {
+            const item = addresses.find(a => a.id === id);
+            if (!item || !['edit', 'delete'].includes(action)) return;
+            addressAccessNonce++;
+            pendingAddressAction = { action, id };
+            document.getElementById('addressPasswordTitle').textContent = action === 'edit' ? 'ยืนยันก่อนแก้ไขข้อมูล' : 'ยืนยันก่อนลบข้อมูล';
+            document.getElementById('addressPasswordName').textContent = item.name || '';
+            document.getElementById('addressPasswordInput').value = '';
+            document.getElementById('btnUnlockAddress').disabled = false;
+            const error = document.getElementById('addressPasswordError');
+            error.textContent = '';
+            error.classList.add('hidden');
+            openModal('addressPasswordModal');
+            document.getElementById('addressPasswordInput').focus();
+        }
+
+        function cancelAddressAccess() {
+            addressAccessNonce++;
+            pendingAddressAction = null;
+            document.getElementById('addressPasswordInput').value = '';
+            document.getElementById('btnUnlockAddress').disabled = false;
+            closeModal('addressPasswordModal');
+        }
+
+        async function unlockAddressAction(event) {
+            event.preventDefault();
+            if (!pendingAddressAction) return;
+            const pending = pendingAddressAction;
+            const input = document.getElementById('addressPasswordInput');
+            const error = document.getElementById('addressPasswordError');
+            const button = document.getElementById('btnUnlockAddress');
+            const nonce = ++addressAccessNonce;
+            button.disabled = true;
+            try {
+                const hash = await hashAdminPassword(input.value);
+                if (nonce !== addressAccessNonce) return;
+                input.value = '';
+                if (hash !== SETTINGS_PASSWORD_SHA256) {
+                    error.textContent = 'รหัสผ่านไม่ถูกต้อง กรุณาลองอีกครั้ง';
+                    error.classList.remove('hidden');
+                    input.focus();
+                    return;
+                }
+                pendingAddressAction = null;
+                closeModal('addressPasswordModal');
+                if (pending.action === 'edit') {
+                    authorizedEditId = pending.id;
+                    executeEditAddress(pending.id);
+                } else {
+                    executeDeleteAddress(pending.id);
+                }
+            } catch (err) {
+                if (nonce !== addressAccessNonce) return;
+                input.value = '';
+                error.textContent = err.message || 'ไม่สามารถตรวจรหัสผ่านได้';
+                error.classList.remove('hidden');
+            } finally {
+                if (nonce === addressAccessNonce) button.disabled = false;
+            }
+        }
 
         function executeDeleteAddress(id) {
             const item = addresses.find(a => a.id === id);
@@ -1443,7 +1524,7 @@
         }
 
         function deleteAddress(id) {
-            executeDeleteAddress(id);
+            requestAddressAccess('delete', id);
         }
 
         function cancelDeleteConfirmation() {
@@ -1538,8 +1619,6 @@
         }
 
         function updateSettingsModalView() {
-            document.getElementById('inputSheetUrl').value = sheetUrl || '';
-            
             const badge = document.getElementById('sheetStatusBadge');
             if (!sheetUrl || !isValidUrl(sheetUrl)) {
                 badge.className = 'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-700';
@@ -1556,11 +1635,9 @@
 
         async function testSheetConnection() {
             const resultEl = document.getElementById('testConnResult');
-            const testUrl = document.getElementById('inputSheetUrl').value.trim() || sheetUrl;
-            
-            if (!testUrl || !isValidUrl(testUrl)) {
+            if (!isValidUrl(sheetUrl)) {
                 resultEl.className = 'text-xs p-2 rounded bg-amber-50 text-amber-800 border border-amber-200 block';
-                resultEl.textContent = 'กรุณาระบุ Web App URL ที่ถูกต้องก่อนทดสอบ';
+                resultEl.textContent = 'Google Apps Script URL ในโค้ดไม่ถูกต้อง';
                 return;
             }
 
@@ -1569,7 +1646,7 @@
 
             const startTime = Date.now();
             try {
-                const data = await apiRequest('health', {}, testUrl);
+                const data = await apiRequest('health');
                 const elapsed = Date.now() - startTime;
                 if (data.status === 'success') {
                     resultEl.className = 'text-xs p-2 rounded bg-green-50 text-green-800 border border-green-200 block';
@@ -1639,6 +1716,12 @@
         let settingsAccessGranted = false;
         let settingsAccessNonce = 0;
 
+        async function hashAdminPassword(password) {
+            if (!globalThis.crypto?.subtle) throw new Error('ไม่รองรับการตรวจรหัสผ่านบนเบราว์เซอร์นี้');
+            const digest = await globalThis.crypto.subtle.digest('SHA-256', new TextEncoder().encode(password));
+            return Array.from(new Uint8Array(digest), byte => byte.toString(16).padStart(2, '0')).join('');
+        }
+
         function requestSettingsAccess() {
             settingsAccessNonce++;
             document.getElementById('settingsPasswordInput').value = '';
@@ -1665,11 +1748,8 @@
             const nonce = ++settingsAccessNonce;
             button.disabled = true;
             try {
-                if (!globalThis.crypto?.subtle) throw new Error('ไม่รองรับการตรวจรหัสผ่านบนเบราว์เซอร์นี้');
-                const bytes = new TextEncoder().encode(input.value);
-                const digest = await globalThis.crypto.subtle.digest('SHA-256', bytes);
+                const hash = await hashAdminPassword(input.value);
                 if (nonce !== settingsAccessNonce) return;
-                const hash = Array.from(new Uint8Array(digest), byte => byte.toString(16).padStart(2, '0')).join('');
                 input.value = '';
                 if (hash !== SETTINGS_PASSWORD_SHA256) {
                     error.textContent = 'รหัสผ่านไม่ถูกต้อง กรุณาลองอีกครั้ง';
@@ -1723,30 +1803,6 @@
             const modal = document.getElementById(id);
             modal.classList.add('hidden');
             modal.classList.remove('flex');
-        }
-
-        function saveSettings() {
-            const inputUrl = document.getElementById('inputSheetUrl').value.trim();
-            
-            if (inputUrl && !isValidUrl(inputUrl)) {
-                showToast('ข้อผิดพลาด: URL ไม่ถูกต้อง ต้องขึ้นต้นด้วย http:// หรือ https://');
-                return;
-            }
-            
-            if (inputUrl && !inputUrl.includes('script.google.com')) {
-                showToast('คำเตือน: URL ที่ใส่ดูเหมือนไม่ใช่ Web App ของ Google Apps Script');
-            }
-            if (inputUrl !== sheetUrl && sheetUrl && getSyncQueue().length) {
-                showToast('ยังมีข้อมูลรอซิงค์กับฐานข้อมูลเดิม กรุณาซิงค์ให้เสร็จก่อนเปลี่ยน URL');
-                return;
-            }
-            if (inputUrl !== sheetUrl) lastSheetLoadSucceeded = false;
-
-            sheetUrl = inputUrl;
-            localStorage.setItem('sheet_url', sheetUrl);
-            updateSettingsModalView();
-            showToast('บันทึกการตั้งค่าแล้ว');
-            loadData(); // reload with new DB
         }
 
         function saveSenderProfile() {

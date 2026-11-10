@@ -19,7 +19,7 @@
 
 ระบบต้องเชื่อมต่ออินเทอร์เน็ตเพื่อใช้ Google Apps Script, Google Sheets, Chart.js, SweetAlert2, Font Awesome, Google Fonts
 
-Letter ใช้ไฟล์ `Letter/index.html` และ `Letter/thai-addresses.js` ภายในเว็บเดียวกัน การเชื่อมต่อ Google Sheet ของ Letter ต้องตั้ง Web App URL ที่ใช้งานได้จากปุ่มตั้งค่าฐานข้อมูลของ Letter ก่อนใช้งานข้อมูลจริง ดูรายละเอียดใน `Letter/README.md`
+Letter ใช้ไฟล์ `Letter/index.html` และ `Letter/thai-addresses.js` ภายในเว็บเดียวกัน โดยฝัง Google Apps Script Web App URL ใน `Letter/index.html` แล้ว ปุ่มตั้งค่าฐานข้อมูลใช้ตรวจการเชื่อมต่อและซิงค์ข้อมูล ดูรายละเอียดใน `Letter/README.md`
 
 ## แหล่งข้อมูลภายนอก
 
