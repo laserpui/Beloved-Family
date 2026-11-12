@@ -293,8 +293,8 @@
                             <div class="flex items-center gap-1.5">
                                 <span class="text-xs font-medium text-slate-500 whitespace-nowrap">เรียง:</span>
                                 <select id="sortBySelect" onchange="onSortChange()" class="rounded-xl border border-slate-200/90 py-2 px-2.5 text-xs bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 cursor-pointer shadow-sm font-medium">
-                                    <option value="name-asc" selected>ชื่อ ก - ฮ (A-Z)</option>
-                                    <option value="name-desc">ชื่อ ฮ - ก (Z-A)</option>
+                                    <option value="name-asc" selected>ชื่อ ก - ฮ</option>
+                                    <option value="name-desc">ชื่อ ฮ - ก</option>
                                     <option value="newest">เพิ่มล่าสุด</option>
                                     <option value="oldest">เพิ่มเก่าสุด</option>
                                 </select>
@@ -1234,6 +1234,17 @@
         let currentSearchQuery = '';
         const thaiCollator = new Intl.Collator('th', { sensitivity: 'base', numeric: true });
 
+        function recipientSortName(name) {
+            const fullName = String(name || '').trim();
+            // Sort by the person's name, rather than grouping everyone by title.
+            return fullName.replace(/^(?:เด็กชาย|เด็กหญิง|นางสาว|นาย|นาง|คุณ|ดร\.?|น\.ส\.?|ด\.ช\.?|ด\.ญ\.?|Mr\.?|Mrs\.?|Ms\.?|Miss)\s*/i, '').trim() || fullName;
+        }
+
+        function compareRecipientNames(a, b) {
+            const byName = thaiCollator.compare(recipientSortName(a.name), recipientSortName(b.name));
+            return byName || thaiCollator.compare(String(a.name || ''), String(b.name || ''));
+        }
+
         function getProcessedAddressList() {
             let list = [...addresses];
 
@@ -1248,9 +1259,9 @@
 
             // 2. Sort by selected Mode (Default: Alphabetical by Name)
             if (currentSortMode === 'name-asc') {
-                list.sort((a, b) => thaiCollator.compare(a.name || '', b.name || ''));
+                list.sort(compareRecipientNames);
             } else if (currentSortMode === 'name-desc') {
-                list.sort((a, b) => thaiCollator.compare(b.name || '', a.name || ''));
+                list.sort((a, b) => compareRecipientNames(b, a));
             } else if (currentSortMode === 'oldest') {
                 list.reverse();
             }
