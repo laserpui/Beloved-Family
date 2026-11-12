@@ -130,12 +130,16 @@
             </div>
         </header>
 
-        <!-- Main Content Grid -->
-        <main class="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-7 grid grid-cols-1 lg:grid-cols-12 gap-7">
+        <!-- Recipient pages -->
+        <main class="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-7">
+            <nav class="flex flex-wrap gap-2 mb-6" aria-label="หน้า Letter">
+                <button id="navRecipients" type="button" onclick="showRecipientPage('list')" class="btn-interactive px-4 py-2.5 rounded-2xl text-sm font-semibold transition" aria-current="page">รายชื่อผู้รับที่บันทึกไว้</button>
+                <button id="navRecipientForm" type="button" onclick="showRecipientPage('form')" class="btn-interactive px-4 py-2.5 rounded-2xl text-sm font-semibold transition">เพิ่ม / แก้ไข ข้อมูลผู้รับ</button>
+            </nav>
             
-            <!-- Left Column: Input Form (Glassmorphic Card) -->
-            <div class="lg:col-span-5">
-                <div class="glass-panel rounded-3xl shadow-[0_15px_35px_-5px_rgba(0,0,0,0.05)] p-6 sm:p-7 sticky top-24 transition-all">
+            <!-- Page 2: Recipient form -->
+            <section id="recipientFormPage" class="hidden max-w-3xl mx-auto" aria-label="เพิ่มหรือแก้ไขข้อมูลผู้รับ">
+                <div class="glass-panel rounded-3xl shadow-[0_15px_35px_-5px_rgba(0,0,0,0.05)] p-6 sm:p-7 transition-all">
                     
                     <!-- Section Header -->
                     <div class="flex items-center justify-between mb-5 pb-3.5 border-b border-slate-200/70">
@@ -241,10 +245,10 @@
                         </div>
                     </form>
                 </div>
-            </div>
+            </section>
 
-            <!-- Right Column: Saved List -->
-            <div class="lg:col-span-7 flex flex-col h-full">
+            <!-- Page 1: Saved recipients -->
+            <section id="recipientListPage" class="flex flex-col">
                 <div class="glass-panel rounded-3xl shadow-[0_15px_35px_-5px_rgba(0,0,0,0.05)] flex flex-col h-full overflow-hidden transition-all">
                     
                     <div class="p-5 border-b border-slate-200/70 bg-white/40 flex flex-col gap-3.5">
@@ -260,12 +264,15 @@
                                 <span id="countBadge" class="bg-blue-100/80 text-blue-800 text-xs font-bold px-2.5 py-0.5 rounded-full border border-blue-200/60">0 รายการ</span>
                             </div>
                             
+                            <div class="flex flex-wrap gap-2">
+                            <button type="button" onclick="startNewRecipient()" class="btn-interactive px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-xl shadow-sm transition">+ เพิ่มผู้รับ</button>
                             <button onclick="refreshData()" class="btn-interactive px-3 py-1.5 bg-white hover:bg-slate-100 text-slate-700 text-xs font-semibold rounded-xl border border-slate-200 shadow-sm transition flex items-center gap-1.5" title="โหลดข้อมูลจาก Google Sheets">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                                 </svg>
                                 <span id="refreshButtonText">โหลดข้อมูลจาก Sheet</span>
                             </button>
+                            </div>
                         </div>
                         <p id="dataAccessStatus" class="text-xs text-amber-700">กำลังโหลดข้อมูลผู้รับ...</p>
 
@@ -302,7 +309,7 @@
                     </div>
 
                     <!-- List Container -->
-                    <div class="flex-1 overflow-y-auto p-4 sm:p-5" style="max-height: 70vh;">
+                    <div class="flex-1 p-4 sm:p-5">
                         <div id="addressList" class="space-y-3">
                             <!-- Items Injected Here -->
                             <div class="text-center py-12 text-slate-400 flex flex-col items-center">
@@ -312,7 +319,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </section>
         </main>
     </div>
 
@@ -1088,6 +1095,31 @@
             return String(str).replace(/[&<>'"]/g, tag => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[tag]||tag));
         }
 
+        function showRecipientPage(page, updateHash = true) {
+            const isForm = page === 'form';
+            document.getElementById('recipientFormPage').classList.toggle('hidden', !isForm);
+            document.getElementById('recipientListPage').classList.toggle('hidden', isForm);
+            const pages = [document.getElementById('navRecipients'), document.getElementById('navRecipientForm')];
+            pages.forEach((button, index) => {
+                const active = index === (isForm ? 1 : 0);
+                button.classList.toggle('bg-blue-600', active);
+                button.classList.toggle('text-white', active);
+                button.classList.toggle('shadow-md', active);
+                button.classList.toggle('bg-white/80', !active);
+                button.classList.toggle('text-slate-700', !active);
+                if (active) button.setAttribute?.('aria-current', 'page');
+                else button.removeAttribute?.('aria-current');
+            });
+            if (updateHash && window.location) window.location.hash = isForm ? 'recipient-form' : 'recipients';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function startNewRecipient() {
+            clearForm();
+            showRecipientPage('form');
+            document.getElementById('inputName').focus();
+        }
+
         const form = document.getElementById('addressForm');
         let legacySelectionSnapshot = null;
         let pendingSaveData = null;
@@ -1171,6 +1203,7 @@
             renderList();
             updateStats();
             clearForm();
+            showRecipientPage('list');
             
             // Background sync
             if(sheetUrl && isValidUrl(sheetUrl)) {
@@ -1280,7 +1313,8 @@
                             </svg>
                         </div>
                         <p class="font-bold text-slate-700 text-sm">ยังไม่มีข้อมูลผู้รับในระบบ</p>
-                        <p class="text-xs text-slate-400 mt-1">กรอกข้อมูลผู้รับที่ฟอร์มด้านซ้ายเพื่อเริ่มต้นใช้งาน</p>
+                        <p class="text-xs text-slate-400 mt-1">กดเพิ่มผู้รับเพื่อเริ่มต้นใช้งาน</p>
+                        <button type="button" onclick="startNewRecipient()" class="mt-4 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-4 py-2 rounded-xl">+ เพิ่มผู้รับ</button>
                     </div>
                 `;
                 updateStats();
@@ -1441,7 +1475,7 @@
             btn.classList.remove('bg-blue-600', 'hover:bg-blue-700');
             btn.classList.add('bg-green-600', 'hover:bg-green-700');
 
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            showRecipientPage('form');
             showToast(`กำลังแก้ไขข้อมูล: ${item.name}`);
         }
 
@@ -2232,6 +2266,10 @@
 
         // Init
         window.addEventListener('DOMContentLoaded', () => {
+            showRecipientPage(window.location && window.location.hash === '#recipient-form' ? 'form' : 'list', false);
+            window.addEventListener('hashchange', () => {
+                showRecipientPage(window.location.hash === '#recipient-form' ? 'form' : 'list', false);
+            });
             initThaiGeoData();
             loadData();
         });
