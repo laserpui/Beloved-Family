@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#E5FFFF"><title>Family Bank • สมุดบัญชีของครอบครัว</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+
+:root {
+  color-scheme: light;
+  --bg: #E5FFFF;
+  --ink: #203b44;
+  --muted: #566e78;
+  --line: rgba(107, 143, 149, .20);
+  --green: #146a68;
+  --light: rgba(221, 247, 240, .82);
+  --white: #fff;
+  --glass: rgba(255, 255, 255, .64);
+  --glass-border: rgba(255, 255, 255, .88);
+  --shadow: 0 8px 32px rgba(48, 81, 98, .055), 0 2px 6px rgba(48, 81, 98, .025);
+  --radius: 26px;
+  --ease: cubic-bezier(.2, .7, .3, 1);
+}
+* { box-sizing: border-box; }
+html { min-width: 0; scroll-behavior: smooth; scroll-padding-top: 24px; }
+body {
+  margin: 0; min-width: 0; min-height: 100vh;
+  color: var(--ink);
+  background: linear-gradient(125deg, #E5FFFF 0%, #FFFFE6 52%, #FFE6FF 100%);
+  background-attachment: fixed;
+  font: 16px/1.7 'Noto Sans Thai', 'Sarabun', 'Leelawadee UI', Tahoma, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+body::before {
+  content: ''; position: fixed; inset: 0; pointer-events: none; z-index: -1;
+  background: radial-gradient(ellipse at 18% 15%, rgba(255,255,255,.74), transparent 52%),
+              radial-gradient(ellipse at 90% 80%, rgba(255,255,255,.38), transparent 48%);
+}
+::selection { background: #c3eae3; color: #123f3d; }
+button, input, select, textarea { font: inherit; }
+button {
+  display: inline-flex; align-items: center; justify-content: center; gap: 9px;
+  min-height: 46px; padding: 11px 17px; border: 1px solid rgba(113,148,151,.24);
+  border-radius: 14px; background: rgba(255,255,255,.65); color: var(--ink);
+  font-size: .9375rem; font-weight: 600; cursor: pointer;
+  transition: background .2s var(--ease), border-color .2s var(--ease), box-shadow .2s var(--ease), color .2s var(--ease), transform .2s var(--ease);
+  -webkit-tap-highlight-color: transparent; touch-action: manipulation;
+}
+button:active:not(:disabled) { transform: scale(.98); }
+button:disabled { opacity: .5; cursor: default; }
+button:focus-visible, a:focus-visible { outline: 3px solid #247e8d; outline-offset: 4px; }
+input:focus, select:focus, textarea:focus {
+  outline: 2px solid #328780; outline-offset: 2px; border-color: #559c97;
+  box-shadow: 0 0 0 5px rgba(39,133,125,.07);
+}
+.primary {
+  background: linear-gradient(135deg, #237f77, #125b62);
+  color: white; border-color: rgba(15,87,88,.25);
+  box-shadow: 0 5px 14px rgba(20,106,104,.17), inset 0 1px 0 rgba(255,255,255,.2);
+}
+.danger { color: #a52d42; }
+.icon { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; vertical-align: middle; }
+[data-icon] { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.shell { display: grid; grid-template-columns: 264px minmax(0,1fr); min-height: 100vh; }
+aside {
+  display: flex; flex-direction: column; position: sticky; top: 0;
+  height: 100vh; height: 100dvh; overflow-y: auto; padding: 36px 22px 26px;
+  background: rgba(255,255,255,.43); border-right: 1px solid var(--glass-border);
+  backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+}
+.brand { display: flex; gap: 12px; align-items: center; margin-bottom: 44px; }
+.brandmark {
+  display: grid; place-items: center; width: 48px; height: 48px; border-radius: 17px;
+  color: white; background: linear-gradient(145deg,#258a7f,#175c66);
+  box-shadow: 0 7px 16px rgba(25,106,100,.17), inset 0 1px 0 rgba(255,255,255,.25);
+}
+.brandmark .icon { width: 25px; height: 25px; }
+.brand b { display: block; font-size: 21px; font-weight: 800; letter-spacing: -.6px; line-height: 1.4; }
+.brand small { display: block; margin-top: 4px; color: var(--muted); font-size: 12px; }
+nav { display: grid; gap: 9px; }
+nav button { justify-content: flex-start; min-height: 50px; padding: 12px 16px; border-color: transparent; background: transparent; color: var(--muted); }
+nav button.active { background: rgba(255,255,255,.82); color: #126660; border-color: rgba(255,255,255,.95); box-shadow: 0 5px 16px rgba(60,105,105,.07), inset 3px 0 0 #3c9c90; }
+.side-note { margin-top: auto; padding: 20px; border: 1px solid var(--glass-border); border-radius: 22px; background: linear-gradient(140deg,rgba(255,255,255,.70),rgba(226,248,242,.50)); color: var(--muted); font-size: 14px; box-shadow: var(--shadow); }
+.side-note strong { display: block; margin-bottom: 8px; color: var(--green); font-size: 15px; }
+.content { width: 100%; min-width: 0; max-width: 1600px; margin: 0 auto; padding: 30px clamp(24px,3.2vw,56px) 36px; }
+.topline { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; padding-bottom: 24px; border-bottom: 1px solid rgba(100,137,146,.16); color: var(--muted); font-size: 14px; }
+.local { display: inline-flex; align-items: center; gap: 8px; padding: 7px 13px; border: 1px solid var(--glass-border); border-radius: 100px; background: rgba(255,255,255,.62); color: #3c6467; font-size: 13px; box-shadow: 0 2px 8px rgba(50,90,100,.025); }
+.local .icon { width: 17px; height: 17px; }
+.heading { display: flex; align-items: center; justify-content: space-between; gap: 24px; margin: 34px 0 30px; }
+.heading > div { min-width: 0; }
+.heading > button { flex-shrink: 0; }
+h1 { margin: 0 0 8px; font-size: clamp(1.7rem,2.35vw,2.25rem); font-weight: 800; letter-spacing: -.7px; line-height: 1.4; overflow-wrap: anywhere; }
+h2 { margin: 0; font-size: 1.1875rem; line-height: 1.55; font-weight: 700; letter-spacing: -.25px; }
+p { margin: 6px 0; }
+.muted { color: var(--muted); }
+.stats { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 18px; margin-bottom: 34px; }
+.stat, .card, .panel, .empty {
+  background: var(--glass); border: 1px solid var(--glass-border); border-radius: var(--radius);
+  box-shadow: var(--shadow), inset 0 1px 0 rgba(255,255,255,.7);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+}
+.stat { padding: 24px; position: relative; min-width: 0; transition: transform .25s var(--ease), box-shadow .25s var(--ease); }
+.stat:first-child { color: #164b49; background: linear-gradient(125deg,rgba(203,241,235,.82),rgba(239,255,247,.75)); border-color: rgba(255,255,255,.94); }
+.stat label { display: block; max-width: calc(100% - 30px); color: #526e76; font-size: 14px; font-weight: 500; line-height: 1.6; }
+.stat strong { display: flex; align-items: baseline; flex-wrap: wrap; gap: 2px; font-size: clamp(2rem,2.7vw,2.6rem); font-weight: 700; line-height: 1.4; margin-top: 16px; letter-spacing: -1px; font-variant-numeric: tabular-nums; }
+.stat strong span { color: var(--muted); letter-spacing: 0; }
+.stat > .icon { position: absolute; top: 22px; right: 20px; color: #53817f; width: 22px; height: 22px; }
+.section-head { display: flex; justify-content: space-between; align-items: center; gap: 14px; flex-wrap: wrap; margin: 28px 0 16px; }
+.section-head small { color: var(--muted); font-size: 14px; }
+.filters { display: grid; grid-template-columns: minmax(220px,1.8fr) repeat(3,minmax(0,1fr)); gap: 12px; padding: 16px; margin-bottom: 24px; background: rgba(255,255,255,.46); border: 1px solid var(--glass-border); border-radius: 22px; box-shadow: 0 3px 16px rgba(50,85,100,.025); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+input, select, textarea { width: 100%; min-width: 0; border: 1px solid rgba(109,148,151,.26); border-radius: 13px; padding: 12px 14px; color: var(--ink); background-color: rgba(255,255,255,.77); transition: border-color .2s var(--ease), box-shadow .2s var(--ease), background-color .2s var(--ease); }
+input::placeholder, textarea::placeholder { color: #657d85; opacity: 1; }
+select { appearance: none; padding-right: 37px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' fill='none' stroke='%23566e78' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 8 4 4 4-4'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; text-overflow: ellipsis; }
+option { color: var(--ink); background: #fff; }
+textarea { resize: vertical; }
+.search { position: relative; min-width: 0; display: flex; align-items: stretch; }
+.search input { padding-left: 42px; min-height: 50px; }
+.search > [data-icon] { position: absolute; top: 50%; transform: translateY(-50%); left: 14px; color: #5f7e83; pointer-events: none; }
+.cards { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); align-items: stretch; gap: 22px; }
+.card { display: flex; flex-direction: column; min-width: 0; position: relative; padding: 26px; overflow: hidden; transition: transform .25s var(--ease), box-shadow .25s var(--ease), border-color .25s var(--ease), background .25s var(--ease); }
+.card::before { content: ''; position: absolute; top: 0; left: 26px; right: 26px; height: 3px; border-radius: 0 0 6px 6px; background: var(--bank); opacity: .68; }
+.card-top { display: flex; align-items: center; gap: 12px; margin-bottom: 22px; }
+.bank-logo { display: grid; place-items: center; flex-shrink: 0; width: 46px; height: 46px; border: 1px solid rgba(255,255,255,.35); border-radius: 16px; background: var(--bank); color: white; font-size: 13px; font-weight: 700; letter-spacing: -.2px; box-shadow: 0 4px 10px rgba(40,65,80,.10), inset 0 1px 0 rgba(255,255,255,.2); }
+.bank-label { flex: 1; min-width: 0; }
+.bank-label strong { display: block; font-size: 16px; line-height: 1.55; overflow-wrap: anywhere; }
+.bank-label small { display: block; color: var(--muted); font-size: 13px; margin-top: 2px; }
+.star { padding: 0; width: 42px; height: 42px; min-height: 42px; flex-shrink: 0; border: 1px solid transparent; background: transparent; color: #6b8186; border-radius: 14px; }
+.star.selected { color: #936116; background: rgba(255,243,206,.88); border-color: rgba(219,172,71,.22); }
+.star.selected svg { fill: #e9bb57; }
+.account-number { margin: 8px 0 6px; font: 600 clamp(1.5rem,1.8vw,1.85rem)/1.5 Consolas, 'SFMono-Regular', monospace; font-variant-numeric: tabular-nums; letter-spacing: .2px; overflow-wrap: anywhere; color: #1b414b; }
+.owner { overflow-wrap: anywhere; font-size: 15px; color: #405e66; }
+.tags { display: flex; flex-wrap: wrap; gap: 7px; margin: 18px 0; }
+.tag { font-size: 12px; line-height: 1.6; padding: 4px 10px; border: 1px solid rgba(83,133,128,.10); border-radius: 9px; background: rgba(225,240,235,.65); color: #4b6c67; }
+.tag.off { background: rgba(255,235,227,.84); color: #974330; border-color: rgba(176,94,60,.15); }
+.note { font-size: 14px; color: var(--muted); overflow-wrap: anywhere; white-space: pre-line; margin-bottom: 18px; }
+.actions { display: flex; gap: 8px; margin-top: auto; padding-top: 18px; border-top: 1px solid var(--line); }
+.actions button { flex: 1; min-width: 0; padding: 10px 8px; font-size: 14px; line-height: 1.6; border-radius: 12px; }
+.actions button:first-child { background: rgba(223,245,235,.76); color: #17665f; border-color: rgba(97,158,141,.18); }
+.actions .icon { width: 17px; height: 17px; }
+.card-foot { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 12px; }
+.card-foot > span { min-width: 0; overflow-wrap: anywhere; }
+.text-btn { border: 0; min-height: 40px; padding: 6px 10px; background: transparent; color: var(--muted); font-size: 14px; border-radius: 12px; flex-shrink: 0; }
+.empty { grid-column: 1/-1; text-align: center; padding: 62px 24px 68px; background: linear-gradient(135deg,rgba(255,255,255,.65),rgba(255,255,255,.40)); }
+.empty .empty-icon { display: grid; place-items: center; width: 76px; height: 76px; margin: 0 auto 22px; border: 1px solid rgba(255,255,255,.95); border-radius: 25px; background: linear-gradient(145deg,#ddf6ee,#f5f9e6); color: var(--green); box-shadow: 0 8px 22px rgba(69,120,102,.07); }
+.empty .empty-icon .icon { width: 30px; height: 30px; }
+.empty h2 { font-size: 22px; }
+.empty p { max-width: 460px; margin: 12px auto 25px; color: var(--muted); }
+.settings-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 24px; }
+.panel { padding: 30px; min-width: 0; }
+.panel h2 { margin-bottom: 20px; }
+.panel p { color: var(--muted); margin-bottom: 18px; overflow-wrap: anywhere; }
+.check { display: flex; align-items: flex-start; gap: 12px; margin: 16px 0; cursor: pointer; }
+.check input { width: 19px; height: 19px; margin: 4px 0 0; flex-shrink: 0; accent-color: var(--green); cursor: pointer; }
+.check span { min-width: 0; }
+.check small { font-size: 13px; }
+pre { padding: 18px; border: 1px solid rgba(108,144,151,.17); border-radius: 16px; background: rgba(242,249,249,.65); color: #466670; font-family: inherit; font-size: 14px; line-height: 1.9; white-space: pre-wrap; overflow-wrap: anywhere; }
+footer { display: flex; justify-content: space-between; gap: 16px; margin-top: 38px; padding-top: 20px; border-top: 1px solid rgba(100,137,146,.15); color: var(--muted); font-size: 12px; }
+dialog { padding: 0; width: min(650px,calc(100% - 32px)); max-height: calc(100vh - 48px); max-height: calc(100dvh - 48px); border: 1px solid rgba(255,255,255,.95); border-radius: 30px; background: linear-gradient(145deg,rgba(250,255,254,.94),rgba(255,251,255,.92)); color: var(--ink); box-shadow: 0 32px 100px rgba(35,68,78,.22), inset 0 1px 0 white; backdrop-filter: blur(28px); -webkit-backdrop-filter: blur(28px); scrollbar-width: thin; scrollbar-color: #a4c3bf transparent; }
+dialog[open] { animation: modal-enter .24s var(--ease) both; }
+dialog::backdrop { background: rgba(29,54,68,.30); backdrop-filter: blur(7px); -webkit-backdrop-filter: blur(7px); }
+.modal-head { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 22px 28px; border-bottom: 1px solid var(--line); background: rgba(255,255,255,.70); position: sticky; top: 0; z-index: 1; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
+.modal-head h2 { font-size: 21px; }
+.modal-head .text-btn { width: 42px; height: 42px; padding: 8px; background: rgba(228,239,238,.6); border: 1px solid rgba(115,152,151,.1); }
+form { padding: 26px 28px; }
+.fields { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 20px 18px; }
+.field { min-width: 0; }
+.field label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 8px; color: #385b62; }
+.full { grid-column: 1/-1; }
+.form-foot { display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px; border-top: 1px solid var(--line); padding-top: 22px; }
+.error { color: #a62c3a; font-size: 14px; margin: 10px 0; white-space: pre-line; }
+.toast { position: fixed; bottom: max(26px,env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); z-index: 10; max-width: calc(100% - 32px); padding: 14px 24px; border: 1px solid rgba(255,255,255,.22); border-radius: 18px; background: rgba(24,66,67,.94); color: white; text-align: center; box-shadow: 0 12px 38px rgba(25,70,70,.18); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); animation: toast-enter .22s var(--ease) both; }
+.banner { background: rgba(255,245,221,.88); color: #77511c; border: 1px solid rgba(191,143,58,.25); padding: 16px 20px; border-radius: 18px; margin-top: 18px; }
+#listView { animation: content-enter .28s var(--ease) both; }
+body [hidden] { display: none !important; }
+@keyframes modal-enter { from { opacity: 0; transform: translateY(12px) scale(.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+@keyframes content-enter { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes toast-enter { from { opacity: 0; transform: translate(-50%,8px); } to { opacity: 1; transform: translate(-50%,0); } }
+@media (hover:hover) and (pointer:fine) {
+  button:hover:not(:disabled) { background-color: rgba(255,255,255,.96); border-color: rgba(75,132,132,.36); box-shadow: 0 4px 12px rgba(54,100,100,.06); transform: translateY(-1px); }
+  .primary:hover:not(:disabled) { background: linear-gradient(135deg,#1b736c,#104f56); box-shadow: 0 8px 20px rgba(20,106,104,.22); }
+  nav button:hover { background: rgba(255,255,255,.63); }
+  nav button.active:hover { background: rgba(255,255,255,.93); }
+  .card:hover { transform: translateY(-4px); border-color: rgba(255,255,255,.98); box-shadow: 0 18px 42px rgba(59,91,105,.10), inset 0 1px 0 white; background: rgba(255,255,255,.77); }
+  .stat:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(59,91,105,.09); }
+  .star:hover { color: #a57114; background: rgba(255,244,213,.86); }
+  .actions button:first-child:hover { background: rgba(206,237,224,.9); }
+  .text-btn:hover { color: var(--green); background: rgba(222,241,233,.7); }
+  input:hover, select:hover, textarea:hover { border-color: rgba(59,125,126,.42); }
+}
+@media (max-width:1350px) {
+  .shell { grid-template-columns: 238px minmax(0,1fr); }
+  .content { padding-inline: 28px; }
+  .cards { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .filters { grid-template-columns: minmax(0,1fr) minmax(0,1fr); }
+  .stats { gap: 12px; }
+  .stat { padding: 20px; }
+  .stat > .icon { right: 16px; top: 20px; }
+}
+@media (max-width:1100px) {
+  .stats { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 16px; }
+  .settings-grid { grid-template-columns: minmax(0,1fr); }
+  .card { padding: 22px; }
+  .actions { flex-wrap: wrap; }
+  .actions button { flex-basis: 100%; }
+  .heading { align-items: flex-start; }
+}
+@media (max-width:850px) {
+  .shell { display: block; }
+  aside { height: auto; position: relative; overflow: visible; padding: 22px 24px 16px; border-right: 0; border-bottom: 1px solid var(--glass-border); }
+  .brand { margin-bottom: 20px; }
+  .side-note { display: none; }
+  nav { display: flex; gap: 8px; }
+  nav button { flex: 1; justify-content: center; padding: 11px 12px; font-size: 14px; min-width: 0; }
+  nav button.active { box-shadow: 0 3px 12px rgba(60,105,105,.06), inset 0 -3px 0 #3c9c90; }
+  .content { padding: 24px; }
+  .heading { align-items: center; }
+  .actions { flex-wrap: nowrap; }
+  .actions button { flex-basis: 0; }
+  .topline { padding-bottom: 20px; }
+}
+@media (max-width:640px) {
+  .cards { grid-template-columns: minmax(0,1fr); gap: 18px; }
+  .heading { align-items: flex-start; flex-direction: column; gap: 18px; margin: 26px 0 24px; }
+  .heading > button { width: 100%; min-height: 50px; }
+  .filters { padding: 13px; gap: 10px; }
+  .search { grid-column: 1/-1; }
+  #statusFilter { grid-column: 1/-1; }
+  .topline { gap: 8px; }
+  .topline > span:first-child { font-size: 12px; }
+  .local { font-size: 12px; padding: 6px 10px; }
+  .stats { gap: 12px; margin-bottom: 26px; }
+  .stat { padding: 18px; border-radius: 22px; }
+  .stat strong { font-size: 32px; margin-top: 14px; }
+  .stat label { font-size: 13px; max-width: 100%; }
+  .stat > .icon { display: none; }
+  .card { padding: 24px; }
+  .account-number { font-size: 28px; }
+  .panel { padding: 24px; }
+  .settings-grid { gap: 18px; }
+  .empty { padding: 40px 22px 46px; }
+  .empty h2 { font-size: 20px; }
+  .fields { grid-template-columns: minmax(0,1fr); gap: 16px; }
+  .full { grid-column: 1/-1; }
+  dialog { width: calc(100% - 24px); max-height: calc(100dvh - 24px); border-radius: 25px; }
+  .modal-head { padding: 18px 20px; }
+  form { padding: 22px 20px; }
+  .form-foot { position: sticky; bottom: -22px; background: rgba(252,254,253,.97); margin-inline: -20px; padding: 18px 20px; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+  .form-foot button { flex: 1; min-width: 0; padding-inline: 12px; font-size: 14px; }
+  footer { flex-direction: column; gap: 5px; margin-top: 30px; }
+}
+@media (max-width:380px) {
+  aside { padding: 18px 14px 14px; }
+  .content { padding: 20px 14px; }
+  nav { gap: 4px; }
+  nav button { font-size: 13px; padding: 10px 7px; gap: 6px; }
+  nav .icon { width: 17px; height: 17px; }
+  .topline { justify-content: flex-end; }
+  .topline > span:first-child { display: none; }
+  .filters { grid-template-columns: minmax(0,1fr); }
+  .stat { padding: 16px; }
+  .stat strong { font-size: 29px; }
+  .card { padding: 22px; }
+  .account-number { font-size: 25px; }
+  .panel { padding: 20px; }
+}
+@media (prefers-reduced-motion:reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  .card:hover, .stat:hover, button:hover, button:active { transform: none !important; }
+}
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))) {
+  aside { background: rgba(247,255,253,.96); }
+  .stat, .card, .panel, .empty { background-color: rgba(255,255,255,.94); }
+  dialog { background: #fbfdfd; }
+}
+@media print {
+  body { background: white; }
+  aside, .filters, .heading > button, .actions, .card-foot button, .star, .toast { display: none !important; }
+  .shell { display: block; }
+  .content { padding: 0; max-width: none; }
+  .card, .stat, .panel { box-shadow: none; backdrop-filter: none; break-inside: avoid; border-color: #ccd8d8; }
+}
+
+.record-actions{display:flex;align-items:center;gap:4px;flex-shrink:0;margin-left:auto}.card-foot{flex-wrap:wrap}.text-btn.danger{color:#a52d42}.text-btn.danger:hover{background:#fff0f0}.text-btn.danger .icon{width:17px;height:17px}.delete-buttons,.connection-buttons{display:flex;gap:12px;flex-wrap:wrap}.delete-buttons{justify-content:flex-end;margin-top:24px}.delete-primary{background:linear-gradient(135deg,#b83f54,#96263e);color:white;border-color:#a83950}.delete-primary:hover:not(:disabled){background:#8e263c;color:white}#deleteDialog{width:min(500px,calc(100% - 28px))}#deleteDetails{white-space:pre-line}.delete-buttons button{font-size:14px;padding-inline:12px}
+#adminDialog{width:min(460px,calc(100% - 28px))}.heading>div:first-child{flex:1}#adminExit{flex-shrink:0}@media(max-width:850px){nav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}nav button{padding-inline:7px;gap:6px}}@media(max-width:500px){nav{grid-template-columns:repeat(2,minmax(0,1fr))}nav button{flex-direction:column;justify-content:center;padding-inline:6px;min-height:64px;font-size:13px;gap:4px}.heading{flex-wrap:wrap}}
+
+/* Compact account cards: sized to content, with touch-friendly controls on mobile. */
+@media screen {
+  .cards { grid-template-columns: repeat(auto-fill,minmax(min(100%,290px),1fr)); gap: 16px; }
+  .card { padding: 18px; border-radius: 22px; }
+  .card::before { left: 18px; right: 18px; }
+  .card-top { gap: 10px; margin-bottom: 12px; }
+  .bank-logo { width: 38px; height: 38px; border-radius: 12px; font-size: 12px; }
+  .bank-label strong { font-size: 15px; line-height: 1.45; }
+  .bank-label small { margin-top: 1px; line-height: 1.5; }
+  .star { width: 38px; height: 38px; min-height: 38px; border-radius: 12px; }
+  .star .icon { width: 18px; height: 18px; }
+  .account-number { font-size: 23px; line-height: 1.35; margin: 4px 0 5px; }
+  .owner { font-size: 14px; line-height: 1.6; }
+  .tags { gap: 6px; margin: 10px 0; }
+  .tag { padding: 3px 8px; border-radius: 8px; }
+  .note { font-size: 14px; line-height: 1.55; margin-bottom: 10px; }
+  .actions { flex-wrap: nowrap; gap: 8px; padding-top: 10px; }
+  .actions button { flex: 1 1 0; min-height: 38px; padding: 7px 6px; font-size: 14px; line-height: 1.5; border-radius: 10px; gap: 6px; }
+  .actions .icon { width: 16px; height: 16px; }
+  .card-foot { gap: 8px; margin-top: 8px; }
+  .card-foot .text-btn { min-height: 36px; padding: 4px 8px; }
+}
+@media screen and (max-width:640px) {
+  .cards { gap: 14px; }
+  .card { padding: 16px; border-radius: 20px; }
+  .card::before { left: 16px; right: 16px; }
+  .account-number { font-size: 23px; }
+  .star { width: 44px; height: 44px; min-height: 44px; }
+  .actions button, .card-foot .text-btn { min-height: 44px; }
+}
+
+
+/* Full-width horizontal account rows. */
+@media screen {
+  .topline { justify-content: flex-end; border: 0; padding-bottom: 0; }
+  .heading { margin: 20px 0 18px; }
+  .brand { margin-bottom: 30px; }
+  .section-head { margin: 18px 0 12px; }
+  .filters { margin-bottom: 16px; }
+  .cards { display: flex; flex-direction: column; gap: 10px; }
+  .card { width: 100%; display: grid; grid-template-columns: minmax(175px,1.1fr) minmax(170px,1fr) minmax(135px,.9fr) 230px; align-items: center; gap: 5px 20px; padding: 16px 20px; border-radius: 18px; }
+  .card::before { inset: 14px auto 14px 0; width: 3px; height: auto; border-radius: 0 4px 4px 0; }
+  .card-top { grid-column: 1; grid-row: 1 / 4; margin: 0; gap: 10px; }
+  .account-number { grid-column: 2; grid-row: 1; font-size: 21px; line-height: 1.4; margin: 0; }
+  .owner { grid-column: 2; grid-row: 2 / 4; font-size: 14px; align-self: start; }
+  .tags { grid-column: 3; grid-row: 1; margin: 0; gap: 5px; }
+  .note { grid-column: 3; grid-row: 2; margin: 0; font-size: 13px; line-height: 1.5; }
+  .actions { grid-column: 4; grid-row: 1 / 3; margin: 0; border: 0; padding: 0; flex-wrap: nowrap; gap: 8px; }
+  .actions button { flex: 1 1 0; min-height: 40px; }
+  .card-foot { display: contents; }
+  .card-foot > span { grid-column: 3; grid-row: 3; }
+  .record-actions { grid-column: 4; grid-row: 3; justify-content: flex-end; }
+  .record-actions .text-btn { min-height: 34px; padding: 3px 8px; }
+}
+@media screen and (max-width:1250px) {
+  .card { grid-template-columns: minmax(175px,1fr) minmax(155px,1fr) 220px; gap: 7px 16px; }
+  .card-top { grid-column: 1; grid-row: 1 / 3; }
+  .account-number { grid-column: 2; grid-row: 1; }
+  .owner { grid-column: 2; grid-row: 2; }
+  .tags { grid-column: 1; grid-row: 3; }
+  .note { grid-column: 2; grid-row: 3; }
+  .card-foot > span { grid-column: 1 / 3; grid-row: 4; }
+  .actions { grid-column: 3; grid-row: 1 / 3; }
+  .record-actions { grid-column: 3; grid-row: 3 / 5; }
+}
+@media screen and (max-width:1000px) {
+  .card { grid-template-columns: minmax(0,1fr) minmax(0,1fr); padding: 14px 18px; gap: 7px 16px; }
+  .card-top { grid-column: 1; grid-row: 1 / 3; }
+  .account-number { grid-column: 2; grid-row: 1; }
+  .owner { grid-column: 2; grid-row: 2; }
+  .tags { grid-column: 1; grid-row: 3; }
+  .note { grid-column: 1; grid-row: 4; }
+  .card-foot > span { grid-column: 1; grid-row: 5; }
+  .actions { grid-column: 2; grid-row: 3 / 5; }
+  .record-actions { grid-column: 2; grid-row: 5; }
+}
+@media screen and (max-width:600px) {
+  .card { grid-template-columns: minmax(0,1fr); gap: 7px; padding: 14px 16px; }
+  .card-top { grid-column: 1; grid-row: 1; }
+  .account-number { grid-column: 1; grid-row: 2; font-size: 22px; }
+  .owner { grid-column: 1; grid-row: 3; }
+  .tags { grid-column: 1; grid-row: 4; }
+  .note { grid-column: 1; grid-row: 5; }
+  .card-foot > span { grid-column: 1; grid-row: 6; }
+  .actions { grid-column: 1; grid-row: 7; margin-top: 3px; }
+  .actions button { min-height: 44px; }
+  .record-actions { grid-column: 1; grid-row: 8; }
+}
+
+/* Pagination is independent of the sidebar navigation layout. */
+#pagination.pagination{display:flex;flex-direction:row;justify-content:flex-end;align-items:center;flex-wrap:wrap;gap:12px;margin-top:18px}
+#pagination button{flex:none;min-height:44px;padding:9px 16px;font-size:14px;background:rgba(255,255,255,.72);border:1px solid var(--line);border-radius:12px}
+#pagination button:disabled{opacity:.45;cursor:default;transform:none;box-shadow:none}
+#pageInfo{font-size:14px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+@media(max-width:500px){#pagination.pagination{justify-content:center;gap:8px}#pagination button{padding-inline:12px}#pageInfo{font-size:13px}}
+.reset-filter{grid-column:1/-1;justify-self:end;min-height:44px;padding:9px 14px}.reset-filter .icon,#resetAccountForm .icon{width:17px;height:17px}#resetAccountForm{margin-right:auto}#accountForm .form-foot{flex-wrap:wrap}@media(min-width:1351px){.filters{grid-template-columns:minmax(220px,1.8fr) repeat(3,minmax(0,1fr)) auto}.reset-filter{grid-column:auto;align-self:stretch}}@media(max-width:500px){.reset-filter{justify-self:stretch}#accountForm #resetAccountForm{flex-basis:100%;margin-right:0}}
+.local.is-loading::before{content:'';width:13px;height:13px;flex-shrink:0;border:2px solid rgba(20,106,104,.22);border-top-color:#146a68;border-radius:50%;animation:connection-spin .8s linear infinite}#reloadAccounts{flex-shrink:0;min-height:44px}@keyframes connection-spin{to{transform:rotate(360deg)}}@media(prefers-reduced-motion:reduce){.local.is-loading::before{animation:none}}
+/* Full-width workspace with the Admin entry in the top-right toolbar. */
+.shell{display:block;min-height:100vh}.content{max-width:none;width:100%;margin:0;padding:24px clamp(16px,2.2vw,40px) 32px}
+.heading{display:flex;align-items:center;flex-direction:row;flex-wrap:wrap;gap:16px}.header-actions{display:flex;align-items:center;justify-content:flex-end;flex-wrap:wrap;gap:10px;margin-left:auto}.header-actions button{min-height:44px}.header-actions button.active{background:var(--light);color:var(--green)}
+@media(max-width:640px){.content{padding:16px}.heading>div:first-child{flex-basis:100%}.header-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:100%;gap:8px}.header-actions button{width:100%;min-width:0;margin:0}.header-actions #addBtn{grid-column:1/-1}.header-actions #adminExit{font-size:14px}}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<main class="content"><div class="topline"><span class="local" id="dataSourceBadge" role="status" aria-live="polite"><span data-icon="shield"></span>บันทึกบนอุปกรณ์นี้</span></div>
+<div id="storageWarning" class="banner" role="alert" hidden></div>
+<div class="heading"><div><h1 id="pageTitle">Family Bank Manager</h1></div><div class="header-actions"><button id="reloadAccounts" type="button" class="text-btn" aria-label="โหลดข้อมูลล่าสุด" title="โหลดข้อมูลล่าสุด"><span data-icon="reset"></span>รีเฟรช</button><button id="adminEntry" type="button" data-view="admin"><span data-icon="shield"></span>Admin</button><button id="adminExit" class="text-btn" hidden><span data-icon="shield"></span>ล็อกหน้า Admin</button><button class="primary" id="addBtn"><span data-icon="plus"></span>เพิ่มบัญชีใหม่</button></div></div>
+<section id="listView">
+
+<div class="section-head"><h2 id="listTitle">บัญชีของคุณ</h2><small id="resultCount" aria-live="polite"></small></div>
+<div class="filters"><div class="search"><span data-icon="search"></span><input id="search" aria-label="ค้นหาบัญชี" placeholder="ค้นหาชื่อ ธนาคาร หรือเลขบัญชี…" type="search"></div><select id="bankFilter" aria-label="กรองธนาคาร"><option value="">ทุกธนาคาร</option></select><select id="categoryFilter" aria-label="กรองหมวดหมู่"><option value="">ทุกหมวดหมู่</option></select><select id="statusFilter" aria-label="กรองสถานะ"><option value="active">กำลังใช้งาน</option><option value="all">ทุกสถานะ</option><option value="inactive">ปิดใช้งาน</option><option value="favorite">บัญชีโปรดที่ใช้งาน</option></select><button id="resetSearch" type="button" class="reset-filter" aria-label="รีเซ็ตการค้นหา"><span data-icon="reset"></span>รีเซ็ต</button></div>
+<div id="cards" class="cards"></div><nav id="pagination" class="pagination" aria-label="หน้ารายการบัญชี" hidden><button id="previousPage" type="button">หน้าก่อนหน้า</button><span id="pageInfo" aria-live="polite"></span><button id="nextPage" type="button">หน้าถัดไป</button></nav></section>
+<div id="storedPreferences" hidden><div class="settings-grid">
+<div class="panel full" id="cloudConnectionPanel" hidden><h2>การเชื่อมต่อ Google Sheets</h2><p>ฝัง URL ของ Apps Script ในไฟล์แล้ว ไม่ต้องใช้ API key</p><p id="connectionStatus" role="status" aria-live="polite">กำลังเชื่อมต่อ…</p><div class="connection-buttons"><button id="refreshCloud" class="primary">โหลดข้อมูลจาก Sheet</button><button id="migrateLocal">นำข้อมูลเดิมบนอุปกรณ์ขึ้น Sheet</button><button id="useLocal">ใช้ข้อมูลบนอุปกรณ์</button></div><p style="font-size:14px;margin-top:16px">ข้อมูลเดิมบนอุปกรณ์ยังเก็บไว้แยกจาก Sheet การนำขึ้น Sheet จะเพิ่มเฉพาะบัญชีที่ยังไม่มี โดยไม่เขียนทับบัญชีเดิม</p></div><div class="panel"><h2>การแสดงผลและการคัดลอก</h2><label class="check"><input id="maskSetting" type="checkbox"><span>ซ่อนเลขบัญชีบางส่วนบนหน้าจอ<br><small class="muted">ปุ่มคัดลอกยังคัดลอกเลขบัญชีเต็ม</small></span></label><label class="check"><input id="branchSetting" type="checkbox"><span>เพิ่มสาขาในข้อความที่คัดลอก</span></label><p style="font-size:14px">ตัวอย่างรูปแบบ “คัดลอกทั้งหมด”</p><pre id="copyPreview"></pre></div>
+<div class="panel"><h2>ข้อมูลสำรอง</h2><p>ส่งออกเป็นไฟล์ JSON เพื่อเก็บสำรอง หรือย้ายไปยังเบราว์เซอร์อื่น ไฟล์มีเลขบัญชีเต็ม กรุณาจัดเก็บไว้ในที่ส่วนตัว</p><div style="display:flex;gap:10px;flex-wrap:wrap"><button id="exportBtn"><span data-icon="download"></span>ส่งออกข้อมูล</button><button id="importBtn"><span data-icon="upload"></span>นำเข้าข้อมูล</button></div><p style="font-size:14px;margin-top:16px">การนำเข้าจะเพิ่มเฉพาะบัญชีที่ยังไม่มี โดยตรวจธนาคารและเลขบัญชีซ้ำ ไม่เขียนทับข้อมูลเดิม</p><input id="importFile" type="file" accept="application/json,.json" hidden><p id="importResult" role="status"></p></div>
+<div class="panel full"><h2>เกี่ยวกับพื้นที่จัดเก็บนี้</h2><p>โหมด Google Sheets อ่านและบันทึกผ่าน Apps Script ส่วนโหมดบนอุปกรณ์เก็บข้อมูลใน Local Storage ของเบราว์เซอร์ ข้อมูลทั้งสองชุดแยกกัน ไม่มีการย้ายข้อมูลเดิมอัตโนมัติ ควรส่งออกข้อมูลสำรองเป็นระยะ</p><p style="margin:0">เก็บเฉพาะรายละเอียดบัญชีสำหรับอ้างอิง ไม่ใช้เก็บรหัสผ่าน PIN หรือ OTP</p></div></div></div>
+</main></div>
+<dialog id="accountDialog" aria-labelledby="dialogTitle"><div class="modal-head"><h2 id="dialogTitle">เพิ่มบัญชีใหม่</h2><button type="button" class="text-btn" id="closeDialog" aria-label="ปิดหน้าต่าง"><span data-icon="close"></span></button></div>
+<form id="accountForm"><div class="fields">
+<div class="field full"><label for="nickname">ชื่อเรียกบัญชี *</label><input id="nickname" name="nickname" required maxlength="100" placeholder="เช่น บัญชีค่าใช้จ่ายบ้าน"></div>
+<div class="field"><label for="bank">ธนาคาร *</label><select id="bank" name="bank" required></select></div><div class="field"><label for="number">เลขบัญชี *</label><input id="number" name="number" required inputmode="numeric" pattern="[0-9\s\-]{6,40}" maxlength="40" placeholder="เลขบัญชี ใช้ขีดหรือเว้นวรรคได้"><small class="muted" style="font-size:12px">เก็บเลข 0 ด้านหน้าไว้ครบถ้วน</small></div>
+<div class="field full"><label for="owner">ชื่อเจ้าของบัญชี *</label><input id="owner" name="owner" required maxlength="120" placeholder="ชื่อตามบัญชีธนาคาร" list="ownerSuggestions"><datalist id="ownerSuggestions"></datalist></div>
+<div class="field"><label for="type">ประเภทบัญชี</label><select id="type" name="type"><option>ออมทรัพย์</option><option>กระแสรายวัน</option><option>ฝากประจำ</option><option>อื่น ๆ</option></select></div><div class="field"><label for="category">หมวดหมู่</label><select id="category" name="category"><option>พ่อ</option><option>แม่</option><option>ลูกชาย</option><option>ลูกสาว</option></select></div>
+<div class="field"><label for="branch">สาขา</label><input id="branch" name="branch" maxlength="100" placeholder="ไม่บังคับ"></div><div class="field"><label for="status">สถานะ</label><select id="status" name="status"><option value="active">ใช้งาน</option><option value="inactive">ปิดใช้งาน</option></select></div>
+<div class="field full"><label for="note">หมายเหตุ</label><textarea id="note" name="note" rows="2" maxlength="500" placeholder="เช่น ใช้รับเงินค่าเช่า"></textarea></div></div>
+<label class="check"><input id="favorite" name="favorite" type="checkbox"><span>ปักหมุดเป็นบัญชีโปรด</span></label><div id="formError" class="error" role="alert"></div><div class="form-foot"><button type="button" id="resetAccountForm"><span data-icon="reset"></span>รีเซ็ตฟอร์ม</button><button type="button" id="cancelDialog">ยกเลิก</button><button class="primary" type="submit">บันทึกบัญชี</button></div></form></dialog>
+<dialog id="copyDialog" aria-labelledby="copyTitle"><div class="modal-head"><h2 id="copyTitle">คัดลอกด้วยตนเอง</h2><button id="closeCopy" class="text-btn" aria-label="ปิด">✕</button></div><div style="padding:24px"><p class="muted">เบราว์เซอร์ไม่อนุญาตให้คัดลอกอัตโนมัติ เลือกข้อความด้านล่างแล้วกดคัดลอก</p><textarea id="manualCopy" rows="5" readonly aria-label="ข้อความสำหรับคัดลอก"></textarea></div></dialog>
+<dialog id="adminDialog" aria-labelledby="adminTitle"><div class="modal-head"><h2 id="adminTitle">เข้าสู่หน้า Admin</h2><button type="button" id="cancelAdmin" class="text-btn" aria-label="ปิดหน้าต่าง Admin"><span data-icon="close"></span></button></div><form id="adminForm"><p class="muted">กรอกรหัสผู้ดูแลเพื่อแก้ไขและลบบัญชี</p><div class="field" style="margin-top:18px"><label for="adminPassword">รหัสผ่าน Admin</label><input id="adminPassword" type="password" required autocomplete="current-password" maxlength="100"></div><p id="adminError" class="error" role="alert"></p><div class="form-foot"><button class="primary" type="submit">เข้าสู่ระบบ</button></div></form></dialog><dialog id="deleteDialog" aria-labelledby="deleteTitle" aria-describedby="deleteTarget"><div class="modal-head"><h2 id="deleteTitle">ยืนยันการลบบัญชี</h2></div><div style="padding:24px"><p id="deleteTarget"></p><pre id="deleteDetails"></pre><p class="muted">การลบนี้ไม่สามารถย้อนกลับได้ หากต้องการเก็บข้อมูลไว้ ให้ยกเลิกแล้วเปลี่ยนสถานะเป็น “ปิดใช้งาน” แทน</p><p id="deleteError" class="error" role="alert"></p><div class="delete-buttons"><button id="cancelDelete">ยกเลิก</button><button id="confirmDelete" class="delete-primary"><span data-icon="trash"></span>ยืนยันการลบ</button></div></div></dialog><div id="toast" class="toast" role="status" hidden></div>
+<script>
+'use strict';
+const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwooTaLIM-xiqDtoqaoXG_RgZ0jd1GyR_IGOsBZs-RnuNQS7HBpj3G-_2t-6cDERVDz/exec';
+const BANKS=[['kbank','กสิกรไทย','K','กสิกร','#158045'],['scb','ไทยพาณิชย์','SCB','ไทยพาณิชย์','#68429a'],['bbl','กรุงเทพ','BBL','กรุงเทพ','#215f9c'],['ktb','กรุงไทย','KTB','กรุงไทย','#087ca8'],['bay','กรุงศรีอยุธยา','BAY','กรุงศรี','#8a6808'],['ttb','ทหารไทยธนชาต (ttb)','ttb','ttb','#255eae'],['gsb','ออมสิน','GSB','ออมสิน','#b62d78'],['baac','ธ.ก.ส.','BAAC','ธ.ก.ส.','#317e41'],['ghb','อาคารสงเคราะห์','GHB','ธอส.','#b76416'],['cimb','ซีไอเอ็มบี ไทย','CIMB','CIMB','#b53035'],['uob','ยูโอบี','UOB','UOB','#294b89'],['other','อื่น ๆ','BANK','อื่น ๆ','#536e66']];
+const PATHS={reset:'M3 10a9 9 0 1 1 2.5 8M3 4v6h6',trash:'M3 6h18M9 6V4h6v2M5 6l1 14h12l1-14M10 10v6m4-6v6',bank:'M3 10h18M4 20h16M6 10v7m6-7v7m6-7v7M3 7l9-4 9 4v3H3z',grid:'M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z',wallet:'M20 8V5H4v14h16v-5m-5-6h6v6h-6zM17 11h1',settings:'M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8M9 3h6l1 3 3 1 2 5-2 5-3 1-1 3H9l-1-3-3-1-2-5 2-5 3-1z',shield:'M12 3l8 3v6c0 5-8 9-8 9s-8-4-8-9V6zM8 12l3 3 5-6',plus:'M12 5v14M5 12h14',search:'M21 21l-5-5M10 3a7 7 0 1 0 0 14 7 7 0 0 0 0-14',star:'m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.3l-5.6 2.9 1.1-6.2L3 9.6l6.2-.9z',copy:'M9 8h11v13H9zM15 8V3H4v13h5',users:'M16 21v-3a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v3M9 3a4 4 0 1 0 0 8 4 4 0 0 0 0-8M18 4a4 4 0 0 1 0 7M19 14a4 4 0 0 1 3 4v3',close:'M6 6l12 12M6 18 18 6',download:'M12 3v12m-5-5 5 5 5-5M4 16v5h16v-5',upload:'M12 16V4m-5 5 5-5 5 5M4 16v5h16v-5'};
+const $=id=>document.getElementById(id),KEY='family-bank-manager.v1';
+const icon=n=>`<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="${PATHS[n]||PATHS.bank}"/></svg>`;
+document.querySelectorAll('[data-icon]').forEach(el=>el.innerHTML=icon(el.dataset.icon));
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const digits=s=>String(s).replace(/[\s-]/g,'');
+const bankOf=a=>BANKS.find(b=>b[0]===a.bank)||BANKS[BANKS.length-1];
+const id=()=>globalThis.crypto?.randomUUID?.()||Date.now().toString(36)+Math.random().toString(36).slice(2);
+const ACCOUNT_CATEGORIES=['พ่อ','แม่','ลูกชาย','ลูกสาว'];
+const LEGACY_CATEGORIES=['ส่วนตัว','ครอบครัว','ธุรกิจ','อื่น ๆ'];
+const defaults=()=>({version:1,accounts:[],settings:{mask:false,includeBranch:false}});
+let state=defaults(),view='accounts',editing=null,timer,storageBlocked=false;
+const PAGE_SIZE=10;
+let currentPage=1,lastPaginationKey='';
+let formOriginal=null;
+let networkLabel='กำลังโหลด…';
+let localState,cloudMode=true,cloudReady=false,networkBusy=false,editingVersion=null,pendingDelete=null;
+let connectionMessage='กำลังเชื่อมต่อ Google Sheets…';
+let adminUnlocked=false;
+function isAdminPage(){return view==='admin'&&adminUnlocked;}
+function navigateTo(next){
+  if(!['accounts','admin'].includes(next))return;
+  if(next==='admin'&&!adminUnlocked){$('adminForm').reset();$('adminError').textContent='';$('adminDialog').showModal();$('adminPassword').focus();return;}
+  if(next!=='admin')adminUnlocked=false;
+  view=next;render();
+}
+function validateRecord(a){if(!a||typeof a!=='object')throw Error('ข้อมูลบัญชีไม่ถูกต้อง');const limits={nickname:100,owner:120,number:40,branch:100,note:500};for(const [k,max] of Object.entries(limits)){if(typeof a[k]!=='string'||a[k].length>max)throw Error('ข้อมูลบัญชีไม่ครบหรือยาวเกินกำหนด');}if(!a.nickname.trim()||!a.owner.trim()||!/^\d{6,20}$/.test(digits(a.number))||!BANKS.some(b=>b[0]===a.bank)||!['active','inactive'].includes(a.status)||!['ออมทรัพย์','กระแสรายวัน','ฝากประจำ','อื่น ๆ'].includes(a.type)||![...ACCOUNT_CATEGORIES,...LEGACY_CATEGORIES].includes(a.category)||typeof a.favorite!=='boolean')throw Error('กรุณาตรวจชื่อ ธนาคาร เลขบัญชี (6–20 หลัก) และสถานะ');return {id:typeof a.id==='string'?a.id:id(),nickname:a.nickname.trim(),owner:a.owner.trim(),number:digits(a.number),bank:a.bank,type:a.type,category:a.category,branch:a.branch.trim(),note:a.note.trim(),status:a.status,favorite:a.favorite};}
+function validateData(data){if(!data||data.version!==1||!Array.isArray(data.accounts)||data.accounts.length>10000)throw Error('รูปแบบไฟล์สำรองไม่ถูกต้อง');const accounts=data.accounts.map(validateRecord);const seen=new Set();for(const a of accounts){const key=a.bank+':'+a.number;if(seen.has(key))throw Error('พบเลขบัญชีซ้ำในข้อมูล');seen.add(key);}return{version:1,accounts,settings:{mask:data.settings?.mask===true,includeBranch:data.settings?.includeBranch===true}};}
+try{const raw=localStorage.getItem(KEY);if(raw)state=validateData(JSON.parse(raw));}catch(e){storageBlocked=true;$('storageWarning').hidden=false;$('storageWarning').textContent='ไม่สามารถอ่านข้อมูลเดิมหรือเข้าถึงพื้นที่จัดเก็บได้ ระบบหยุดการบันทึกเพื่อรักษาข้อมูลเดิมไว้ กรุณาเปิดในเบราว์เซอร์ปกติ หรือนำเข้าไฟล์สำรองที่ตรวจสอบแล้ว';}
+localState=structuredClone(state);
+function toast(message){clearTimeout(timer);$('toast').textContent=message;$('toast').hidden=false;timer=setTimeout(()=>$('toast').hidden=true,3500);}
+function commit(next,restore=false){
+  if(storageBlocked&&!restore){toast('ยังบันทึกบนอุปกรณ์ไม่ได้ กรุณาตรวจพื้นที่จัดเก็บ');return false;}
+  const saved=cloudMode?{...localState,settings:next.settings}:next;
+  try{localStorage.setItem(KEY,JSON.stringify(saved));localState=structuredClone(saved);state=next;storageBlocked=false;return true;}
+  catch(error){toast('บันทึกบนอุปกรณ์ไม่สำเร็จ ข้อมูลเดิมยังอยู่');return false;}
+}
+function copyText(a){return `ธนาคาร${bankOf(a)[1]}\nชื่อบัญชี: ${a.owner}\nเลขบัญชี: ${a.number}${state.settings.includeBranch&&a.branch?'\nสาขา: '+a.branch:''}`;}
+async function copy(value){try{if(navigator.clipboard&&window.isSecureContext){await navigator.clipboard.writeText(value);}else{const field=document.createElement('textarea');field.value=value;field.style.position='fixed';field.style.opacity='0';document.body.append(field);field.select();let ok;try{ok=document.execCommand('copy');}finally{field.remove();}if(!ok)throw Error('copy');}toast('คัดลอกแล้ว');}catch(e){$('manualCopy').value=value;$('copyDialog').showModal();$('manualCopy').focus();$('manualCopy').select();}}
+function options(select,values,placeholder){const current=select.value;select.innerHTML=`<option value="">${placeholder}</option>`+values.map(([value,label])=>`<option value="${esc(value)}">${esc(label)}</option>`).join('');select.value=values.some(v=>v[0]===current)?current:'';}
+function render(){options($('bankFilter'),BANKS.filter(b=>state.accounts.some(a=>a.bank===b[0])).map(b=>[b[0],b[1]]),'ทุกธนาคาร');options($('categoryFilter'),[...ACCOUNT_CATEGORIES,...LEGACY_CATEGORIES.filter(c=>state.accounts.some(a=>a.category===c))].map(c=>[c,LEGACY_CATEGORIES.includes(c)?'หมวดหมู่เดิม: '+c:c]),'ทุกหมวดหมู่');$('ownerSuggestions').innerHTML=[...new Set(state.accounts.map(a=>a.owner))].map(o=>`<option value="${esc(o)}"></option>`).join('');$('listView').hidden=false;$('addBtn').hidden=false;$('pageTitle').textContent={accounts:'Family Bank Manager',admin:'จัดการบัญชี · Admin'}[view];$('listTitle').textContent=isAdminPage()?'จัดการรายการบัญชี':'รายการบัญชี';$('adminExit').hidden=!isAdminPage();$('adminEntry').hidden=isAdminPage();document.querySelectorAll('[data-view]').forEach(b=>{b.classList.toggle('active',b.dataset.view===view);if(b.dataset.view===view)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');});$('maskSetting').checked=state.settings.mask;$('branchSetting').checked=state.settings.includeBranch;$('copyPreview').textContent=copyText({bank:'kbank',owner:'ชื่อเจ้าของบัญชี',number:'0000000000',branch:'ชื่อสาขา'});renderCards();}
+function renderCards(){const q=$('search').value.trim().toLocaleLowerCase('th');const compact=digits(q);let rows=state.accounts.filter(a=>{const mode=$('statusFilter').value;return (!$('bankFilter').value||a.bank===$('bankFilter').value)&&(!$('categoryFilter').value||a.category===$('categoryFilter').value)&&(mode==='all'||(mode==='favorite'?a.favorite&&a.status==='active':a.status===mode))&&(!q||[a.nickname,a.owner,bankOf(a)[1],a.note,a.category].some(s=>s.toLocaleLowerCase('th').includes(q))||(compact&&a.number.includes(compact)));});rows.sort((a,b)=>Number(b.favorite)-Number(a.favorite)||a.nickname.localeCompare(b.nickname,'th'));const paginationKey=JSON.stringify([view,q,$('bankFilter').value,$('categoryFilter').value,$('statusFilter').value]);
+if(paginationKey!==lastPaginationKey){currentPage=1;lastPaginationKey=paginationKey;}
+const pageCount=Math.max(1,Math.ceil(rows.length/PAGE_SIZE));
+currentPage=Math.max(1,Math.min(currentPage,pageCount));
+const pageRows=rows.slice((currentPage-1)*PAGE_SIZE,currentPage*PAGE_SIZE);
+$('resultCount').textContent=`แสดง ${pageRows.length} จาก ${rows.length} บัญชี`;
+$('pagination').hidden=rows.length<=PAGE_SIZE;
+$('previousPage').disabled=currentPage===1;
+$('nextPage').disabled=currentPage===pageCount;
+$('pageInfo').textContent=`หน้า ${currentPage} จาก ${pageCount}`;
+$('cards').innerHTML=rows.length?pageRows.map(a=>{const b=bankOf(a);return `<article class="card" style="--bank:${b[4]}"><div class="card-top"><div class="bank-logo">${b[2]}</div><div class="bank-label"><strong>${esc(a.nickname)}</strong><small>ธนาคาร${esc(b[1])}</small></div><button class="star ${a.favorite?'selected':''}" data-action="favorite" data-id="${esc(a.id)}" aria-label="${a.favorite?'ยกเลิก':'เพิ่ม'}บัญชีโปรด ${esc(a.nickname)}" aria-pressed="${a.favorite}">${icon('star')}</button></div><div class="account-number">${esc(state.settings.mask?'••• ••• '+a.number.slice(-4):a.number)}</div><div class="owner">${esc(a.owner)}</div><div class="tags"><span class="tag">${esc(a.category)}</span><span class="tag">${esc(a.type)}</span>${a.status==='inactive'?'<span class="tag off">ปิดใช้งาน</span>':''}</div>${a.note?`<div class="note">${esc(a.note)}</div>`:''}<div class="actions"><button data-action="number" data-id="${esc(a.id)}">${icon('copy')}เลขบัญชี</button><button data-action="all" data-id="${esc(a.id)}">คัดลอกทั้งหมด</button></div><div class="card-foot"><span class="muted" style="font-size:12px">${esc(a.branch||'ไม่ได้ระบุสาขา')}</span>${isAdminPage()?`<div class="record-actions"><button class="text-btn" data-action="edit" data-id="${esc(a.id)}">แก้ไข</button><button class="text-btn danger" data-action="delete" data-id="${esc(a.id)}" aria-label="ลบบัญชี ${esc(a.nickname)}">${icon('trash')}ลบ</button></div>`:''}</div></article>`;}).join(''):`<div class="empty"><div class="empty-icon">${icon(state.accounts.length?'search':'wallet')}</div><h2>${state.accounts.length?'ไม่พบบัญชีที่ตรงกับการค้นหา':'เริ่มต้นสมุดบัญชีของคุณ'}</h2><p>${state.accounts.length?'ลองเปลี่ยนคำค้นหาหรือตัวกรอง เพื่อดูบัญชีอื่น ๆ':'เพิ่มบัญชีแรกของคุณ เพื่อรวมรายละเอียดบัญชีไว้ในที่เดียวและคัดลอกได้ทันที'}</p><button id="emptyAction" class="primary">${state.accounts.length?'ล้างตัวกรอง':'เพิ่มบัญชีแรก'}</button></div>`;$('emptyAction')?.addEventListener('click',()=>{if(!state.accounts.length)openForm();else{$('search').value='';$('bankFilter').value='';$('categoryFilter').value='';$('statusFilter').value='all';renderCards();}});}
+function populateAccountForm(a){
+  $('accountForm').reset();
+  $('category').innerHTML=ACCOUNT_CATEGORIES.map(c=>'<option>'+esc(c)+'</option>').join('')+(a&&LEGACY_CATEGORIES.includes(a.category)?'<option value="'+esc(a.category)+'">หมวดหมู่เดิม: '+esc(a.category)+'</option>':'');
+  if(a)for(const [key,value] of Object.entries(a)){const field=$('accountForm').elements.namedItem(key);if(field){if(field.type==='checkbox')field.checked=value;else field.value=value;}}
+  $('formError').textContent='';
+}
+function openForm(a){
+  if(a&&!isAdminPage()){toast('กรุณาเข้าหน้า Admin เพื่อแก้ไขบัญชี');return;}if(!canMutate())return;
+  formOriginal=a?structuredClone(a):null;editingVersion=a?.updatedAt||null;editing=a?.id||null;
+  populateAccountForm(formOriginal);$('dialogTitle').textContent=a?'แก้ไขบัญชี':'เพิ่มบัญชีใหม่';
+  $('accountDialog').showModal();$('nickname').focus();
+}
+
+function cloudControls(){
+  $('dataSourceBadge').textContent=networkBusy?networkLabel:cloudMode?(cloudReady?'Google Sheets':'ยังไม่เชื่อมต่อ Sheet'):'ข้อมูลบนอุปกรณ์นี้';$('dataSourceBadge').classList.toggle('is-loading',networkBusy);$('reloadAccounts').disabled=networkBusy;
+  $('connectionStatus').textContent=connectionMessage;
+  const blocked=networkBusy||(cloudMode&&!cloudReady);
+  $('addBtn').disabled=blocked;$('accountForm').querySelector('[type="submit"]').disabled=blocked;
+  $('accountForm').querySelectorAll('input,select,textarea').forEach(field=>field.disabled=networkBusy);
+  $('accountForm').querySelector('[type="submit"]').textContent=networkBusy?'กำลังบันทึก…':'บันทึกบัญชี';
+  $('importBtn').disabled=blocked;$('refreshCloud').disabled=networkBusy;
+  $('useLocal').disabled=networkBusy||!cloudMode;
+  $('migrateLocal').disabled=networkBusy||!cloudMode||!cloudReady||storageBlocked||!localState.accounts.length;
+  $('confirmDelete').disabled=blocked;
+  ['cancelDelete','closeDialog','cancelDialog','resetAccountForm'].forEach(k=>$(k).disabled=networkBusy);
+  document.querySelectorAll('#cards [data-action="favorite"],#cards [data-action="edit"],#cards [data-action="delete"]').forEach(b=>b.disabled=blocked);
+}
+function canMutate(){if(networkBusy){toast('กำลังทำรายการ กรุณารอสักครู่');return false;}if(cloudMode&&!cloudReady){toast('ยังเชื่อมต่อ Sheet ไม่สำเร็จ กรุณารีเฟรชหน้าเว็บเพื่อลองใหม่');return false;}return true;}
+async function apiRequest(action,payload={}){
+  const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),25000);
+  try{
+    const response=await fetch(WEB_APP_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({...payload,action}),redirect:'follow',signal:controller.signal});
+    if(!response.ok)throw Error('เชื่อมต่อ Apps Script ไม่สำเร็จ (HTTP '+response.status+')');
+    let result;try{result=JSON.parse(await response.text());}catch(error){throw Error('Apps Script ไม่ได้ส่ง JSON กลับมา กรุณาตรวจ URL และสิทธิ์ Web app');}
+    if(!result||result.ok!==true){const error=new Error(result?.error?.code==='UNAUTHORIZED'?'Apps Script ยังตรวจ API key กรุณาวาง Code.gs ล่าสุดและ Deploy เวอร์ชันใหม่':result?.error?.message||'ผลตอบกลับจาก Apps Script ไม่ถูกต้อง');error.code=result?.error?.code;throw error;}
+    if(!result.data||typeof result.data!=='object')throw Error('ผลตอบกลับไม่มีข้อมูลตามรูปแบบที่กำหนด');return result.data;
+  }catch(error){if(error.name==='AbortError')throw Error('หมดเวลารอ Apps Script กรุณาโหลดข้อมูลจาก Sheet เพื่อตรวจสอบก่อนลองบันทึกใหม่');if(error instanceof TypeError)throw Error('ติดต่อ Apps Script ไม่ได้ กรุณาตรวจอินเทอร์เน็ตและสิทธิ์เข้าถึง Web app');throw error;}
+  finally{clearTimeout(timeout);}
+}
+function validatedRemoteAccount(raw){const a=validateRecord(raw);if(!a.id||typeof raw.updatedAt!=='string'||!Number.isFinite(Date.parse(raw.updatedAt))||typeof raw.createdAt!=='string'||!Number.isFinite(Date.parse(raw.createdAt)))throw Error('ข้อมูลเวอร์ชันบัญชีจาก Sheet ไม่ถูกต้อง');return {...a,createdAt:raw.createdAt,updatedAt:raw.updatedAt};}
+async function fetchCloudState(){
+  const data=await apiRequest('list');validateData({...data,settings:state.settings});
+  const accounts=data.accounts.map(validatedRemoteAccount);if(new Set(accounts.map(a=>a.id)).size!==accounts.length)throw Error('พบ ID บัญชีซ้ำใน Sheet');
+  return {version:1,accounts,settings:state.settings};
+}
+async function connectCloud(){
+  if(networkBusy||$('accountDialog').open||$('deleteDialog').open)return;
+  networkLabel='กำลังโหลด…';networkBusy=true;connectionMessage='กำลังโหลดข้อมูลจาก Google Sheets…';cloudControls();
+  try{const next=await fetchCloudState();state=next;cloudMode=true;cloudReady=true;connectionMessage='เชื่อมต่อ Google Sheets แล้ว • '+state.accounts.length+' บัญชี';$('storageWarning').hidden=!storageBlocked;render();}
+  catch(error){connectionMessage=error.message;if(cloudMode)cloudReady=false;$('storageWarning').hidden=false;$('storageWarning').textContent=error.message+' ข้อมูลเดิมยังอยู่ กรุณารีเฟรชหน้าเว็บเพื่อลองเชื่อมต่ออีกครั้ง';}
+  finally{networkBusy=false;cloudControls();}
+}
+function markCloudUncertain(error){cloudReady=false;connectionMessage=error.message+' กรุณารีเฟรชหน้าเว็บก่อนบันทึกต่อ';$('storageWarning').hidden=false;$('storageWarning').textContent=connectionMessage;cloudControls();}
+async function cloudWrite(action,payload){
+  if(!canMutate())return null;networkLabel=action==='deleteAccount'?'กำลังลบ…':action==='setFavorite'?'กำลังอัปเดต…':'กำลังบันทึก…';networkBusy=true;cloudControls();
+  try{return await apiRequest(action,payload);}catch(error){markCloudUncertain(error);throw error;}
+  finally{networkBusy=false;cloudControls();}
+}
+function applySavedAccount(data,expectedId){
+  let account;try{account=validatedRemoteAccount(data.account);if(expectedId&&account.id!==expectedId)throw Error('ผลบันทึกไม่ตรงกับบัญชีที่ส่ง กรุณาโหลดข้อมูลล่าสุด');}catch(error){markCloudUncertain(error);throw error;}
+  state={...state,accounts:state.accounts.some(a=>a.id===account.id)?state.accounts.map(a=>a.id===account.id?account:a):[...state.accounts,account]};
+  connectionMessage='เชื่อมต่อ Google Sheets แล้ว • '+state.accounts.length+' บัญชี';render();
+}
+function openDelete(account){
+  if(!isAdminPage()){toast('กรุณาเข้าหน้า Admin เพื่อลบบัญชี');return;}if(!canMutate())return;pendingDelete={id:account.id,expectedUpdatedAt:account.updatedAt,cloudMode};
+  $('deleteDetails').textContent=account.nickname+'\nธนาคาร'+bankOf(account)[1]+'\n'+account.owner+'\nเลขบัญชี: '+(state.settings.mask?'••• ••• '+account.number.slice(-4):account.number);
+  $('deleteTarget').textContent=cloudMode?'บัญชีนี้จะถูกลบออกจาก Google Sheets':'บัญชีนี้จะถูกลบออกจากข้อมูลบนอุปกรณ์นี้';
+  $('deleteError').textContent='';$('deleteDialog').showModal();$('cancelDelete').focus();
+}
+const renderBase=render,renderCardsBase=renderCards;
+render=function(){renderBase();cloudControls();};
+renderCards=function(){renderCardsBase();cloudControls();};
+
+$('bank').innerHTML='<option value="">เลือกธนาคาร</option>'+BANKS.map(b=>`<option value="${b[0]}">${b[1]}</option>`).join('');
+document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>navigateTo(b.dataset.view)));$('addBtn').onclick=()=>openForm();$('closeDialog').onclick=$('cancelDialog').onclick=()=>$('accountDialog').close();$('closeCopy').onclick=()=>$('copyDialog').close();$('previousPage').onclick=()=>{if(currentPage>1){currentPage--;renderCards();}};$('nextPage').onclick=()=>{currentPage++;renderCards();};$('search').addEventListener('input',renderCards);['bankFilter','categoryFilter','statusFilter'].forEach(k=>$(k).addEventListener('change',renderCards));
+
+$('resetSearch').onclick=()=>{
+  $('search').value='';$('bankFilter').value='';$('categoryFilter').value='';$('statusFilter').value='all';currentPage=1;renderCards();$('search').focus();
+};
+$('resetAccountForm').onclick=()=>{
+  if(networkBusy)return;populateAccountForm(formOriginal);$('nickname').focus();toast(formOriginal?'คืนค่าฟอร์มก่อนแก้ไขแล้ว':'ล้างข้อมูลในฟอร์มแล้ว');
+};
+$('accountForm').addEventListener('submit',async e=>{
+  e.preventDefault();if(editing&&!isAdminPage()){$('formError').textContent='กรุณาเข้าหน้า Admin เพื่อแก้ไขบัญชี';return;}if(!canMutate())return;$('formError').textContent='';
+  try{
+    const a=validateRecord({...Object.fromEntries(new FormData(e.target)),id:editing||id(),favorite:$('favorite').checked});
+    if(state.accounts.some(x=>x.id!==editing&&x.bank===a.bank&&x.number===a.number))throw Error('มีเลขบัญชีนี้ในธนาคารที่เลือกแล้ว');
+    if(cloudMode){const result=await cloudWrite('saveAccount',{account:a,...(editing?{expectedUpdatedAt:editingVersion}:{})});if(!result)return;applySavedAccount(result,a.id);}
+    else if(!commit({...state,accounts:editing?state.accounts.map(x=>x.id===editing?a:x):[...state.accounts,a]}))throw Error('บันทึกบนอุปกรณ์ไม่สำเร็จ ข้อมูลในแบบฟอร์มยังอยู่');
+    $('accountDialog').close();render();toast(cloudMode?'บันทึกลง Google Sheets แล้ว':'บันทึกบนอุปกรณ์แล้ว');
+  }catch(error){$('formError').textContent=error.message;}
+});
+$('cards').addEventListener('click',async e=>{
+  const button=e.target.closest('button[data-action]');if(!button)return;const a=state.accounts.find(x=>x.id===button.dataset.id);if(!a)return;
+  switch(button.dataset.action){
+    case 'number':copy(a.number);break;case 'all':copy(copyText(a));break;case 'edit':openForm(a);break;case 'delete':openDelete(a);break;
+    case 'favorite':if(!canMutate())return;try{if(cloudMode){const result=await cloudWrite('setFavorite',{id:a.id,favorite:!a.favorite,expectedUpdatedAt:a.updatedAt});if(result)applySavedAccount(result,a.id);}else if(commit({...state,accounts:state.accounts.map(x=>x.id===a.id?{...x,favorite:!x.favorite}:x)}))render();}catch(error){toast(error.message);}break;
+  }
+});
+$('adminForm').addEventListener('submit',e=>{
+  e.preventDefault();
+  if($('adminPassword').value!=='Admin1234'){$('adminError').textContent='รหัสผ่านไม่ถูกต้อง กรุณาลองใหม่';$('adminPassword').value='';$('adminPassword').focus();return;}
+  adminUnlocked=true;$('adminPassword').value='';$('adminDialog').close();view='admin';$('statusFilter').value='all';render();toast('เข้าสู่หน้า Admin แล้ว');
+});
+$('cancelAdmin').onclick=()=>$('adminDialog').close();
+$('adminDialog').addEventListener('close',()=>{$('adminPassword').value='';});
+$('adminExit').onclick=()=>{adminUnlocked=false;view='accounts';render();toast('ล็อกหน้า Admin แล้ว');};
+$('cancelDelete').onclick=()=>{if(!networkBusy)$('deleteDialog').close();};
+$('deleteDialog').addEventListener('cancel',e=>{if(networkBusy)e.preventDefault();});
+$('deleteDialog').addEventListener('close',()=>{pendingDelete=null;});
+$('accountDialog').addEventListener('cancel',e=>{if(networkBusy)e.preventDefault();});
+$('confirmDelete').onclick=async()=>{
+  if(!isAdminPage()){toast('กรุณาเข้าหน้า Admin เพื่อลบบัญชี');return;}if(!pendingDelete||!canMutate())return;const target={...pendingDelete};$('deleteError').textContent='';
+  try{
+    if(target.cloudMode!==cloudMode)throw Error('โหมดข้อมูลเปลี่ยนไป กรุณาปิดหน้าต่างและเลือกรายการใหม่');
+    if(cloudMode){const result=await cloudWrite('deleteAccount',{id:target.id,expectedUpdatedAt:target.expectedUpdatedAt});if(!result)return;if(result.deleted!==true||result.id!==target.id){const error=new Error('ผลการลบไม่ตรงกับรายการ');markCloudUncertain(error);throw error;}state={...state,accounts:state.accounts.filter(a=>a.id!==target.id)};connectionMessage='เชื่อมต่อ Google Sheets แล้ว • '+state.accounts.length+' บัญชี';}
+    else if(!commit({...state,accounts:state.accounts.filter(a=>a.id!==target.id)}))throw Error('ลบไม่สำเร็จ ข้อมูลเดิมยังอยู่ กรุณาตรวจพื้นที่จัดเก็บ');
+    $('deleteDialog').close();render();toast(cloudMode?'ลบบัญชีออกจาก Google Sheets แล้ว':'ลบบัญชีบนอุปกรณ์แล้ว');
+  }catch(error){$('deleteError').textContent=error.message;}
+};
+['maskSetting','branchSetting'].forEach(k=>$(k).onchange=()=>{commit({...state,settings:{mask:$('maskSetting').checked,includeBranch:$('branchSetting').checked}});render();});
+$('exportBtn').onclick=()=>{const blob=new Blob([JSON.stringify({...state,exportedAt:new Date().toISOString()},null,2)],{type:'application/json'});const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='family-bank-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);toast('ส่งไฟล์สำรองไปยังรายการดาวน์โหลดแล้ว');};
+
+$('importBtn').onclick=()=>{if(canMutate())$('importFile').click();};
+$('importFile').onchange=async e=>{
+  const file=e.target.files[0];if(!file)return;$('importResult').textContent='';
+  try{
+    if(!canMutate())return;if(file.size>5*1024*1024)throw Error('ไฟล์ใหญ่เกิน 5 MB');const data=validateData(JSON.parse(await file.text()));
+    if(!confirm('นำเข้า '+data.accounts.length+' บัญชี'+(cloudMode?'ลง Google Sheets':'บนอุปกรณ์')+'? บัญชีซ้ำจะถูกข้าม'))return;
+    if(cloudMode){const result=await cloudWrite('importAccounts',{backup:data});if(!result)return;await connectCloud();$('importResult').textContent='นำเข้าแล้ว '+result.imported+' บัญชี ข้ามบัญชีซ้ำ '+result.skipped+' บัญชี'+(!cloudReady?' — กรุณารีเฟรชหน้าเว็บอีกครั้ง':'');}
+    else{const seen=new Set(state.accounts.map(a=>a.bank+':'+a.number)),added=[];for(const a of data.accounts){const k=a.bank+':'+a.number;if(!seen.has(k)){added.push({...a,id:id()});seen.add(k);}}if(!commit({...state,accounts:[...state.accounts,...added],settings:state.accounts.length?state.settings:data.settings},true))throw Error('บันทึกข้อมูลที่นำเข้าไม่สำเร็จ');render();$('importResult').textContent='นำเข้าแล้ว '+added.length+' บัญชี ข้ามบัญชีซ้ำ '+(data.accounts.length-added.length)+' บัญชี';}
+  }catch(error){$('importResult').textContent='นำเข้าไม่สำเร็จ: '+error.message;}finally{e.target.value='';}
+};
+$('refreshCloud').onclick=()=>connectCloud();
+$('reloadAccounts').onclick=()=>connectCloud();
+$('useLocal').onclick=()=>{
+  if(networkBusy||$('accountDialog').open||$('deleteDialog').open)return;
+  cloudMode=false;cloudReady=false;state=structuredClone(localState);connectionMessage='ใช้ข้อมูลบนอุปกรณ์นี้ การบันทึกจะไม่ส่งไป Google Sheets';$('storageWarning').hidden=!storageBlocked;render();toast('เปลี่ยนเป็นข้อมูลบนอุปกรณ์แล้ว');
+};
+$('migrateLocal').onclick=async()=>{
+  if(!cloudMode||!canMutate()||storageBlocked||!localState.accounts.length)return;
+  if(!confirm('นำข้อมูลเดิมบนอุปกรณ์ '+localState.accounts.length+' บัญชีขึ้น Google Sheets? บัญชีซ้ำจะถูกข้าม ข้อมูลบนอุปกรณ์จะยังอยู่'))return;
+  try{const result=await cloudWrite('importAccounts',{backup:{version:1,accounts:localState.accounts}});if(!result)return;await connectCloud();toast('นำขึ้น Sheet แล้ว '+result.imported+' บัญชี ข้ามซ้ำ '+result.skipped+' บัญชี'+(!cloudReady?' กรุณาโหลดข้อมูลอีกครั้ง':''));}catch(error){toast(error.message);}
+};
+window.addEventListener('storage',e=>{if(e.key===KEY){storageBlocked=true;$('storageWarning').hidden=false;$('storageWarning').textContent='ข้อมูลมีการเปลี่ยนแปลงจากแท็บอื่น กรุณารีเฟรชหน้านี้ก่อนแก้ไขต่อ เพื่อไม่ให้ข้อมูลเขียนทับกัน';}});
+render();
+connectCloud();
+</script>
+
+<script>
+// Embedded sizing is independent of account loading and works with local files.
+if (window.parent !== window) {
+  const embeddedStyle = document.createElement('style');
+  embeddedStyle.textContent = 'html { overflow-y: hidden; } body, .shell { min-height: 0; }';
+  document.head.append(embeddedStyle);
+  let pendingHeight = false;
+  let lastHeight = 0;
+  function reportEmbeddedHeight(force = false) {
+    if (pendingHeight && !force) return;
+    pendingHeight = true;
+    requestAnimationFrame(() => {
+      pendingHeight = false;
+      const height = Math.ceil(document.body.getBoundingClientRect().height);
+      if (height > 0 && (force || height !== lastHeight)) {
+        lastHeight = height;
+        window.parent.postMessage({ type: 'beloved-family-bank-height', height }, '*');
+      }
+    });
+  }
+  new ResizeObserver(() => reportEmbeddedHeight()).observe(document.body);
+  window.addEventListener('message', event => {
+    if (event.source === window.parent && event.data?.type === 'beloved-request-bank-height') {
+      reportEmbeddedHeight(true);
+    }
+  });
+  window.addEventListener('resize', () => reportEmbeddedHeight(true));
+  document.fonts?.ready.then(() => reportEmbeddedHeight(true));
+  reportEmbeddedHeight(true);
+}
+</script>
+</body></html>

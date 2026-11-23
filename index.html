@@ -19,7 +19,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 
   <!-- Main Stylesheet -->
-  <link rel="stylesheet" href="style.css?v=20261103-letter-layout">
+  <link rel="stylesheet" href="style.css?v=20261123-bank-height-fix">
 </head>
 <body>
 
@@ -55,6 +55,10 @@
         <a href="#" class="nav-item" data-target="family-menu">
           <i class="fa-solid fa-utensils"></i>
           <span>Family Menu</span>
+        </a>
+        <a href="#" class="nav-item" data-target="family-bank">
+          <i class="fa-solid fa-building-columns"></i>
+          <span>Family Bank</span>
         </a>
         <a href="#" class="nav-item" data-target="letter">
           <i class="fa-solid fa-envelope"></i>
@@ -101,6 +105,12 @@
             <img class="portal-icon" src="family_menu_icon.png" alt="Family Menu" style="object-fit: cover;">
             <h3>Family Menu</h3>
             <p>คลังสูตรอาหารประจำบ้านและเครื่องมือคำนวณวัตถุดิบ</p>
+          </div>
+
+          <div class="portal-card" role="button" tabindex="0" data-navigate="family-bank" aria-label="เปิด Family Bank Manager">
+            <span class="portal-icon bg-gradient-green" aria-hidden="true"><i class="fa-solid fa-building-columns"></i></span>
+            <h3>Family Bank Manager</h3>
+            <p>จัดการบัญชีธนาคารของครอบครัว ค้นหาและคัดลอกเลขบัญชี</p>
           </div>
 
           <div class="portal-card" role="button" tabindex="0" data-navigate="letter" aria-label="เปิด Letter">
@@ -468,6 +478,17 @@
         </div>
       </section>
 
+      <!-- Family Bank Manager Section -->
+      <section id="family-bank" class="page-section fade-in">
+        <header class="section-header">
+          <h2><i class="fa-solid fa-building-columns me-2"></i> Family Bank Manager</h2>
+          <p>สมุดบัญชีธนาคารของครอบครัว</p>
+        </header>
+        <div class="embedded-app-panel embedded-app-autoheight">
+          <iframe data-src="Family%20Bank%20Manager/index.html" title="Family Bank Manager จัดการบัญชีธนาคารของครอบครัว"></iframe>
+        </div>
+      </section>
+
       <!-- Letter Section -->
       <section id="letter" class="page-section fade-in">
         <header class="section-header">
@@ -489,7 +510,7 @@
   </div>
 
   <script src="core-utils.js?v=20260802-hardening-v1"></script>
-  <script src="app.js?v=20260802-hardening-v1"></script>
+  <script src="app.js?v=20261123-bank-height-fix"></script>
   <script src="family-expenses.js?v=20260802-hardening-v1"></script>
   <script src="kids-savings.js?v=20260802-hardening-v1"></script>
   <script src="mona-expenses.js?v=20260802-hardening-v1"></script>

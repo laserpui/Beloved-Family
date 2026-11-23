@@ -48,6 +48,23 @@ async function requestAdminAccess(sessionKey, title = 'ยืนยันตั�
   return false;
 }
 
+// The child reports its height, including when opened directly through file://.
+// Do not read contentDocument: local files can have separate opaque origins.
+const embeddedFrames = [...document.querySelectorAll('.embedded-app-autoheight iframe')];
+window.addEventListener('message', event => {
+  const frame = embeddedFrames.find(item => item.contentWindow === event.source);
+  if (!frame || event.data?.type !== 'beloved-family-bank-height') return;
+  const height = event.data.height;
+  if (!Number.isFinite(height) || height < 1 || height > 100000) return;
+  frame.style.height = Math.max(360, Math.ceil(height)) + 'px';
+});
+function requestEmbeddedHeight(frame) {
+  frame.contentWindow?.postMessage({ type: 'beloved-request-bank-height' }, '*');
+}
+embeddedFrames.forEach(frame => {
+  frame.addEventListener('load', () => requestEmbeddedHeight(frame));
+});
+
 async function activatePage(targetId) {
   const unlockKey = protectedPages[targetId];
   if (unlockKey && !(await requestAdminAccess(unlockKey, 'ยืนยันก่อนเข้าใช้งาน'))) return false;
@@ -60,6 +77,16 @@ async function activatePage(targetId) {
 
   document.querySelectorAll('.page-section').forEach(section => {
     section.classList.toggle('active', section.id === targetId);
+  });
+
+  // Load embedded apps on first visit; keep their state when switching pages.
+  document.getElementById(targetId)?.querySelectorAll('iframe[data-src]').forEach(frame => {
+    frame.src = frame.dataset.src;
+    frame.removeAttribute('data-src');
+  });
+
+  document.getElementById(targetId)?.querySelectorAll('.embedded-app-autoheight iframe').forEach(frame => {
+    requestEmbeddedHeight(frame);
   });
 
   if (targetId !== 'family-expenses' && typeof stopFamilyExpensesAutoRefresh === 'function') {

@@ -674,3 +674,13 @@ input[type="file"]::file-selector-button:hover {
   margin-bottom: 8px;
   color: var(--text-dark);
 }
+
+/* Let the main page own scrolling for the embedded Family Bank app. */
+#family-bank .embedded-app-autoheight {
+  height: auto;
+}
+
+#family-bank .embedded-app-autoheight iframe {
+  height: 720px;
+  min-height: 360px;
+}
